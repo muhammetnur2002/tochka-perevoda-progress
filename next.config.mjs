@@ -22,6 +22,7 @@ const csp = [
   "frame-ancestors 'self' https://web.telegram.org https://*.telegram.org",
   "base-uri 'self'",
   "form-action 'self' https://yoomoney.ru https://*.yoomoney.ru",
+  "worker-src 'self' blob:",
   "object-src 'none'",
 ]
   .join("; ")
@@ -37,7 +38,12 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {
-    serverComponentsExternalPackages: ["exceljs", "nodemailer", "@aws-sdk/client-s3", "qrcode"],
+    serverComponentsExternalPackages: ["exceljs", "nodemailer", "@aws-sdk/client-s3", "qrcode", "sharp"],
+  },
+  webpack: (config) => {
+    // pdfjs-dist (разбор PDF в браузере сотрудника) необязательно подтягивает node-canvas
+    config.resolve.alias.canvas = false;
+    return config;
   },
   images: {
     // Все изображения next/image — локальные (public/brand). Удалённые источники
@@ -58,7 +64,7 @@ const nextConfig = {
     return [
       { source: "/:path*", headers: security },
       // Личные разделы и API не кэшируются прокси
-      { source: "/(account|admin|workspace)/:path*", headers: [{ key: "Cache-Control", value: "private, no-store" }] },
+      { source: "/(account|admin|workspace|proof)/:path*", headers: [{ key: "Cache-Control", value: "private, no-store" }] },
     ];
   },
 };

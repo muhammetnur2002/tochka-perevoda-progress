@@ -549,7 +549,13 @@
     "metaOrder": "Sipariş",
     "metaProfile": "Profil",
     "translationPair": "Çeviri: {from} → {to}",
-    "titleTemplate": "Hesabım"
+    "titleTemplate": "Hesabım",
+    "proofTitle": "Çeviri kontrolü",
+    "proofAwaiting": "Çeviri hazır — yazdırmadan önce adları, tarihleri ve numaraları kontrol edin.",
+    "proofChanges": "Düzeltme notları gönderildi. Düzeltilmiş sürümü bekliyoruz.",
+    "proofApproved": "Çeviri onaylandı, belge yazdırılacak.",
+    "proofOpen": "Çeviriyi kontrol et",
+    "proofView": "Aç"
   },
   "profile": {
     "name": "Ad",
@@ -656,5 +662,52 @@
       "first_order_only": "Bu promosyon kodu yalnızca ilk siparişte geçerlidir",
       "min_amount": "Sipariş tutarı bu promosyon kodu için gereken minimum tutarın altında"
     }
+  },
+  "proof": {
+    "title": "Çeviri kontrolü",
+    "subtitle": "Sipariş {number} · sürüm {version}",
+    "pageOf": "Sayfa {n} / {total}",
+    "loadError": "Sayfa yüklenemedi",
+    "retry": "Tekrar dene",
+    "pinPlaceholder": "Burada ne yanlış?",
+    "pinSave": "Ekle",
+    "pinCancel": "İptal",
+    "printBlocked": "Bu sayfanın yazdırılması mümkün değil",
+    "approvedBanner": "Çeviri {date} tarihinde onaylandı. Belge yazdırılacak.",
+    "changesBanner": "Düzeltme notlarınız gönderildi. Çeviriyi düzeltip yeni sürümü kontrolünüze sunacağız.",
+    "staffView": "Çalışan için ön izleme: kararı müşteri verir.",
+    "noteTitle": "Çevirmenden mesaj",
+    "keyDataTitle": "Önemli bilgiler",
+    "keyDataHint": "Belgenizle karşılaştırın: her şey doğru yazılmış mı?",
+    "ok": "Doğru",
+    "fix": "Düzelt",
+    "correctValue": "Doğrusu şu",
+    "commentOptional": "Yorum (isteğe bağlı)",
+    "commentsTitle": "Metinle ilgili düzeltmeler",
+    "addComment": "Sayfada hatayı işaretle",
+    "addCommentActive": "Hatanın olduğu yere tıklayın",
+    "commentOnPage": "Sayfa {page}",
+    "removeComment": "Düzeltmeyi sil",
+    "decisionTitle": "Kararınız",
+    "sendChangesHint": "Çeviriyi düzeltip yeni sürümü kontrolünüze sunacağız.",
+    "fixNeedsValue": "Düzeltilecek her alan için doğru yazımı belirtin.",
+    "sendChanges": "Düzeltmeleri gönder",
+    "check": {
+      "names": "Ad, soyad ve baba adının yazımını kontrol ettim",
+      "dates": "Tarihleri, belge numaralarını ve adresleri kontrol ettim",
+      "print": "Çeviriyle ilgili bir itirazım yok, yazdırılmasını rica ederim"
+    },
+    "answerAllFields": "Onaylamak için her önemli bilgide «Doğru» seçeneğini işaretleyin.",
+    "approve": "Her şey doğru — yazdırabilirsiniz",
+    "officeNote": "Belgeleri teslim alırken kâğıt nüshayı yine de kontrol edip imzalayacaksınız.",
+    "protectedNote": "Sayfalar korumalıdır: indirme, kopyalama ve ekran görüntüsü alma mümkün değildir. Her sayfada adınızı ve görüntüleme zamanını içeren bir işaret bulunur.",
+    "covered": "Görüntülemeye devam etmek için sekmeye geri dönün",
+    "backToOrders": "Siparişlerim",
+    "approveDone": "Teşekkürler! Çeviri onaylandı",
+    "changesDone": "Düzeltmeler gönderildi ({count})",
+    "accessDenied": "Kontrole erişim yok",
+    "accessDeniedText": "Bağlantının süresi dolmuş veya başka bir siparişe ait. Kontrolü açmak için hesabınıza giriş yapın.",
+    "login": "Giriş yap",
+    "notSent": "Çeviri henüz kontrole gönderilmedi"
   }
 }

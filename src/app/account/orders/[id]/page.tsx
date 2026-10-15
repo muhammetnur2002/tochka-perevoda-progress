@@ -59,6 +59,30 @@ export default async function AccountOrderPage({ params }: { params: { id: strin
         </div>
       </div>
 
+      {order.proof_status !== "none" && (
+        <section
+          className={
+            order.proof_status === "awaiting_client"
+              ? "flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-gold-400 bg-gold-50 p-5"
+              : "flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-card p-5"
+          }
+        >
+          <div>
+            <h3 className="font-bold text-brand-800">{t("proofTitle")}</h3>
+            <p className="text-sm text-slate-700">
+              {order.proof_status === "awaiting_client"
+                ? t("proofAwaiting")
+                : order.proof_status === "changes_requested"
+                  ? t("proofChanges")
+                  : t("proofApproved")}
+            </p>
+          </div>
+          <Button asChild variant={order.proof_status === "awaiting_client" ? "gold" : "outline"}>
+            <Link href={`/proof/${order.id}`}>{order.proof_status === "awaiting_client" ? t("proofOpen") : t("proofView")}</Link>
+          </Button>
+        </section>
+      )}
+
       <section className="rounded-2xl border bg-card p-5">
         <OrderTimeline status={order.status} history={history.data ?? []} createdAt={order.created_at} />
         <p className="mt-4 text-sm text-muted-foreground">

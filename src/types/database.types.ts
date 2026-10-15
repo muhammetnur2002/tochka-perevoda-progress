@@ -159,6 +159,73 @@ export type PromoCodeRow = {
   updated_at: string;
 };
 
+export type ProofStatus = "pending" | "approved" | "changes_requested" | "superseded";
+export type OrderProofStatus = "none" | "awaiting_client" | "changes_requested" | "approved";
+
+export interface ProofKeyField {
+  id: string;
+  label: string;
+  value: string;
+}
+
+export interface ProofPageMeta {
+  n: number;
+  path: string;
+  width: number;
+  height: number;
+}
+
+export type ProofRow = {
+  id: string;
+  order_id: string;
+  version: number;
+  status: ProofStatus;
+  note: string | null;
+  key_fields: ProofKeyField[];
+  pages: ProofPageMeta[];
+  page_count: number;
+  content_hash: string;
+  created_by: string | null;
+  created_at: string;
+  decided_at: string | null;
+  decision: Json | null;
+};
+
+export type ProofCommentRow = {
+  id: string;
+  proof_id: string;
+  page: number | null;
+  x: number | null;
+  y: number | null;
+  field_id: string | null;
+  proposed_value: string | null;
+  body: string;
+  created_at: string;
+};
+
+export type ProofEventName =
+  | "created"
+  | "sent"
+  | "opened"
+  | "approved"
+  | "changes_requested"
+  | "office_approved"
+  | "superseded"
+  | "reminded";
+
+export type ProofEventRow = {
+  id: string;
+  proof_id: string;
+  order_id: string;
+  event: ProofEventName;
+  actor_id: string | null;
+  actor_role: string | null;
+  ip: string | null;
+  user_agent: string | null;
+  meta: Json;
+  created_at: string;
+};
+
 export type OrderRow = {
   id: string;
   public_number: string;
@@ -184,6 +251,8 @@ export type OrderRow = {
   promo_code_id: string | null;
   /** Сумма скидки по промокоду (вычитается из итога). */
   promo_discount: number;
+  /** Состояние сверки перевода клиентом перед печатью. */
+  proof_status: OrderProofStatus;
   issued_at: string | null;
   completed_at: string | null;
   cancelled_at: string | null;
@@ -402,6 +471,27 @@ export type Database = {
       >;
       languages: Table<LanguageRow, Ins<LanguageRow, "code" | "name">>;
       offices: Table<OfficeRow, Ins<OfficeRow, "slug" | "name" | "address">>;
+      proofs: Table<
+        ProofRow,
+        Ins<ProofRow, "order_id" | "version" | "page_count" | "content_hash">,
+        [
+          Fk<"proofs_order_id_fkey", "order_id", "orders">,
+          Fk<"proofs_created_by_fkey", "created_by", "users">,
+        ]
+      >;
+      proof_comments: Table<
+        ProofCommentRow,
+        Ins<ProofCommentRow, "proof_id" | "body">,
+        [Fk<"proof_comments_proof_id_fkey", "proof_id", "proofs">]
+      >;
+      proof_events: Table<
+        ProofEventRow,
+        Ins<ProofEventRow, "proof_id" | "order_id" | "event">,
+        [
+          Fk<"proof_events_proof_id_fkey", "proof_id", "proofs">,
+          Fk<"proof_events_order_id_fkey", "order_id", "orders">,
+        ]
+      >;
       promo_codes: Table<
         PromoCodeRow,
         Ins<PromoCodeRow, "name" | "discount_type" | "value">,

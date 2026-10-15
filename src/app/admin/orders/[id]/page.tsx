@@ -7,6 +7,9 @@ import { OrderTimeline } from "@/components/order/order-timeline";
 import { FileList } from "@/components/order/file-list";
 import { ChatPanel } from "@/components/chat/chat-panel";
 import { OrderControls } from "@/components/admin/order-controls";
+import { ProofPanel } from "@/components/admin/proof-panel";
+import { isManagerRole } from "@/lib/auth/roles";
+import { loadProofPanelData } from "@/lib/proof/panel-data";
 import { createClient } from "@/lib/supabase/server";
 import { formatMoney } from "@/lib/format/money";
 import { formatDateTime } from "@/lib/format/date";
@@ -70,6 +73,9 @@ export default async function AdminOrderPage({ params }: { params: { id: string 
             .limit(30)
         ).data ?? []
       : [];
+
+  const isManager = isManagerRole(myProfile?.role);
+  const proofData = await loadProofPanelData(supabase, order.id, isManager);
 
   const langName = (id: string | null) => {
     const l = (languages.data ?? []).find((x) => x.id === id);
@@ -203,6 +209,14 @@ export default async function AdminOrderPage({ params }: { params: { id: string 
             <FileList files={files.data ?? []} />
           </section>
 
+          <ProofPanel
+            orderId={order.id}
+            orderProofStatus={order.proof_status}
+            proofs={proofData.proofs}
+            events={isManager ? proofData.events : undefined}
+            canOfficeApprove={isManager}
+          />
+
           <section className="rounded-2xl border bg-card p-4">
             <h2 className="mb-3 font-bold text-brand-800">{t("chat")}</h2>
             <ChatPanel orderId={order.id} />
@@ -250,6 +264,7 @@ export default async function AdminOrderPage({ params }: { params: { id: string 
         <OrderControls
           orderId={order.id}
           status={order.status}
+          proofStatus={order.proof_status}
           deadline={order.deadline}
           due={due}
           assignments={(assignments.data ?? []).map((a) => ({ id: a.id, role: a.role, status: a.status, userName: a.user?.name ?? "—" }))}

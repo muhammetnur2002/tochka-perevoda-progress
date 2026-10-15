@@ -549,7 +549,13 @@
     "metaOrder": "Sargyt",
     "metaProfile": "Profil",
     "translationPair": "Terjime: {from} → {to}",
-    "titleTemplate": "Şahsy otag"
+    "titleTemplate": "Şahsy otag",
+    "proofTitle": "Terjimäni barlamak",
+    "proofAwaiting": "Terjime taýýar — çapdan öň atlary, seneleri we belgileri barlaň.",
+    "proofChanges": "Bellikler iberildi. Düzedilen wersiýany garaşýarys.",
+    "proofApproved": "Terjime tassyklandy, resminama çap ediler.",
+    "proofOpen": "Terjimäni barla",
+    "proofView": "Aç"
   },
   "profile": {
     "name": "Adyňyz",
@@ -656,5 +662,52 @@
       "first_order_only": "Bu promokod diňe ilkinji sargyda dogry gelýär",
       "min_amount": "Sargydyň jemi bu promokod üçin iň az mukdardan az"
     }
+  },
+  "proof": {
+    "title": "Terjimäni barlamak",
+    "subtitle": "Sargyt {number} · wersiýa {version}",
+    "pageOf": "Sahypa {n} / {total}",
+    "loadError": "Sahypany ýüklemek başartmady",
+    "retry": "Gaýtala",
+    "pinPlaceholder": "Bu ýerde näme nädogry?",
+    "pinSave": "Goş",
+    "pinCancel": "Ýatyr",
+    "printBlocked": "Bu sahypany çap etmek mümkin däl",
+    "approvedBanner": "Terjime {date} senesinde tassyklandy. Resminama çap ediler.",
+    "changesBanner": "Bellikler iberildi. Terjimäni düzedip, täze wersiýany barlamaga ibereris.",
+    "staffView": "Işgär üçin deslapky görnüş: karary müşderi kabul edýär.",
+    "noteTitle": "Terjimeçiden habar",
+    "keyDataTitle": "Esasy maglumatlar",
+    "keyDataHint": "Resminamaňyz bilen deňeşdiriň: hemmesi dogry ýazylanmy.",
+    "ok": "Dogry",
+    "fix": "Düzet",
+    "correctValue": "Dogrusy nähili",
+    "commentOptional": "Düşündiriş (hökman däl)",
+    "commentsTitle": "Tekst boýunça bellikler",
+    "addComment": "Sahypada ýalňyşlygy belläň",
+    "addCommentActive": "Ýalňyşlygyň ýerinde sahypa basyň",
+    "commentOnPage": "Sah. {page}",
+    "removeComment": "Bellik aýyr",
+    "decisionTitle": "Siziň kararyňyz",
+    "sendChangesHint": "Terjimäni düzedip, täze wersiýany barlamaga ibereris.",
+    "fixNeedsValue": "Düzedilýän her meýdan üçin nähili ýazylmalydygyny görkeziň.",
+    "sendChanges": "Bellikleri ibermek",
+    "check": {
+      "names": "Adyň, familiýanyň we atasynyň adynyň ýazylyşyny barladym",
+      "dates": "Seneleri, resminama belgilerini we salgylary barladym",
+      "print": "Terjime barada şikaýatym ýok, çap etmegiňizi haýyş edýärin"
+    },
+    "answerAllFields": "Tassyklamak üçin her esasy meýdanda «Dogry» saýlaň.",
+    "approve": "Hemmesi dogry — çap etse bolar",
+    "officeNote": "Resminamalary alanyňyzda kagyz nusgasyny ýene-de barlap, gol çekersiňiz.",
+    "protectedNote": "Sahypalar goralan: ýükläp almak, göçürmek we ekran suratyny almak göz öňünde tutulmaýar. Her sahypada adyňyz we görülen wagtyňyz bellenilýär.",
+    "covered": "Görmegi dowam etdirmek üçin goýma gaýdyp geliň",
+    "backToOrders": "Meniň sargytlarym",
+    "approveDone": "Sag boluň! Terjime tassyklandy",
+    "changesDone": "Bellikler iberildi ({count})",
+    "accessDenied": "Barlaga giriş ýok",
+    "accessDeniedText": "Salgy könelipdir ýa-da başga sargyda degişli. Barlagy açmak üçin şahsy otaga giriň.",
+    "login": "Gir",
+    "notSent": "Terjime entek barlaga iberilmedi"
   }
 }

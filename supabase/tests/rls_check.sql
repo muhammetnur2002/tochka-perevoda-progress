@@ -72,6 +72,19 @@ insert into storage.objects (bucket_id, name) values
 insert into public.order_assignments (order_id, user_id, role) values
   ('00000000-0000-0000-0000-0000000000a2', :tr, 'translator');
 
+-- Сверка перевода: по версии к заказам клиента 1 и клиента 2
+insert into public.proofs (id, order_id, version, page_count, content_hash, pages) values
+  ('00000000-0000-0000-0000-0000000000c1', '00000000-0000-0000-0000-0000000000a1', 1, 1, 'h1',
+   '[{"n":1,"path":"proofs/a1/1.jpg","width":10,"height":10}]'),
+  ('00000000-0000-0000-0000-0000000000c2', '00000000-0000-0000-0000-0000000000a2', 1, 1, 'h2',
+   '[{"n":1,"path":"proofs/a2/1.jpg","width":10,"height":10}]');
+insert into public.proof_comments (proof_id, page, x, y, body) values
+  ('00000000-0000-0000-0000-0000000000c1', 1, 0.1, 0.2, 'моё замечание'),
+  ('00000000-0000-0000-0000-0000000000c2', 1, 0.1, 0.2, 'чужое замечание');
+insert into public.proof_events (proof_id, order_id, event) values
+  ('00000000-0000-0000-0000-0000000000c1', '00000000-0000-0000-0000-0000000000a1', 'created'),
+  ('00000000-0000-0000-0000-0000000000c2', '00000000-0000-0000-0000-0000000000a2', 'created');
+
 \echo '2. Нагрузка переводчика пересчитана триггером'
 do $$ begin
   assert (select current_load from public.translators where user_id = '44444444-4444-4444-4444-444444444444') = 1,
@@ -125,6 +138,9 @@ do $$ begin
   assert (select count(*) from public.users) = 1, 'Клиент видит чужие профили';
   assert (select count(*) from public.audit_log) = 0, 'Клиенту доступен аудит';
   assert (select count(*) from public.promo_codes) = 0, 'Клиент видит промокоды';
+  assert (select count(*) from public.proofs) = 1, 'Клиент видит чужие версии перевода';
+  assert (select count(*) from public.proof_comments) = 1, 'Клиент видит чужие замечания';
+  assert (select count(*) from public.proof_events) = 0, 'Клиенту доступен журнал сверки (IP, устройства)';
   assert (select count(*) from public.v_promo_usage) = 0, 'Клиент видит использование промокодов';
   assert (select count(*) from public.status_history) >= 1, 'Клиент не видит историю своего заказа';
   assert (select count(*) from public.v_revenue_daily) <= 1, 'Отчёт обходит RLS';
@@ -152,6 +168,15 @@ do $$ begin
   assert (select count(*) from public.offices) = (select count(*) from public.offices where is_active),
     'Клиент видит скрытые точки приёма';
   begin
+    update public.proofs set status = 'approved' where order_id = '00000000-0000-0000-0000-0000000000a1';
+    assert not found, 'Клиент сам подтвердил перевод в обход сервера';
+  end;
+  begin
+    insert into public.proof_comments (proof_id, body) values ('00000000-0000-0000-0000-0000000000c1', 'x');
+    raise exception 'FAIL: клиент добавил замечание в обход сервера';
+  exception when insufficient_privilege then null;
+  end;
+  begin
     insert into public.promo_codes (code, name, discount_type, value) values ('HACK100', 'X', 'percent', 100);
     raise exception 'FAIL: клиент создал промокод';
   exception when insufficient_privilege then null;
@@ -172,6 +197,8 @@ set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"44444444-4444-4444-4444-444444444444","role":"authenticated"}', true);
 do $$ begin
   assert (select count(*) from public.orders) = 1, 'Переводчик видит не только назначенные заказы';
+  assert (select count(*) from public.proofs) = 1, 'Переводчик видит версии не только своих заказов';
+  assert (select count(*) from public.proof_events) = 0, 'Переводчику доступен журнал сверки';
   assert (select id from public.orders) = '00000000-0000-0000-0000-0000000000a2', 'Переводчик видит не тот заказ';
   assert (select count(*) from public.files) = 1, 'Переводчик не видит исходник назначенного заказа';
   assert (select count(*) from storage.objects) = 1, 'Переводчик не видит объект назначенного заказа';
@@ -200,6 +227,7 @@ set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"33333333-3333-3333-3333-333333333333","role":"authenticated"}', true);
 do $$ begin
   assert (select count(*) from public.orders) >= 3, 'Менеджер видит не все заказы';
+  assert (select count(*) from public.proof_events) >= 2, 'Менеджер не видит журнал сверки';
   assert (select count(*) from public.payments) >= 2, 'Менеджер видит не все платежи';
   assert (select count(*) from public.audit_log) = 0, 'Аудит доступен менеджеру (только админ)';
   perform public.change_order_status('00000000-0000-0000-0000-0000000000a2', 'in_progress', 'Передан переводчику');

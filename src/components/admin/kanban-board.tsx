@@ -23,6 +23,7 @@ import { createClient } from "@/lib/supabase/client";
 import { apiFetch } from "@/lib/client/api";
 import { canTransition } from "@/lib/auth/roles";
 import type { OrderStatus } from "@/lib/config/constants";
+import type { OrderProofStatus } from "@/types/database.types";
 import { formatMoney } from "@/lib/format/money";
 import { formatDateTime } from "@/lib/format/date";
 import { cn } from "@/lib/utils";
@@ -31,6 +32,7 @@ export interface KanbanOrder {
   id: string;
   public_number: string;
   status: OrderStatus;
+  proof_status?: OrderProofStatus;
   total_price: number;
   paid_amount: number;
   deadline: string | null;
@@ -54,11 +56,17 @@ const isOpen = (o: KanbanOrder) => ["new", "confirmed", "in_progress"].includes(
 const isHot = (o: KanbanOrder) =>
   isOpen(o) && !!o.deadline && new Date(o.deadline).getTime() - Date.now() < DAY && new Date(o.deadline).getTime() > Date.now();
 const isOverdue = (o: KanbanOrder) => isOpen(o) && !!o.deadline && new Date(o.deadline).getTime() < Date.now();
+const PROOF_BADGE: Partial<Record<OrderProofStatus, string>> = {
+  awaiting_client: "bg-sky-100 text-sky-800",
+  changes_requested: "bg-amber-100 text-amber-800",
+  approved: "bg-emerald-100 text-emerald-800",
+};
 const executorOf = (o: KanbanOrder) => o.assignments.find((a) => a.role !== "manager" && a.status !== "rejected");
 
 function OrderCard({ order, onNext }: { order: KanbanOrder; onNext?: () => void }) {
   const t = useTranslations("admin.kanban");
   const tSource = useTranslations("admin.sources");
+  const tProof = useTranslations("admin.proof");
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: order.id, data: { order } });
   const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
   const executor = executorOf(order);
@@ -92,6 +100,13 @@ function OrderCard({ order, onNext }: { order: KanbanOrder; onNext?: () => void 
           <div className="flex items-center gap-1 text-xs font-semibold text-slate-500">
             <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
             <span className="truncate">{order.office.name}</span>
+          </div>
+        )}
+        {order.proof_status && PROOF_BADGE[order.proof_status] && (
+          <div>
+            <span className={cn("inline-block rounded-full px-2 py-0.5 text-[11px] font-bold", PROOF_BADGE[order.proof_status])}>
+              {tProof(`badge.${order.proof_status as "awaiting_client" | "changes_requested" | "approved"}`)}
+            </span>
           </div>
         )}
         <div className="leading-snug">{order.items.map((i) => `${i.name_snapshot}${i.quantity > 1 ? ` × ${i.quantity}` : ""}`).join(", ")}</div>

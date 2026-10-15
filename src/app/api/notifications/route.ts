@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isCronAuthorized } from "@/lib/auth/session";
-import { retryFailedNotifications } from "@/lib/notifications";
+import { notifyProofReminders, retryFailedNotifications } from "@/lib/notifications";
 import { errorResponse } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +13,8 @@ export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
   if (!isCronAuthorized(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
-    return NextResponse.json({ ok: true, ...(await retryFailedNotifications()) });
+    const retried = await retryFailedNotifications();
+    return NextResponse.json({ ok: true, ...retried, proofReminders: await notifyProofReminders() });
   } catch (err) {
     return errorResponse(err);
   }

@@ -19,9 +19,9 @@ function sign(payload: string): string {
   return createHmac("sha256", secret()).update(payload).digest("base64url");
 }
 
-/** Выпускает токен для заказа. */
-export function issueOrderToken(orderId: string, now = Date.now()): string {
-  const exp = Math.floor((now + TTL_MS) / 1000).toString(36);
+/** Выпускает токен для заказа (по умолчанию на 24 часа; ссылки в уведомлениях — дольше). */
+export function issueOrderToken(orderId: string, now = Date.now(), ttlMs = TTL_MS): string {
+  const exp = Math.floor((now + ttlMs) / 1000).toString(36);
   return `${exp}.${sign(`${orderId}.${exp}`)}`;
 }
 

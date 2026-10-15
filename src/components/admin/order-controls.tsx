@@ -19,16 +19,20 @@ import {
 import { canTransition } from "@/lib/auth/roles";
 import type { OrderStatus } from "@/lib/config/constants";
 import { uploadOrderFile } from "@/lib/client/api";
-import type { UserRole } from "@/types/database.types";
+import type { OrderProofStatus, UserRole } from "@/types/database.types";
 import { cn } from "@/lib/utils";
 
 const STATUSES: OrderStatus[] = ["new", "confirmed", "in_progress", "ready", "issued", "completed", "cancelled"];
 const ROLES = ["guest", "client", "manager", "translator", "notary", "printer", "admin"];
 const ASSIGNMENT_STATUSES = ["assigned", "accepted", "in_progress", "done", "rejected"];
+/** Статусы, в которых перевод уже печатают/выдают — клиент должен был подтвердить его раньше. */
+const PROOF_GUARDED_STATUSES: OrderStatus[] = ["ready", "issued", "completed"];
 
 interface OrderControlsProps {
   orderId: string;
   status: OrderStatus;
+  /** Сверка перевода клиентом: мягкое предупреждение при выдаче без подтверждения. */
+  proofStatus?: OrderProofStatus;
   deadline: string | null;
   due: number;
   assignments: { id: string; role: string; status: string; userName: string }[];
@@ -57,8 +61,9 @@ function toLocalInput(iso: string | null): string {
 }
 
 /** Правая колонка карточки заказа: статус, срок, исполнитель, оплата, загрузка файлов. */
-export function OrderControls({ orderId, status, deadline, due, assignments, staff }: OrderControlsProps) {
+export function OrderControls({ orderId, status, proofStatus = "none", deadline, due, assignments, staff }: OrderControlsProps) {
   const t = useTranslations("admin.controls");
+  const tProof = useTranslations("admin.proof");
   const tAdmin = useTranslations("admin");
   const tStatus = useTranslations("orderStatus");
   const tRoles = useTranslations("roles");
@@ -106,12 +111,15 @@ export function OrderControls({ orderId, status, deadline, due, assignments, sta
                 key={s}
                 type="button"
                 disabled={!allowed || pending}
-                onClick={() =>
+                onClick={() => {
+                  // Мягкая защита: предупреждаем, но не блокируем
+                  const unconfirmed = proofStatus === "awaiting_client" || proofStatus === "changes_requested";
+                  if (unconfirmed && PROOF_GUARDED_STATUSES.includes(s) && !window.confirm(tProof("guardWarning"))) return;
                   exec(
                     () => setOrderStatusAction(orderId, s, comment || undefined),
                     () => setComment(""),
-                  )
-                }
+                  );
+                }}
                 className={cn(
                   "min-h-9 rounded-full border px-3 text-xs font-extrabold",
                   s === status

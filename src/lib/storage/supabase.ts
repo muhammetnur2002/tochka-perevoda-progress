@@ -23,6 +23,13 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     return data.signedUrl;
   }
 
+  async download(path: string): Promise<Buffer> {
+    const admin = createAdminClient();
+    const { data, error } = await admin.storage.from(STORAGE_BUCKET).download(path);
+    if (error || !data) throw new Error(`Не удалось прочитать файл: ${error?.message ?? "пусто"}`);
+    return Buffer.from(await data.arrayBuffer());
+  }
+
   async remove(path: string): Promise<void> {
     const admin = createAdminClient();
     const { error } = await admin.storage.from(STORAGE_BUCKET).remove([path]);

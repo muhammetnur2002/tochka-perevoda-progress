@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
     let query = actor.supabase
       .from("orders")
       .select(
-        "id, public_number, status, total_price, paid_amount, deadline, delivery_type, source, language_from, office_id, created_at, updated_at, office:offices(name), client:clients(name, phone), items:order_items(service_id, name_snapshot, quantity), assignments:order_assignments(role, status, user_id, user:users!order_assignments_user_id_fkey(name))",
+        "id, public_number, status, proof_status, total_price, paid_amount, deadline, delivery_type, source, language_from, office_id, created_at, updated_at, office:offices(name), client:clients(name, phone), items:order_items(service_id, name_snapshot, quantity), assignments:order_assignments(role, status, user_id, user:users!order_assignments_user_id_fkey(name))",
       )
       .order("created_at", { ascending: false })
       .limit(limit);

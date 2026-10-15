@@ -22,6 +22,11 @@ export function orderTokenFrom(req: NextRequest): string | null {
  * (если заказ ему виден, значит доступ есть), гость — по подписанному токену.
  */
 export async function requireOrderAccess(req: NextRequest, orderId: string): Promise<OrderAccess> {
+  return resolveOrderAccess(orderId, orderTokenFrom(req));
+}
+
+/** То же без запроса: для серверных страниц (токен берётся из адреса страницы). */
+export async function resolveOrderAccess(orderId: string, token: string | null): Promise<OrderAccess> {
   const actor = await getActor();
 
   if (actor) {
@@ -37,6 +42,6 @@ export async function requireOrderAccess(req: NextRequest, orderId: string): Pro
     }
   }
 
-  if (verifyOrderToken(orderId, orderTokenFrom(req))) return { mode: "guest", actor };
+  if (verifyOrderToken(orderId, token)) return { mode: "guest", actor };
   throw forbidden("Нет доступа к этому заказу");
 }

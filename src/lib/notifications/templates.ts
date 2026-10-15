@@ -89,6 +89,26 @@ export function chatMessageToManager(number: string, body: string): Message {
   return { subject: `Сообщение по ${number}`, text: `💬 ${number}: ${body.slice(0, 500)}` };
 }
 
+export function proofRequestMessage(number: string, url: string, reminder = false): Message {
+  return {
+    subject: `Проверьте перевод заказа ${number}`,
+    text:
+      `${reminder ? "Напоминаем: перевод" : "Перевод"} заказа ${number} готов к проверке. ` +
+      `Пожалуйста, проверьте написание имён, дат и номеров документов до печати: ${url}
+` +
+      `Если всё верно — подтвердите, если нет — отметьте, что исправить.`,
+  };
+}
+
+export function proofDecisionToManager(number: string, kind: "approved" | "changes", count = 0): Message {
+  return kind === "approved"
+    ? { subject: `Перевод ${number} подтверждён`, text: `✅ Клиент подтвердил перевод ${number} — можно печатать.` }
+    : {
+        subject: `Замечания по переводу ${number}`,
+        text: `✏️ Клиент оставил замечания по переводу ${number} (${count}). Откройте заказ в CRM.`,
+      };
+}
+
 /** Удаляет HTML-разметку (для SMS/email). */
 export function plain(text: string): string {
   return text.replace(/<[^>]+>/g, "");

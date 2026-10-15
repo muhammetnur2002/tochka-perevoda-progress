@@ -549,7 +549,13 @@
     "metaOrder": "Buyurtma",
     "metaProfile": "Profil",
     "translationPair": "Tarjima: {from} → {to}",
-    "titleTemplate": "Shaxsiy kabinet"
+    "titleTemplate": "Shaxsiy kabinet",
+    "proofTitle": "Tarjimani tekshirish",
+    "proofAwaiting": "Tarjima tayyor — chop etishdan oldin ism, sana va raqamlarni tekshiring.",
+    "proofChanges": "Izohlar yuborildi. Tuzatilgan versiyani kutamiz.",
+    "proofApproved": "Tarjima tasdiqlandi, hujjat chop etiladi.",
+    "proofOpen": "Tarjimani tekshirish",
+    "proofView": "Ochish"
   },
   "profile": {
     "name": "Ism",
@@ -656,5 +662,52 @@
       "first_order_only": "Bu promokod faqat birinchi buyurtma uchun amal qiladi",
       "min_amount": "Buyurtma summasi bu promokod uchun minimal summadan kam"
     }
+  },
+  "proof": {
+    "title": "Tarjimani tekshirish",
+    "subtitle": "Buyurtma {number} · versiya {version}",
+    "pageOf": "{n}-sahifa, jami {total} ta",
+    "loadError": "Sahifani yuklab boʻlmadi",
+    "retry": "Qayta urinish",
+    "pinPlaceholder": "Bu yerda nima notoʻgʻri?",
+    "pinSave": "Qoʻshish",
+    "pinCancel": "Bekor qilish",
+    "printBlocked": "Bu sahifani chop etib boʻlmaydi",
+    "approvedBanner": "Tarjima {date} kuni tasdiqlandi. Hujjat chop etiladi.",
+    "changesBanner": "Izohlar yuborildi. Tarjimani tuzatib, tekshirish uchun yangi versiyasini yuboramiz.",
+    "staffView": "Xodim uchun oldindan koʻrish: qarorni mijoz qabul qiladi.",
+    "noteTitle": "Tarjimondan xabar",
+    "keyDataTitle": "Asosiy maʼlumotlar",
+    "keyDataHint": "Hujjatingiz bilan solishtiring: hammasi toʻgʻri yozilganmi.",
+    "ok": "Toʻgʻri",
+    "fix": "Tuzatish",
+    "correctValue": "Toʻgʻrisi qanday",
+    "commentOptional": "Izoh (ixtiyoriy)",
+    "commentsTitle": "Matn boʻyicha izohlar",
+    "addComment": "Sahifada xatoni belgilash",
+    "addCommentActive": "Xato joyida sahifani bosing",
+    "commentOnPage": "{page}-sahifa",
+    "removeComment": "Izohni oʻchirish",
+    "decisionTitle": "Sizning qaroringiz",
+    "sendChangesHint": "Tarjimani tuzatib, tekshirish uchun yangi versiyasini yuboramiz.",
+    "fixNeedsValue": "Tuzatiladigan har bir maydon uchun qanday yozilishi kerakligini kiriting.",
+    "sendChanges": "Izohlarni yuborish",
+    "check": {
+      "names": "Ism, familiya va otasining ismi yozilishini tekshirdim",
+      "dates": "Sanalar, hujjat raqamlari va manzillarni tekshirdim",
+      "print": "Tarjimaga eʼtirozim yoʻq, chop etishingizni soʻrayman"
+    },
+    "answerAllFields": "Tasdiqlash uchun har bir asosiy maydonda «Toʻgʻri» ni belgilang.",
+    "approve": "Hammasi toʻgʻri — chop etish mumkin",
+    "officeNote": "Hujjatlarni olayotganda qogʻoz nusxani baribir oʻzingiz tekshirib, imzo qoʻyasiz.",
+    "protectedNote": "Sahifalar himoyalangan: yuklab olish, nusxa koʻchirish va skrinshot olish nazarda tutilmagan. Har bir sahifada ismingiz va koʻrish vaqti yozilgan belgi bor.",
+    "covered": "Koʻrishni davom ettirish uchun shu varaqqa qayting",
+    "backToOrders": "Buyurtmalarim",
+    "approveDone": "Rahmat! Tarjima tasdiqlandi",
+    "changesDone": "Izohlar yuborildi ({count})",
+    "accessDenied": "Tekshirishga ruxsat yoʻq",
+    "accessDeniedText": "Havola eskirgan yoki boshqa buyurtmaga tegishli. Tekshirishni ochish uchun shaxsiy kabinetga kiring.",
+    "login": "Kirish",
+    "notSent": "Tarjima hali tekshirishga yuborilmagan"
   }
 }

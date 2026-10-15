@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { FileList } from "@/components/order/file-list";
 import { TaskActions } from "@/components/workspace/task-actions";
+import { ProofPanel } from "@/components/admin/proof-panel";
+import { isManagerRole } from "@/lib/auth/roles";
+import { loadProofPanelData } from "@/lib/proof/panel-data";
 import { requireUser } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateTime } from "@/lib/format/date";
@@ -29,7 +32,7 @@ export default async function WorkspacePage({ searchParams }: { searchParams: { 
 
   const { data: tasks } = await supabase
     .from("order_assignments")
-    .select("id, role, status, due_at, assigned_at, completed_at, order:orders(id, public_number, deadline, comment, language_from, language_to, items:order_items(name_snapshot, quantity))")
+    .select("id, role, status, due_at, assigned_at, completed_at, order:orders(id, public_number, proof_status, deadline, comment, language_from, language_to, items:order_items(name_snapshot, quantity))")
     .eq("user_id", profile.id)
     .order("due_at", { ascending: true, nullsFirst: false })
     .limit(200);
@@ -47,6 +50,9 @@ export default async function WorkspacePage({ searchParams }: { searchParams: { 
   const { data: files } = selected?.order
     ? await supabase.from("files").select("id, original_name, kind, size_bytes").eq("order_id", selected.order.id).order("created_at")
     : { data: [] };
+  // Сверка перевода клиентом: исполнитель видит версии и замечания, журнал — только менеджер
+  const isManager = isManagerRole(profile.role);
+  const proofData = selected?.order ? await loadProofPanelData(supabase, selected.order.id, isManager) : null;
   const { data: translator } = await supabase.from("translators").select("capacity_per_day").eq("user_id", profile.id).maybeSingle();
   const now = Date.now();
 
@@ -142,6 +148,15 @@ export default async function WorkspacePage({ searchParams }: { searchParams: { 
             <FileList files={files ?? []} />
             <p className="mt-1.5 text-xs text-muted-foreground">{t("filesHint")}</p>
           </div>
+          {proofData && (
+            <ProofPanel
+              orderId={selected.order.id}
+              orderProofStatus={selected.order.proof_status}
+              proofs={proofData.proofs}
+              events={isManager ? proofData.events : undefined}
+              canOfficeApprove={isManager}
+            />
+          )}
           <TaskActions assignmentId={selected.id} orderId={selected.order.id} status={selected.status} role={selected.role} />
         </section>
       )}

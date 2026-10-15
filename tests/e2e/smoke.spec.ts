@@ -59,6 +59,15 @@ test.describe("публичная часть", () => {
     }
   });
 
+  test("проверка перевода без доступа закрыта (нужен вход или ссылка с токеном)", async ({ page }) => {
+    const res = await page.goto("/proof/00000000-0000-0000-0000-000000000000");
+    expect(res?.status()).toBe(200);
+    await expect(page.getByRole("heading", { name: "Нет доступа к проверке" })).toBeVisible();
+    // страницы перевода без токена не отдаются вовсе
+    const image = await page.request.get("/api/proofs/00000000-0000-0000-0000-000000000000/pages/1");
+    expect([403, 404]).toContain(image.status());
+  });
+
   test("закрытые разделы требуют входа", async ({ page }) => {
     await page.goto("/admin");
     await expect(page).toHaveURL(/\/login\?next=%2Fadmin/);

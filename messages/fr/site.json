@@ -549,7 +549,13 @@
     "metaOrder": "Commande",
     "metaProfile": "Profil",
     "translationPair": "Traduction : {from} → {to}",
-    "titleTemplate": "Mon espace"
+    "titleTemplate": "Mon espace",
+    "proofTitle": "Vérification de la traduction",
+    "proofAwaiting": "La traduction est prête — vérifiez les noms, les dates et les numéros avant l'impression.",
+    "proofChanges": "Remarques envoyées. Nous attendons la version corrigée.",
+    "proofApproved": "Traduction approuvée, le document sera imprimé.",
+    "proofOpen": "Vérifier la traduction",
+    "proofView": "Ouvrir"
   },
   "profile": {
     "name": "Nom",
@@ -656,5 +662,52 @@
       "first_order_only": "Ce code promo n'est valable que pour la première commande",
       "min_amount": "Le montant de la commande est inférieur au minimum requis pour ce code promo"
     }
+  },
+  "proof": {
+    "title": "Vérification de la traduction",
+    "subtitle": "Commande {number} · version {version}",
+    "pageOf": "Page {n} sur {total}",
+    "loadError": "Impossible de charger la page",
+    "retry": "Réessayer",
+    "pinPlaceholder": "Qu'est-ce qui ne va pas ici ?",
+    "pinSave": "Ajouter",
+    "pinCancel": "Annuler",
+    "printBlocked": "Impression de cette page impossible",
+    "approvedBanner": "Traduction approuvée le {date}. Le document sera imprimé.",
+    "changesBanner": "Vos remarques ont été envoyées. Nous corrigerons la traduction et vous enverrons une nouvelle version à vérifier.",
+    "staffView": "Aperçu pour un employé : la décision revient au client.",
+    "noteTitle": "Message du traducteur",
+    "keyDataTitle": "Données clés",
+    "keyDataHint": "Comparez avec votre document : tout est-il écrit correctement ?",
+    "ok": "Correct",
+    "fix": "Corriger",
+    "correctValue": "Écriture correcte",
+    "commentOptional": "Commentaire (facultatif)",
+    "commentsTitle": "Remarques sur le texte",
+    "addComment": "Signaler une erreur sur la page",
+    "addCommentActive": "Cliquez sur la page à l'endroit de l'erreur",
+    "commentOnPage": "P. {page}",
+    "removeComment": "Supprimer la remarque",
+    "decisionTitle": "Votre décision",
+    "sendChangesHint": "Nous corrigerons la traduction et vous enverrons une nouvelle version à vérifier.",
+    "fixNeedsValue": "Indiquez l'écriture correcte pour chaque champ à corriger.",
+    "sendChanges": "Envoyer les remarques",
+    "check": {
+      "names": "J'ai vérifié l'orthographe du nom, du prénom et du patronyme",
+      "dates": "J'ai vérifié les dates, les numéros de documents et les adresses",
+      "print": "Je n'ai aucune réserve sur la traduction, vous pouvez imprimer"
+    },
+    "answerAllFields": "Cochez « Correct » pour chaque donnée clé afin de confirmer.",
+    "approve": "Tout est correct — vous pouvez imprimer",
+    "officeNote": "À la remise des documents, vous vérifierez quand même l'exemplaire papier et le signerez.",
+    "protectedNote": "Les pages sont protégées : téléchargement, copie et captures d'écran ne sont pas prévus. Chaque page porte une marque avec votre nom et l'heure de consultation.",
+    "covered": "Revenez sur l'onglet pour continuer la consultation",
+    "backToOrders": "Mes commandes",
+    "approveDone": "Merci ! La traduction est approuvée",
+    "changesDone": "Remarques envoyées ({count})",
+    "accessDenied": "Accès à la vérification refusé",
+    "accessDeniedText": "Le lien a expiré ou concerne une autre commande. Connectez-vous à votre espace personnel pour ouvrir la vérification.",
+    "login": "Se connecter",
+    "notSent": "La traduction n'a pas encore été envoyée pour vérification"
   }
 }

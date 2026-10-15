@@ -21,7 +21,7 @@ export default async function AccountOrdersPage() {
   const supabase = createClient();
   const { data: orders } = await supabase
     .from("orders")
-    .select("id, public_number, status, total_price, paid_amount, created_at, items:order_items(service_id, name_snapshot, quantity), files(id)")
+    .select("id, public_number, status, proof_status, total_price, paid_amount, created_at, items:order_items(service_id, name_snapshot, quantity), files(id)")
     .eq("user_id", profile.id)
     .order("created_at", { ascending: false })
     .limit(100);
@@ -55,6 +55,11 @@ export default async function AccountOrdersPage() {
                 {t("from", { date: formatDateShort(o.created_at) })} · {t("files", { count: filesCount })}
               </div>
             </div>
+            {o.proof_status === "awaiting_client" && (
+              <Button asChild variant="gold">
+                <Link href={`/proof/${o.id}`}>{t("proofOpen")}</Link>
+              </Button>
+            )}
             <OrderStatusBadge status={o.status} />
             <strong className="w-28 text-right text-lg text-brand-800">{formatMoney(Number(o.total_price))}</strong>
             <div className="flex gap-2">

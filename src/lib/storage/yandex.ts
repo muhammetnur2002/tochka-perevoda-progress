@@ -56,6 +56,12 @@ export class YandexStorageAdapter implements StorageAdapter {
     );
   }
 
+  async download(path: string): Promise<Buffer> {
+    const res = await this.client.send(new GetObjectCommand({ Bucket: this.bucket, Key: path }));
+    if (!res.Body) throw new Error("Не удалось прочитать файл: пусто");
+    return Buffer.from(await res.Body.transformToByteArray());
+  }
+
   async remove(path: string): Promise<void> {
     await this.client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: path }));
   }

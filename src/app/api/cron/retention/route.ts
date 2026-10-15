@@ -48,8 +48,28 @@ export async function GET(req: NextRequest) {
         logger.warn("Retention: не удалось удалить файл", { id: file.id, error: (err as Error).message });
       }
     }
-    logger.info("Cron retention", { removed, days });
-    return NextResponse.json({ ok: true, removed, days });
+
+    // Страницы переводов на сверке — тоже персональные данные: удаляем из хранилища,
+    // в БД остаются решение клиента, хэш и журнал (pages = [] — страницы удалены)
+    const { data: proofs } = await admin
+      .from("proofs")
+      .select("id, pages")
+      .in("order_id", orderIds)
+      .filter("pages", "neq", "[]")
+      .limit(200);
+    let proofPages = 0;
+    for (const proof of proofs ?? []) {
+      try {
+        for (const page of proof.pages) await storage.remove(page.path);
+        await admin.from("proofs").update({ pages: [] }).eq("id", proof.id);
+        proofPages += proof.pages.length;
+      } catch (err) {
+        logger.warn("Retention: не удалось удалить страницы сверки", { id: proof.id, error: (err as Error).message });
+      }
+    }
+
+    logger.info("Cron retention", { removed, proofPages, days });
+    return NextResponse.json({ ok: true, removed, proofPages, days });
   } catch (err) {
     return errorResponse(err);
   }

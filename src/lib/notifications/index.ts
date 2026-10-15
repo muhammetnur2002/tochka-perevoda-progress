@@ -1,6 +1,8 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
+import { issueOrderToken } from "@/lib/auth/order-access";
+import { PROOF_LINK_TTL_DAYS, PROOF_REMIND_HOURS } from "@/lib/proof/constants";
 import { formatMoney } from "@/lib/format/money";
 import { formatDateTime } from "@/lib/format/date";
 import type { NotificationChannel, OrderStatus } from "@/types/database.types";
@@ -15,6 +17,8 @@ import {
   paymentReceivedMessage,
   pickupReminder,
   plain,
+  proofDecisionToManager,
+  proofRequestMessage,
   readyMessage,
   statusChangedMessage,
   unclaimedManagerWarning,
@@ -230,6 +234,55 @@ export async function notifyChatMessage(orderId: string, body: string): Promise<
   const { data: order } = await admin.from("orders").select("public_number").eq("id", orderId).maybeSingle();
   if (!order) return;
   await broadcastToManagers(orderId, chatMessageToManager(order.public_number, body));
+}
+
+/** Клиенту: перевод готов к проверке (ссылка с токеном — работает и без входа в кабинет). */
+export async function notifyProofRequested(orderId: string, reminder = false): Promise<boolean> {
+  const found = await orderRecipient(orderId);
+  if (!found) return false;
+  const site = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  const token = issueOrderToken(orderId, Date.now(), PROOF_LINK_TTL_DAYS * 24 * 60 * 60 * 1000);
+  const url = `${site}/proof/${orderId}?token=${token}`;
+  const channel = await deliverWithFallback(orderId, found.recipient, proofRequestMessage(found.order.public_number, url, reminder));
+  return channel !== null;
+}
+
+/** Менеджерам: клиент подтвердил перевод или оставил замечания. */
+export async function notifyProofDecision(orderId: string, kind: "approved" | "changes", count = 0): Promise<void> {
+  const admin = createAdminClient();
+  const { data: order } = await admin.from("orders").select("public_number").eq("id", orderId).maybeSingle();
+  if (!order) return;
+  await broadcastToManagers(orderId, proofDecisionToManager(order.public_number, kind, count));
+}
+
+/** Cron: клиент не ответил на сверку за PROOF_REMIND_HOURS — напомнить (один раз). */
+export async function notifyProofReminders(): Promise<number> {
+  const admin = createAdminClient();
+  const before = new Date(Date.now() - PROOF_REMIND_HOURS * 3_600_000).toISOString();
+  const { data: proofs } = await admin
+    .from("proofs")
+    .select("id, order_id")
+    .eq("status", "pending")
+    .lt("created_at", before);
+  let count = 0;
+  for (const p of proofs ?? []) {
+    const { count: sent } = await admin
+      .from("proof_events")
+      .select("id", { count: "exact", head: true })
+      .eq("proof_id", p.id)
+      .eq("event", "reminded");
+    if ((sent ?? 0) > 0) continue;
+    const ok = await notifyProofRequested(p.order_id, true);
+    await admin.from("proof_events").insert({
+      proof_id: p.id,
+      order_id: p.order_id,
+      event: "reminded",
+      actor_role: "system",
+      meta: { delivered: ok },
+    });
+    if (ok) count++;
+  }
+  return count;
 }
 
 /** Cron: дедлайн < 24 ч — менеджерам (не чаще раза в сутки на заказ). */

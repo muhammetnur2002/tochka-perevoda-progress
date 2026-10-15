@@ -549,7 +549,13 @@
     "metaOrder": "Order",
     "metaProfile": "Profile",
     "translationPair": "Translation: {from} → {to}",
-    "titleTemplate": "My account"
+    "titleTemplate": "My account",
+    "proofTitle": "Translation check",
+    "proofAwaiting": "Your translation is ready — please check the names, dates and numbers before printing.",
+    "proofChanges": "Remarks sent. We are waiting for the corrected version.",
+    "proofApproved": "Translation approved, the document will be printed.",
+    "proofOpen": "Check translation",
+    "proofView": "Open"
   },
   "profile": {
     "name": "Name",
@@ -656,5 +662,52 @@
       "first_order_only": "This promo code is valid for the first order only",
       "min_amount": "The order total is below the minimum for this promo code"
     }
+  },
+  "proof": {
+    "title": "Translation check",
+    "subtitle": "Order {number} · version {version}",
+    "pageOf": "Page {n} of {total}",
+    "loadError": "Could not load the page",
+    "retry": "Try again",
+    "pinPlaceholder": "What is wrong here?",
+    "pinSave": "Add",
+    "pinCancel": "Cancel",
+    "printBlocked": "Printing this page is not available",
+    "approvedBanner": "Translation approved on {date}. The document will be printed.",
+    "changesBanner": "Your remarks have been sent. We will correct the translation and send you a new version to check.",
+    "staffView": "Staff preview: the decision is made by the customer.",
+    "noteTitle": "Message from the translator",
+    "keyDataTitle": "Key details",
+    "keyDataHint": "Compare with your document: is everything written correctly?",
+    "ok": "Correct",
+    "fix": "Correct it",
+    "correctValue": "Correct version",
+    "commentOptional": "Comment (optional)",
+    "commentsTitle": "Remarks on the text",
+    "addComment": "Mark an error on the page",
+    "addCommentActive": "Click the page where the error is",
+    "commentOnPage": "Page {page}",
+    "removeComment": "Delete remark",
+    "decisionTitle": "Your decision",
+    "sendChangesHint": "We will correct the translation and send you a new version to check.",
+    "fixNeedsValue": "For each field you want corrected, enter how it should be written.",
+    "sendChanges": "Send remarks",
+    "check": {
+      "names": "I have checked the spelling of the first name, last name and patronymic",
+      "dates": "I have checked the dates, document numbers and addresses",
+      "print": "I have no objections to the translation, please print it"
+    },
+    "answerAllFields": "Mark “Correct” for every key field to approve.",
+    "approve": "All correct — ready to print",
+    "officeNote": "When you collect your documents, you will still check the paper copy and sign for it.",
+    "protectedNote": "The pages are protected: downloading, copying and screenshots are not available. Each page carries a mark with your name and the time of viewing.",
+    "covered": "Return to this tab to continue viewing",
+    "backToOrders": "My orders",
+    "approveDone": "Thank you! The translation is approved",
+    "changesDone": "Remarks sent ({count})",
+    "accessDenied": "No access to the check",
+    "accessDeniedText": "The link has expired or belongs to another order. Sign in to your account to open the check.",
+    "login": "Sign in",
+    "notSent": "The translation has not been sent for checking yet"
   }
 }

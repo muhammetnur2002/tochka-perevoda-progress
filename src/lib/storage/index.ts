@@ -6,6 +6,8 @@ export interface StorageAdapter {
   upload(path: string, data: Buffer, contentType: string): Promise<string>;
   /** Создаёт подписанный URL (короткий TTL для приватных файлов). */
   getSignedUrl(path: string, expiresInSeconds: number, downloadName?: string): Promise<string>;
+  /** Читает объект целиком (для серверной обработки, например водяных знаков). */
+  download(path: string): Promise<Buffer>;
   /** Удаляет объект. */
   remove(path: string): Promise<void>;
 }
