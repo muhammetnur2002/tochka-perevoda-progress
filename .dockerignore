@@ -1,0 +1,15 @@
+node_modules
+.next
+.pnpm-store
+.git
+.env
+.env.*
+!.env.example
+coverage
+playwright-report
+test-results
+backups
+tests
+docs
+*.md
+!README.md

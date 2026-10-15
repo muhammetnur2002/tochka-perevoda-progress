@@ -1,0 +1,53 @@
+# зависимости
+node_modules/
+.pnp
+.pnp.js
+
+# сборка Next.js
+.next/
+out/
+build/
+dist/
+
+# тесты
+coverage/
+.playwright/
+test-results/
+playwright-report/
+
+# переменные окружения
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+
+# логи
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ОС / редактор
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# временные файлы
+*.tsbuildinfo
+# next-env.d.ts генерируется Next.js
+
+# БД-дамры и бэкапы (содержат ПД)
+backups/
+*.dump
+*.sql.bak
+
+# локальный store pnpm (если задан store-dir в проекте)
+.pnpm-store/
+
+# локальные настройки Claude Code
+.claude/

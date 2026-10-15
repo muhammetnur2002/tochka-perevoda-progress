@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Точка Перевода Прогресс">
+  <!--
+    Векторный фолбэк-логотип.
+    Используется только если нет растрового public/brand/logo.png.
+    Цвета взяты из фирменной палитры: navy #00214C, gold #D4A02A.
+    При появлении фирменного SVG — заменить содержимое этим файлом.
+  -->
+  <rect width="240" height="240" fill="#FDFDFD"/>
+  <g transform="translate(120 82)">
+    <circle r="60" fill="none" stroke="#00214C" stroke-width="6"/>
+    <circle r="60" fill="none" stroke="#D4A02A" stroke-width="2" transform="scale(0.86)"/>
+    <ellipse rx="34" ry="60" fill="none" stroke="#00214C" stroke-width="2"/>
+    <ellipse rx="60" ry="20" fill="none" stroke="#00214C" stroke-width="2"/>
+    <line x1="-60" y1="0" x2="60" y2="0" stroke="#00214C" stroke-width="2"/>
+    <path d="M 28 -52 L 44 -40 L 36 -28 L 20 -40 Z" fill="#D4A02A"/>
+  </g>
+  <text x="120" y="172" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="700" letter-spacing="1" fill="#00214C">ТОЧКА ПЕРЕВОДА</text>
+  <text x="120" y="204" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="6" fill="#D4A02A">ПРОГРЕСС</text>
+</svg>
