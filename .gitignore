@@ -51,3 +51,7 @@ backups/
 
 # локальные настройки Claude Code
 .claude/
+
+# локальное состояние Supabase CLI
+supabase/.branches/
+supabase/.temp/

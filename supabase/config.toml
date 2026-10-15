@@ -1,26 +1,34 @@
-# Конфигурация Supabase CLI для локального запуска (`supabase start`).
-# Команды: supabase init уже выполнен; supabase start; supabase db push (или pnpm db:push).
+# Конфигурация Supabase CLI для локального запуска: npx supabase start
+# Миграции из supabase/migrations применяются автоматически при старте.
+#
+# Порты перенесены с 5432x на 5442x: Windows (Hyper-V/WSL) резервирует диапазон
+# 54308–54407, и стандартные порты Supabase туда попадают. Проверить занятые
+# диапазоны: netsh int ipv4 show excludedportrange protocol=tcp
 project_id = "tochka-perevoda-progress"
 
 [api]
 enabled = true
-port = 54321
+port = 54421
 schemas = ["public", "storage", "graphql_public"]
 extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
 [db]
-port = 54322
-shadow_port = 54320
+port = 54422
+shadow_port = 54420
 major_version = 15
+
+[db.pooler]
+enabled = false
+port = 54429
 
 [studio]
 enabled = true
-port = 54323
+port = 54423
 
 [inbucket]
 enabled = true
-port = 54324
+port = 54424
 
 [auth]
 enabled = true
@@ -28,11 +36,18 @@ site_url = "http://localhost:3000"
 additional_redirect_urls = ["http://localhost:3000/auth/callback", "http://localhost:3000/tg"]
 jwt_expiry = 3600
 enable_signup = true
-# Для тестов: письма/OTP попадают в Inbucket на localhost:54324
+# Письма (подтверждение, сброс пароля) локально попадают в Mailpit: http://localhost:54424
+
+[auth.email]
+enable_confirmations = false
 
 [storage]
 enabled = true
 file_size_limit = "50MiB"
 
+[edge_runtime]
+enabled = false
+
 [analytics]
 enabled = false
+port = 54427

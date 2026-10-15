@@ -344,7 +344,10 @@ export type Database = {
       clients: Table<
         ClientRow,
         Ins<ClientRow, "name">,
-        [Fk<"clients_user_id_fkey", "user_id", "users">]
+        [
+          Fk<"clients_user_id_fkey", "user_id", "users">,
+          Fk<"clients_created_by_fkey", "created_by", "users">,
+        ]
       >;
       services: Table<ServiceRow, Ins<ServiceRow, "slug" | "category" | "name">>;
       price_rules: Table<
@@ -406,6 +409,7 @@ export type Database = {
           Fk<"order_assignments_order_id_fkey", "order_id", "orders">,
           Fk<"order_assignments_order_item_id_fkey", "order_item_id", "order_items">,
           Fk<"order_assignments_user_id_fkey", "user_id", "users">,
+          Fk<"order_assignments_assigned_by_fkey", "assigned_by", "users">,
         ]
       >;
       audit_log: Table<AuditLogRow, Ins<AuditLogRow, "entity" | "action">>;

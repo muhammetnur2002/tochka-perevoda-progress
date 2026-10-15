@@ -29,7 +29,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
       db.from("files").select("id, original_name, mime_type, size_bytes, kind, created_at").eq("order_id", order.id).order("created_at"),
       db.from("payments").select("id, amount, method, status, provider, paid_at, created_at").eq("order_id", order.id).order("created_at", { ascending: false }),
       db.from("status_history").select("*").eq("order_id", order.id).order("created_at"),
-      db.from("order_assignments").select("*, user:users(name)").eq("order_id", order.id),
+      db.from("order_assignments").select("*, user:users!order_assignments_user_id_fkey(name)").eq("order_id", order.id),
     ]);
 
     return NextResponse.json({

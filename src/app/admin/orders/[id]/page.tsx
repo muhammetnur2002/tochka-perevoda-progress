@@ -32,7 +32,7 @@ export default async function AdminOrderPage({ params }: { params: { id: string 
     supabase.from("files").select("id, original_name, kind, size_bytes, created_at").eq("order_id", order.id).order("created_at"),
     supabase.from("payments").select("*").eq("order_id", order.id).order("created_at", { ascending: false }),
     supabase.from("status_history").select("*, user:users(name)").eq("order_id", order.id).order("created_at"),
-    supabase.from("order_assignments").select("*, user:users(name)").eq("order_id", order.id).order("assigned_at"),
+    supabase.from("order_assignments").select("*, user:users!order_assignments_user_id_fkey(name)").eq("order_id", order.id).order("assigned_at"),
     supabase.from("users").select("id, name, role").in("role", ["translator", "notary", "printer", "manager", "admin"]).eq("is_active", true).order("name"),
     supabase.from("translators").select("user_id, capacity_per_day, current_load, is_available, languages"),
     supabase.from("languages").select("id, name"),

@@ -36,8 +36,10 @@ pnpm dev                           # http://localhost:3000
 | `SUPABASE_SERVICE_ROLE_KEY` | API → service_role (только сервер!) |
 | `DATABASE_URL` | Database → Connection string → URI (Session pooler) |
 
-Локальный Supabase: `supabase start` → `DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres`,
-ключи выводит `supabase status`.
+Локальный Supabase (нужен Docker Desktop): `npx supabase start` — миграции применятся сами.
+Порты перенесены на 5442x, т.к. Windows резервирует 54308–54407:
+API `http://127.0.0.1:54421`, БД `postgresql://postgres:postgres@127.0.0.1:54422/postgres`,
+Studio `http://127.0.0.1:54423`, почта (Mailpit) `http://127.0.0.1:54424`; ключи — `npx supabase status`.
 
 ### Демо-доступы (после `pnpm db:seed`, только для разработки)
 

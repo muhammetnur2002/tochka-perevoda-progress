@@ -43,7 +43,7 @@ export async function getDashboardStats(db: Db, days: number): Promise<Dashboard
       .limit(5000),
     db.from("clients").select("id", { count: "exact", head: true }),
     db.from("payments").select("amount, method, status").gte("created_at", since).eq("status", "succeeded"),
-    db.from("order_assignments").select("status, user:users(name)").gte("assigned_at", since),
+    db.from("order_assignments").select("status, user:users!order_assignments_user_id_fkey(name)").gte("assigned_at", since),
     db.from("languages").select("id, name"),
   ]);
   if (ordersRes.error) throw ordersRes.error;
