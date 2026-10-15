@@ -43,6 +43,12 @@ describe("createOrderSchema", () => {
     expect(createOrderSchema.parse({ ...base, languageTo: UUID })).not.toHaveProperty("languageTo");
   });
 
+  it("промокод необязателен и обрезается по краям", () => {
+    expect(createOrderSchema.parse(base).promoCode).toBeUndefined();
+    expect(createOrderSchema.parse({ ...base, promoCode: "  zima10 " }).promoCode).toBe("zima10");
+    expect(createOrderSchema.safeParse({ ...base, promoCode: "x".repeat(41) }).success).toBe(false);
+  });
+
   it("для доставки обязателен адрес", () => {
     expect(createOrderSchema.safeParse({ ...base, deliveryType: "delivery" }).success).toBe(false);
     expect(createOrderSchema.safeParse({ ...base, deliveryType: "delivery", deliveryAddress: "Казань, Баумана 1" }).success).toBe(true);

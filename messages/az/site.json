@@ -36,7 +36,8 @@
     "menu": "Menyu",
     "crm": "CRM-admin paneli",
     "workspace": "İş yeri",
-    "mainMenu": "Əsas menyu"
+    "mainMenu": "Əsas menyu",
+    "myOrders": "Sifarişlərim"
   },
   "categories": {
     "translation": "Tərcümələr",
@@ -323,7 +324,9 @@
     "receiving": "Alma üsulu",
     "pickup": "Qəbul məntəqəsindən özünüz götürün",
     "courier": "Kuryerlə çatdırılma",
-    "courierPrice": "Çatdırılma (+{price})"
+    "courierPrice": "Çatdırılma (+{price})",
+    "promoDiscountCode": "Promo kod {code}",
+    "promoDiscount": "«{name}» endirimi"
   },
   "cartDrawer": {
     "title": "Səbət",
@@ -512,7 +515,7 @@
     "title": "Şəxsi kabinet",
     "tabsAria": "Kabinet bölmələri",
     "tabs": {
-      "orders": "Sifarişlər",
+      "orders": "Sifarişlərim",
       "profile": "Profil",
       "data": "Məlumatlarım"
     },
@@ -634,5 +637,24 @@
     "servicesDescription": "«Точка Перевода Прогресс» tərcümə bürosunun tam qiymət siyahısı: sənəd tərcüməsi, poliqrafiya, sığorta. Səhifə və sənəd üzrə qiymətlər.",
     "status": "Sifarişin statusu",
     "statusDescription": "Sifarişin statusunu nömrə və telefonla yoxlayın: qəbul edilib, icra olunur, təhvilə hazırdır."
+  },
+  "promo": {
+    "toggle": "Promo kodum var",
+    "label": "Promo kod",
+    "placeholder": "Promo kodu daxil edin",
+    "apply": "Tətbiq et",
+    "remove": "Promo kodu sil",
+    "applied": "{code} promo kodu tətbiq olundu",
+    "autoApplied": "«{name}» endirimi avtomatik tətbiq olundu",
+    "errors": {
+      "not_found": "Promo kod tapılmadı",
+      "inactive": "Bu promo kod qüvvədə deyil",
+      "not_started": "Bu promo kod hələ qüvvədə deyil",
+      "expired": "Promo kodun müddəti bitib",
+      "limit": "Promo kodun istifadə limiti bitib",
+      "client_limit": "Siz bu promo kodu artıq istifadə etmisiniz",
+      "first_order_only": "Bu promo kod yalnız ilk sifariş üçün keçərlidir",
+      "min_amount": "Sifarişin məbləği bu promo kod üçün minimum məbləğdən azdır"
+    }
   }
 }

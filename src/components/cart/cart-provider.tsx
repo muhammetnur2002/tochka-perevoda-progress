@@ -13,6 +13,8 @@ export interface CartOptions {
   languageTo: string | null;
   /** Выбранная точка приёма документов. */
   officeId: string | null;
+  /** Введённый клиентом промокод (проверяет и применяет сервер). */
+  promoCode: string | null;
 }
 
 interface CartState extends CartOptions {
@@ -38,6 +40,7 @@ interface CartContextValue {
   setLanguageFrom: (v: string | null) => void;
   setLanguageTo: (v: string | null) => void;
   setOfficeId: (v: string | null) => void;
+  setPromoCode: (v: string | null) => void;
   resetOptions: () => void;
 }
 
@@ -53,6 +56,7 @@ const DEFAULT_OPTIONS: CartOptions = {
   languageFrom: null,
   languageTo: null,
   officeId: null,
+  promoCode: null,
 };
 
 const EMPTY_STATE: CartState = { items: [], ...DEFAULT_OPTIONS };
@@ -123,6 +127,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         languageFrom: state.languageFrom,
         languageTo: state.languageTo,
         officeId: state.officeId,
+        promoCode: state.promoCode,
       },
       itemsCount: state.items.reduce((sum, i) => sum + i.quantity, 0),
       hydrated,
@@ -152,6 +157,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setLanguageFrom: (languageFrom) => setState((s) => ({ ...s, languageFrom })),
       setLanguageTo: (languageTo) => setState((s) => ({ ...s, languageTo })),
       setOfficeId: (officeId) => setState((s) => ({ ...s, officeId })),
+      setPromoCode: (promoCode) => setState((s) => ({ ...s, promoCode })),
       resetOptions: () => setState((s) => ({ ...s, ...DEFAULT_OPTIONS })),
     };
   }, [state, hydrated]);

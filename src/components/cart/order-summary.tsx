@@ -7,6 +7,7 @@ import { useCart } from "@/components/cart/cart-provider";
 import { canRequestNotary, notaryUnits, type PricingSettings } from "@/lib/services/pricing";
 import { formatMoney } from "@/lib/format/money";
 import { INTL_LOCALE, NUMERIC_DATE_LOCALES, isLocale } from "@/i18n/config";
+import { usePromoQuote } from "@/hooks/use-pricing";
 import type { PriceBreakdown, UrgencyKey } from "@/types/domain";
 import { cn } from "@/lib/utils";
 
@@ -107,6 +108,7 @@ export function NotaryCheckbox({ settings }: { settings: PricingSettings }) {
 export function PriceLines({ pricing }: { pricing: PriceBreakdown }) {
   const t = useTranslations("calculator");
   const formatDeadline = useDeadlineFormatter();
+  const { rule: promo } = usePromoQuote();
   return (
     <div className="space-y-1.5 text-sm text-slate-700">
       <div className="flex justify-between">
@@ -117,6 +119,12 @@ export function PriceLines({ pricing }: { pricing: PriceBreakdown }) {
         <div className="flex justify-between text-emerald-700">
           <span>{t("discount")}</span>
           <span>−{formatMoney(pricing.discount)}</span>
+        </div>
+      )}
+      {pricing.promoDiscount > 0 && (
+        <div className="flex justify-between gap-3 text-emerald-700">
+          <span>{promo?.code ? t("promoDiscountCode", { code: promo.code }) : t("promoDiscount", { name: promo?.name ?? "" })}</span>
+          <span className="whitespace-nowrap">−{formatMoney(pricing.promoDiscount)}</span>
         </div>
       )}
       {pricing.urgencySurcharge > 0 && (

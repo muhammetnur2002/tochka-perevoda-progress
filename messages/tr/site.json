@@ -36,7 +36,8 @@
     "menu": "Menü",
     "crm": "CRM yönetim paneli",
     "workspace": "Çalışma alanı",
-    "mainMenu": "Ana menü"
+    "mainMenu": "Ana menü",
+    "myOrders": "Siparişlerim"
   },
   "categories": {
     "translation": "Çeviri",
@@ -323,7 +324,9 @@
     "receiving": "Teslim alma",
     "pickup": "Teslim noktasından gel-al",
     "courier": "Kurye ile teslimat",
-    "courierPrice": "Teslimat (+{price})"
+    "courierPrice": "Teslimat (+{price})",
+    "promoDiscountCode": "Promosyon kodu {code}",
+    "promoDiscount": "«{name}» indirimi"
   },
   "cartDrawer": {
     "title": "Sepet",
@@ -512,7 +515,7 @@
     "title": "Hesabım",
     "tabsAria": "Hesap bölümleri",
     "tabs": {
-      "orders": "Siparişler",
+      "orders": "Siparişlerim",
       "profile": "Profil",
       "data": "Verilerim"
     },
@@ -634,5 +637,24 @@
     "servicesDescription": "«Точка Перевода Прогресс» çeviri bürosunun tam fiyat listesi: belge çevirisi, baskı, sigorta. Sayfa ve belge başına fiyatlar.",
     "status": "Sipariş durumu",
     "statusDescription": "Sipariş numarası ve telefonla sipariş durumunu sorgulayın: alındı, hazırlanıyor, teslime hazır."
+  },
+  "promo": {
+    "toggle": "Promosyon kodum var",
+    "label": "Promosyon kodu",
+    "placeholder": "Promosyon kodunu girin",
+    "apply": "Uygula",
+    "remove": "Promosyon kodunu kaldır",
+    "applied": "{code} promosyon kodu uygulandı",
+    "autoApplied": "«{name}» indirimi otomatik uygulandı",
+    "errors": {
+      "not_found": "Promosyon kodu bulunamadı",
+      "inactive": "Bu promosyon kodu geçerli değil",
+      "not_started": "Bu promosyon kodu henüz geçerli değil",
+      "expired": "Promosyon kodunun süresi doldu",
+      "limit": "Promosyon kodunun kullanım limiti doldu",
+      "client_limit": "Bu promosyon kodunu zaten kullandınız",
+      "first_order_only": "Bu promosyon kodu yalnızca ilk siparişte geçerlidir",
+      "min_amount": "Sipariş tutarı bu promosyon kodu için gereken minimum tutarın altında"
+    }
   }
 }

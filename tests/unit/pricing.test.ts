@@ -4,9 +4,11 @@ import {
   canRequestNotary,
   DEFAULT_PRICING_SETTINGS,
   notaryUnits,
+  promoDiscountAmount,
   settingsToPricing,
   urgencyDays,
   type PricingSettings,
+  type PromoRule,
 } from "@/lib/services/pricing";
 import type { CartItem } from "@/types/domain";
 
@@ -138,5 +140,48 @@ describe("settingsToPricing", () => {
     const s = settingsToPricing(undefined);
     expect(s.urgency).toEqual({ "1d": 1.5, same_day: 2 });
     expect(s.volumeDiscounts[0]?.slug).toBe("legal");
+  });
+});
+
+describe("промокоды и автоскидки", () => {
+  const percent: PromoRule = { code: "ZIMA10", name: "Зима", type: "percent", value: 10, maxDiscount: null, minOrderAmount: 0 };
+  const fixed: PromoRule = { code: "MINUS500", name: "−500", type: "fixed", value: 500, maxDiscount: null, minOrderAmount: 2000 };
+  const base = { urgency: "standard", notaryRequested: false, deliveryType: "pickup", settings, now: NOW } as const;
+  const passport = [item({ slug: "passport-all", unitPrice: 2390, quantity: 1 })];
+
+  it("процент считается от стоимости услуг и ограничивается потолком", () => {
+    expect(promoDiscountAmount(percent, 2390)).toBe(239);
+    expect(promoDiscountAmount({ ...percent, maxDiscount: 100 }, 2390)).toBe(100);
+  });
+
+  it("фиксированная скидка не больше стоимости услуг; минимальная сумма обязательна", () => {
+    expect(promoDiscountAmount(fixed, 2390)).toBe(500);
+    expect(promoDiscountAmount(fixed, 1999)).toBe(0);
+    expect(promoDiscountAmount({ ...fixed, minOrderAmount: 0 }, 300)).toBe(300);
+    expect(promoDiscountAmount(percent, 0)).toBe(0);
+  });
+
+  it("в итог вычитается, заверение и доставка скидкой не уменьшаются", () => {
+    const r = calculatePrice(passport, { ...base, deliveryType: "delivery", notaryRequested: true, promo: percent });
+    const plain = calculatePrice(passport, { ...base, deliveryType: "delivery", notaryRequested: true });
+    expect(r.promoDiscount).toBe(239);
+    expect(r.total).toBe(plain.total - 239);
+    expect(r.notaryFee).toBe(plain.notaryFee);
+    expect(r.deliveryFee).toBe(plain.deliveryFee);
+  });
+
+  it("скидка считается от суммы со срочностью, итог не уходит в минус", () => {
+    const r = calculatePrice(passport, { ...base, urgency: "1d", promo: percent });
+    expect(r.promoDiscount).toBe(358.5); // 10% от 2390 × 1,5
+    expect(r.total).toBe(3226.5);
+    const tiny = calculatePrice([item({ slug: "x", unitPrice: 100, quantity: 1 })], {
+      ...base,
+      promo: { ...fixed, minOrderAmount: 0, value: 5000 },
+    });
+    expect(tiny.total).toBe(0);
+  });
+
+  it("без промокода скидка равна нулю", () => {
+    expect(calculatePrice(passport, base).promoDiscount).toBe(0);
   });
 });

@@ -63,6 +63,7 @@ export type Permission =
   | "order.view_payments"
   | "service.edit"
   | "settings.edit"
+  | "promo.manage"
   | "audit.view"
   | "user.change_role"
   | "task.update_own";
@@ -74,6 +75,7 @@ const PERMISSIONS: Record<Permission, readonly UserRole[]> = {
   "order.view_payments": MANAGER_ROLES,
   "service.edit": MANAGER_ROLES,
   "settings.edit": MANAGER_ROLES,
+  "promo.manage": MANAGER_ROLES,
   "audit.view": ["admin"],
   "user.change_role": ["admin"],
   "task.update_own": EXECUTOR_ROLES,

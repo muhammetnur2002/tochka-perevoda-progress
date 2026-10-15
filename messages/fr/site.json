@@ -36,7 +36,8 @@
     "menu": "Menu",
     "crm": "Admin CRM",
     "workspace": "Espace de travail",
-    "mainMenu": "Menu principal"
+    "mainMenu": "Menu principal",
+    "myOrders": "Mes commandes"
   },
   "categories": {
     "translation": "Traductions",
@@ -323,7 +324,9 @@
     "receiving": "Réception",
     "pickup": "Retrait au point d'accueil",
     "courier": "Livraison par coursier",
-    "courierPrice": "Livraison (+{price})"
+    "courierPrice": "Livraison (+{price})",
+    "promoDiscountCode": "Code promo {code}",
+    "promoDiscount": "Réduction « {name} »"
   },
   "cartDrawer": {
     "title": "Panier",
@@ -512,7 +515,7 @@
     "title": "Mon espace",
     "tabsAria": "Sections de l'espace personnel",
     "tabs": {
-      "orders": "Commandes",
+      "orders": "Mes commandes",
       "profile": "Profil",
       "data": "Mes données"
     },
@@ -634,5 +637,24 @@
     "servicesDescription": "Tarifs complets de l'agence de traduction «Точка Перевода Прогресс» : traduction de documents, impression, assurance. Prix par page et par document.",
     "status": "Suivi de commande",
     "statusDescription": "Vérifiez le statut de votre commande avec son numéro et votre téléphone : reçue, en cours, prête à être remise."
+  },
+  "promo": {
+    "toggle": "J'ai un code promo",
+    "label": "Code promo",
+    "placeholder": "Saisissez le code promo",
+    "apply": "Appliquer",
+    "remove": "Retirer le code promo",
+    "applied": "Code promo {code} appliqué",
+    "autoApplied": "Réduction « {name} » appliquée automatiquement",
+    "errors": {
+      "not_found": "Code promo introuvable",
+      "inactive": "Ce code promo n'est pas actif",
+      "not_started": "Ce code promo n'est pas encore valable",
+      "expired": "Ce code promo a expiré",
+      "limit": "Ce code promo a atteint sa limite d'utilisation",
+      "client_limit": "Vous avez déjà utilisé ce code promo",
+      "first_order_only": "Ce code promo n'est valable que pour la première commande",
+      "min_amount": "Le montant de la commande est inférieur au minimum requis pour ce code promo"
+    }
   }
 }

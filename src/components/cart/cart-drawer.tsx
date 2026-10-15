@@ -7,9 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart } from "@/components/cart/cart-provider";
-import { useCatalog, toPricingSettings } from "@/hooks/use-catalog";
+import { usePricing } from "@/hooks/use-pricing";
 import { useServiceName } from "@/i18n/names";
-import { calculatePrice } from "@/lib/services/pricing";
 import { formatMoney } from "@/lib/format/money";
 
 interface CartDrawerProps {
@@ -22,15 +21,8 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const t = useTranslations("cartDrawer");
   const tc = useTranslations("calculator");
   const serviceName = useServiceName();
-  const { items, options, setQuantity, removeItem } = useCart();
-  const { data: catalog } = useCatalog();
-
-  const pricing = calculatePrice(items, {
-    urgency: options.urgency,
-    notaryRequested: options.notaryRequested,
-    deliveryType: options.deliveryType,
-    settings: toPricingSettings(catalog?.settings),
-  });
+  const { items, setQuantity, removeItem } = useCart();
+  const pricing = usePricing();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

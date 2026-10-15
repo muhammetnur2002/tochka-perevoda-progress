@@ -11,6 +11,7 @@ import { CONSENT_VERSION } from "@/lib/config/constants";
 import { issueOrderToken } from "@/lib/auth/order-access";
 import { notifyNewOrderToManagers } from "@/lib/notifications";
 import { logger } from "@/lib/logger";
+import { PROMO_REJECTION_MESSAGES, resolvePromo } from "@/lib/services/promo-service";
 
 export interface CreateOrderResult {
   orderId: string;
@@ -67,13 +68,13 @@ export async function quoteOrder(
   input: Pick<CreateOrderInput, "items" | "urgency" | "notaryRequested" | "deliveryType">,
 ) {
   const items = await loadCartItems(input);
-  const options: PriceOptions = {
+  const options: Omit<PriceOptions, "promo"> = {
     urgency: input.urgency,
     notaryRequested: input.notaryRequested,
     deliveryType: input.deliveryType,
     settings: settingsToPricing(await getPublicSettings()),
   };
-  return { items, pricing: calculatePrice(items, options) };
+  return { items, options, pricing: calculatePrice(items, options) };
 }
 
 /**
@@ -158,10 +159,21 @@ export async function createOrder(
   ctx: CreateOrderContext = {},
 ): Promise<CreateOrderResult> {
   const admin = createAdminClient();
-  const { items, pricing } = await quoteOrder(input);
+  const quote = await quoteOrder(input);
+  const { items } = quote;
   const placement = await resolveOfficeAndLanguages(input, items);
 
   const clientId = await resolveClient(input, ctx.actorId);
+
+  // Промокод / автоскидка: окончательная проверка лимитов уже по клиенту
+  const { promo, codeError } = await resolvePromo({
+    code: input.promoCode,
+    items,
+    options: quote.options,
+    clientId,
+  });
+  if (input.promoCode?.trim() && codeError) throw badRequest(PROMO_REJECTION_MESSAGES[codeError]);
+  const pricing = calculatePrice(items, { ...quote.options, promo: promo?.rule ?? null });
 
   const { data: order, error: orderError } = await admin
     .from("orders")
@@ -177,6 +189,9 @@ export async function createOrder(
       notary_fee: pricing.notaryFee,
       delivery_fee: pricing.deliveryFee,
       discount: pricing.discount,
+      promo_code_id: promo?.row.id ?? null,
+      promo_code: promo?.row.code ?? null,
+      promo_discount: pricing.promoDiscount,
       total_price: pricing.total,
       deadline: pricing.deadline ? pricing.deadline.toISOString() : null,
       delivery_type: input.deliveryType,
@@ -217,6 +232,19 @@ export async function createOrder(
   } catch (err) {
     await admin.from("orders").delete().eq("id", order.id);
     throw err;
+  }
+
+  // Лимиты промокода: при гонке двух заказов лишний откатываем (как и при ошибках выше)
+  if (promo) {
+    const { data: usage } = await admin
+      .from("v_promo_usage")
+      .select("uses")
+      .eq("promo_code_id", promo.row.id)
+      .maybeSingle();
+    if (promo.row.max_uses != null && Number(usage?.uses ?? 0) > promo.row.max_uses) {
+      await admin.from("orders").delete().eq("id", order.id);
+      throw badRequest(PROMO_REJECTION_MESSAGES.limit);
+    }
   }
 
   // Итог пересчитан триггером recalc_order_totals — читаем фактическое значение

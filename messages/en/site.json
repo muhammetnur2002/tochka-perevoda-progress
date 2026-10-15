@@ -36,7 +36,8 @@
     "menu": "Menu",
     "crm": "CRM admin",
     "workspace": "Workspace",
-    "mainMenu": "Main menu"
+    "mainMenu": "Main menu",
+    "myOrders": "My orders"
   },
   "categories": {
     "translation": "Translations",
@@ -323,7 +324,9 @@
     "receiving": "Receiving",
     "pickup": "Pickup at a drop-off point",
     "courier": "Courier delivery",
-    "courierPrice": "Delivery (+{price})"
+    "courierPrice": "Delivery (+{price})",
+    "promoDiscountCode": "Promo code {code}",
+    "promoDiscount": "Discount “{name}”"
   },
   "cartDrawer": {
     "title": "Cart",
@@ -512,7 +515,7 @@
     "title": "My account",
     "tabsAria": "Account sections",
     "tabs": {
-      "orders": "Orders",
+      "orders": "My orders",
       "profile": "Profile",
       "data": "My data"
     },
@@ -634,5 +637,24 @@
     "servicesDescription": "Full price list of the «Точка Перевода Прогресс» translation bureau: document translation, printing, insurance. Prices per page and per document.",
     "status": "Order status",
     "statusDescription": "Check your order status by order number and phone: accepted, in progress, ready for pickup."
+  },
+  "promo": {
+    "toggle": "I have a promo code",
+    "label": "Promo code",
+    "placeholder": "Enter promo code",
+    "apply": "Apply",
+    "remove": "Remove promo code",
+    "applied": "Promo code {code} applied",
+    "autoApplied": "Discount “{name}” applied automatically",
+    "errors": {
+      "not_found": "Promo code not found",
+      "inactive": "This promo code is not active",
+      "not_started": "This promo code is not valid yet",
+      "expired": "This promo code has expired",
+      "limit": "This promo code has reached its usage limit",
+      "client_limit": "You have already used this promo code",
+      "first_order_only": "This promo code is valid for the first order only",
+      "min_amount": "The order total is below the minimum for this promo code"
+    }
   }
 }

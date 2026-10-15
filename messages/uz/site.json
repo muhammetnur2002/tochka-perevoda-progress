@@ -36,7 +36,8 @@
     "menu": "Menyu",
     "crm": "CRM-admin panel",
     "workspace": "Ish joyi",
-    "mainMenu": "Asosiy menyu"
+    "mainMenu": "Asosiy menyu",
+    "myOrders": "Buyurtmalarim"
   },
   "categories": {
     "translation": "Tarjimalar",
@@ -323,7 +324,9 @@
     "receiving": "Olish usuli",
     "pickup": "Qabul punktidan olib ketish",
     "courier": "Kuryer orqali yetkazib berish",
-    "courierPrice": "Yetkazib berish (+{price})"
+    "courierPrice": "Yetkazib berish (+{price})",
+    "promoDiscountCode": "Promokod {code}",
+    "promoDiscount": "«{name}» chegirmasi"
   },
   "cartDrawer": {
     "title": "Savat",
@@ -512,7 +515,7 @@
     "title": "Shaxsiy kabinet",
     "tabsAria": "Kabinet boʻlimlari",
     "tabs": {
-      "orders": "Buyurtmalar",
+      "orders": "Buyurtmalarim",
       "profile": "Profil",
       "data": "Mening maʼlumotlarim"
     },
@@ -634,5 +637,24 @@
     "servicesDescription": "«Точка Перевода Прогресс» tarjima byurosining toʻliq narxnomasi: hujjatlar tarjimasi, poligrafiya, sugʻurta. Sahifa va hujjat uchun narxlar.",
     "status": "Buyurtma holati",
     "statusDescription": "Buyurtma holatini raqam va telefon orqali tekshiring: qabul qilindi, jarayonda, topshirishga tayyor."
+  },
+  "promo": {
+    "toggle": "Menda promokod bor",
+    "label": "Promokod",
+    "placeholder": "Promokodni kiriting",
+    "apply": "Qoʻllash",
+    "remove": "Promokodni olib tashlash",
+    "applied": "{code} promokodi qoʻllandi",
+    "autoApplied": "«{name}» chegirmasi avtomatik qoʻllandi",
+    "errors": {
+      "not_found": "Promokod topilmadi",
+      "inactive": "Bu promokod amal qilmaydi",
+      "not_started": "Bu promokod hali amal qilmaydi",
+      "expired": "Promokodning amal qilish muddati tugagan",
+      "limit": "Promokodning foydalanish limiti tugagan",
+      "client_limit": "Siz bu promokoddan allaqachon foydalangansiz",
+      "first_order_only": "Bu promokod faqat birinchi buyurtma uchun amal qiladi",
+      "min_amount": "Buyurtma summasi bu promokod uchun minimal summadan kam"
+    }
   }
 }

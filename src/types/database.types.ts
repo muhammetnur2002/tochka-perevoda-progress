@@ -137,6 +137,28 @@ export type OfficeRow = {
   updated_at: string;
 };
 
+export type PromoCodeRow = {
+  id: string;
+  /** Верхний регистр; null — только для автоматических скидок. */
+  code: string | null;
+  name: string;
+  description: string | null;
+  discount_type: "percent" | "fixed";
+  value: number;
+  max_discount: number | null;
+  min_order_amount: number;
+  auto_apply: boolean;
+  first_order_only: boolean;
+  valid_from: string | null;
+  valid_to: string | null;
+  max_uses: number | null;
+  max_uses_per_client: number | null;
+  is_active: boolean;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type OrderRow = {
   id: string;
   public_number: string;
@@ -159,6 +181,9 @@ export type OrderRow = {
   comment: string | null;
   source: OrderSource;
   promo_code: string | null;
+  promo_code_id: string | null;
+  /** Сумма скидки по промокоду (вычитается из итога). */
+  promo_discount: number;
   issued_at: string | null;
   completed_at: string | null;
   cancelled_at: string | null;
@@ -377,6 +402,11 @@ export type Database = {
       >;
       languages: Table<LanguageRow, Ins<LanguageRow, "code" | "name">>;
       offices: Table<OfficeRow, Ins<OfficeRow, "slug" | "name" | "address">>;
+      promo_codes: Table<
+        PromoCodeRow,
+        Ins<PromoCodeRow, "name" | "discount_type" | "value">,
+        [Fk<"promo_codes_created_by_fkey", "created_by", "users">]
+      >;
       orders: Table<
         OrderRow,
         Ins<OrderRow, "client_id">,
@@ -386,6 +416,7 @@ export type Database = {
           Fk<"orders_language_from_fkey", "language_from", "languages">,
           Fk<"orders_language_to_fkey", "language_to", "languages">,
           Fk<"orders_office_id_fkey", "office_id", "offices">,
+          Fk<"orders_promo_code_id_fkey", "promo_code_id", "promo_codes">,
         ]
       >;
       order_items: Table<
@@ -457,6 +488,7 @@ export type Database = {
       >;
     };
     Views: {
+      v_promo_usage: View<{ promo_code_id: string; uses: number; discount_total: number }>;
       v_revenue_daily: View<{ day: string; orders_count: number; revenue: number; paid: number }>;
       v_service_popularity: View<{
         service_id: string | null;

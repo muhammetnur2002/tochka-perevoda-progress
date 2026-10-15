@@ -36,7 +36,8 @@
     "menu": "Menýu",
     "crm": "CRM-admin paneli",
     "workspace": "Iş ýeri",
-    "mainMenu": "Esasy menýu"
+    "mainMenu": "Esasy menýu",
+    "myOrders": "Meniň sargytlarym"
   },
   "categories": {
     "translation": "Terjimeler",
@@ -323,7 +324,9 @@
     "receiving": "Almak usuly",
     "pickup": "Kabul ediş nokadyndan özüňiz almak",
     "courier": "Kurýer arkaly eltip bermek",
-    "courierPrice": "Eltip bermek (+{price})"
+    "courierPrice": "Eltip bermek (+{price})",
+    "promoDiscountCode": "Promokod {code}",
+    "promoDiscount": "Arzanladyş «{name}»"
   },
   "cartDrawer": {
     "title": "Sebet",
@@ -512,7 +515,7 @@
     "title": "Şahsy otag",
     "tabsAria": "Otagyň bölümleri",
     "tabs": {
-      "orders": "Sargytlar",
+      "orders": "Meniň sargytlarym",
       "profile": "Profil",
       "data": "Meniň maglumatlarym"
     },
@@ -634,5 +637,24 @@
     "servicesDescription": "«Точка Перевода Прогресс» terjime býurosynyň doly nyrhnamasy: resminamalaryň terjimesi, poligrafiýa, ätiýaçlandyryş. Sahypa we resminama üçin bahalar.",
     "status": "Sargydyň ýagdaýy",
     "statusDescription": "Sargydyň ýagdaýyny belgisi we telefon boýunça barlaň: kabul edildi, işlenýär, bermäge taýýar."
+  },
+  "promo": {
+    "toggle": "Meniň promokodym bar",
+    "label": "Promokod",
+    "placeholder": "Promokody giriziň",
+    "apply": "Ulan",
+    "remove": "Promokody aýyr",
+    "applied": "{code} promokody ulanyldy",
+    "autoApplied": "«{name}» arzanladyşy awtomatiki ulanyldy",
+    "errors": {
+      "not_found": "Promokod tapylmady",
+      "inactive": "Bu promokod işlemeýär",
+      "not_started": "Bu promokod entek işlemeýär",
+      "expired": "Promokodyň möhleti gutardy",
+      "limit": "Promokodyň ulanylyş çägi gutardy",
+      "client_limit": "Siz bu promokody eýýäm ulandyňyz",
+      "first_order_only": "Bu promokod diňe ilkinji sargyda dogry gelýär",
+      "min_amount": "Sargydyň jemi bu promokod üçin iň az mukdardan az"
+    }
   }
 }

@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = { title: "Аудит" };
 export const dynamic = "force-dynamic";
 
-const ENTITIES = ["orders", "order_items", "payments", "services", "offices", "users"];
+const ENTITIES = ["orders", "order_items", "payments", "services", "offices", "promo_codes", "users"];
 const ROLES = ["guest", "client", "manager", "translator", "notary", "printer", "admin"];
 const SKIP = new Set(["updated_at", "created_at", "raw"]);
 

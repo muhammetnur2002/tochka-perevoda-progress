@@ -189,6 +189,106 @@ export async function saveOfficeAction(id: string | null, input: unknown): Promi
   });
 }
 
+const promoSchema = z
+  .object({
+    auto_apply: z.boolean(),
+    code: z.string().nullable(),
+    name: z.string().trim().min(1).max(100),
+    description: optionalText(500),
+    discount_type: z.enum(["percent", "fixed"]),
+    value: z.number().positive().max(10_000_000),
+    max_discount: z.number().positive().max(10_000_000).nullable(),
+    min_order_amount: z.number().min(0).max(10_000_000),
+    first_order_only: z.boolean(),
+    valid_from: z.string().datetime({ offset: true }).nullable(),
+    valid_to: z.string().datetime({ offset: true }).nullable(),
+    max_uses: z.number().int().min(1).max(1_000_000).nullable(),
+    max_uses_per_client: z.number().int().min(1).max(1_000_000).nullable(),
+    is_active: z.boolean(),
+  })
+  .superRefine((p, ctx) => {
+    if (p.discount_type === "percent" && p.value > 100) ctx.addIssue({ code: "custom", path: ["value"], message: "percent" });
+    if (p.valid_from && p.valid_to && new Date(p.valid_to) <= new Date(p.valid_from)) {
+      ctx.addIssue({ code: "custom", path: ["valid_to"], message: "dates" });
+    }
+    if (!p.auto_apply && !/^[^\s]{3,32}$/.test((p.code ?? "").replace(/\s+/g, ""))) {
+      ctx.addIssue({ code: "custom", path: ["code"], message: "code" });
+    }
+  })
+  .transform((p) => ({
+    ...p,
+    // Автоскидка применяется без кода; обычный код хранится без пробелов в верхнем регистре
+    code: p.auto_apply ? null : (p.code ?? "").replace(/\s+/g, "").toUpperCase(),
+    // Потолок скидки имеет смысл только для процентов
+    max_discount: p.discount_type === "percent" ? p.max_discount : null,
+  }));
+
+/** Промокод или автоскидка: создание (id = null) и правка. Право promo.manage. */
+export async function savePromoAction(id: string | null, input: unknown): Promise<ActionResult> {
+  return run(async (t) => {
+    const actor = await requirePermission("promo.manage");
+    const data = promoSchema.parse(input);
+    if (id) {
+      const { data: row, error } = await actor.supabase
+        .from("promo_codes")
+        .update(data)
+        .eq("id", z.string().uuid().parse(id))
+        .select("id")
+        .maybeSingle();
+      if (error) {
+        if (error.code === "23505") throw new CodedError(t("errors.promoCodeTaken"), "CODE_TAKEN");
+        throw error;
+      }
+      if (!row) throw notFound();
+    } else {
+      const { error } = await actor.supabase.from("promo_codes").insert({ ...data, created_by: actor.id });
+      if (error) {
+        if (error.code === "23505") throw new CodedError(t("errors.promoCodeTaken"), "CODE_TAKEN");
+        throw error;
+      }
+    }
+    revalidatePath("/admin/promo");
+    return id ? t("promoSaved") : t("promoAdded");
+  });
+}
+
+/** Быстрое включение/выключение промокода. */
+export async function setPromoActiveAction(id: string, isActive: boolean): Promise<ActionResult> {
+  return run(async (t) => {
+    const actor = await requirePermission("promo.manage");
+    const { data: row, error } = await actor.supabase
+      .from("promo_codes")
+      .update({ is_active: z.boolean().parse(isActive) })
+      .eq("id", z.string().uuid().parse(id))
+      .select("id")
+      .maybeSingle();
+    if (error) throw error;
+    if (!row) throw notFound();
+    revalidatePath("/admin/promo");
+    return isActive ? t("promoEnabled") : t("promoDisabled");
+  });
+}
+
+/** Удаление промокода; если по нему уже оформлялись заказы, база не даст (FK) — тогда нужно отключить. */
+export async function deletePromoAction(id: string): Promise<ActionResult> {
+  return run(async (t) => {
+    const actor = await requirePermission("promo.manage");
+    const { data: row, error } = await actor.supabase
+      .from("promo_codes")
+      .delete()
+      .eq("id", z.string().uuid().parse(id))
+      .select("id")
+      .maybeSingle();
+    if (error) {
+      if (error.code === "23503") throw new CodedError(t("errors.promoInUse"), "IN_USE");
+      throw error;
+    }
+    if (!row) throw notFound();
+    revalidatePath("/admin/promo");
+    return t("promoDeleted");
+  });
+}
+
 export async function saveSettingAction(key: string, value: Json): Promise<ActionResult> {
   return run(async (t) => {
     const actor = await requirePermission("settings.edit");

@@ -24,12 +24,14 @@ import { cn } from "@/lib/utils";
 import { homePathForRole, isStaffRole } from "@/lib/auth/roles";
 import { LocaleSwitcher } from "./locale-switcher";
 
-const NAV = [
+type NavKey = "home" | "services" | "calculator" | "status" | "myOrders";
+
+const NAV: readonly { href: string; key: NavKey }[] = [
   { href: "/", key: "home" },
   { href: "/services", key: "services" },
   { href: "/calculator", key: "calculator" },
   { href: "/status", key: "status" },
-] as const;
+];
 
 export function SiteHeader() {
   const t = useTranslations("nav");
@@ -40,6 +42,10 @@ export function SiteHeader() {
   const [cartOpen, setCartOpen] = React.useState(false);
 
   const isStaff = isStaffRole(profile?.role);
+  // Вошедший клиент вместо поиска по номеру видит «Мои заказы» — статусы там же
+  const navItems = NAV.map((item) =>
+    item.key === "status" && user && !isStaff ? { href: "/account", key: "myOrders" as const } : item,
+  );
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
@@ -47,13 +53,13 @@ export function SiteHeader() {
         <div className="flex items-center gap-6">
           <Logo size={44} />
           <nav className="hidden items-center gap-1 lg:flex">
-            {NAV.map((item) => (
+            {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
                   "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
-                  pathname === item.href && "text-brand-800",
+                  (item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)) && "text-brand-800",
                 )}
               >
                 {t(item.key)}
@@ -130,7 +136,7 @@ export function SiteHeader() {
                 </SheetHeader>
                 <LocaleSwitcher className="mt-4 w-full [&_select]:w-full" />
                 <nav className="mt-4 flex flex-col gap-1">
-                  {NAV.map((item) => (
+                  {navItems.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}

@@ -90,6 +90,26 @@ do $$ begin
 end $$;
 
 -- -----------------------------------------------------------------------------
+\echo '3a. Промокод: итог = (позиции − объёмная скидка) × срочность + сборы − промо, не ниже нуля'
+insert into public.promo_codes (id, code, name, discount_type, value)
+values ('00000000-0000-0000-0000-0000000000b1', 'RLS10', 'Тест', 'percent', 10);
+insert into public.orders (id, client_id, urgency_coefficient, promo_code_id, promo_code, promo_discount)
+values ('00000000-0000-0000-0000-0000000000a4', :gu, 1.5, '00000000-0000-0000-0000-0000000000b1', 'RLS10', 200);
+insert into public.order_items (order_id, name_snapshot, quantity, unit_price, price)
+values ('00000000-0000-0000-0000-0000000000a4', 'Перевод паспорта', 1, 1000, 1000);
+do $$ begin
+  assert (select total_price from public.orders where id = '00000000-0000-0000-0000-0000000000a4') = 1300,
+    'Итог заказа с промокодом посчитан неверно';
+  assert (select uses from public.v_promo_usage where promo_code_id = '00000000-0000-0000-0000-0000000000b1') = 1,
+    'Использование промокода не учтено';
+end $$;
+update public.orders set promo_discount = 99999 where id = '00000000-0000-0000-0000-0000000000a4';
+update public.order_items set price = 1000 where order_id = '00000000-0000-0000-0000-0000000000a4';
+do $$ begin
+  assert (select total_price from public.orders where id = '00000000-0000-0000-0000-0000000000a4') = 0,
+    'Итог ушёл в минус из-за промокода';
+end $$;
+
 insert into public.offices (slug, name, address, is_active) values ('rls-hidden', 'Скрытая', 'ул. Тестовая, 1', false);
 
 \echo '4. Клиент видит только своё'
@@ -104,6 +124,8 @@ do $$ begin
   assert (select count(*) from public.clients) = 1, 'Клиент видит чужие карточки клиентов';
   assert (select count(*) from public.users) = 1, 'Клиент видит чужие профили';
   assert (select count(*) from public.audit_log) = 0, 'Клиенту доступен аудит';
+  assert (select count(*) from public.promo_codes) = 0, 'Клиент видит промокоды';
+  assert (select count(*) from public.v_promo_usage) = 0, 'Клиент видит использование промокодов';
   assert (select count(*) from public.status_history) >= 1, 'Клиент не видит историю своего заказа';
   assert (select count(*) from public.v_revenue_daily) <= 1, 'Отчёт обходит RLS';
 end $$;
@@ -129,6 +151,11 @@ do $$ begin
   -- точки приёма: клиент видит только активные и не может их менять
   assert (select count(*) from public.offices) = (select count(*) from public.offices where is_active),
     'Клиент видит скрытые точки приёма';
+  begin
+    insert into public.promo_codes (code, name, discount_type, value) values ('HACK100', 'X', 'percent', 100);
+    raise exception 'FAIL: клиент создал промокод';
+  exception when insufficient_privilege then null;
+  end;
   update public.offices set address = 'взлом' where true;
   assert not found, 'Клиент изменил адрес точки приёма';
   begin

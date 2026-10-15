@@ -9,8 +9,43 @@ import { addBusinessDays } from "./deadline";
  *
  * Формула (совпадает с триггером recalc_order_totals в БД):
  *   total = (Σ quantity × unit_price − скидка за объём) × коэффициент срочности
- *           + нотариальное заверение + доставка
+ *           + нотариальное заверение + доставка − скидка по промокоду
+ *
+ * Скидка по промокоду считается от стоимости услуг с учётом срочности (без
+ * заверения и доставки) и не может превысить эту стоимость.
  */
+
+/** Условия скидки, нужные для расчёта (публичные поля промокода). */
+export interface PromoRule {
+  /** Код для показа клиенту; null у автоматической скидки. */
+  code: string | null;
+  name: string;
+  type: "percent" | "fixed";
+  value: number;
+  /** Потолок скидки для процентных промокодов. */
+  maxDiscount: number | null;
+  /** Минимальная стоимость услуг, с которой скидка действует. */
+  minOrderAmount: number;
+}
+
+/** Причины отказа в промокоде — клиент показывает их на языке интерфейса. */
+export type PromoRejection =
+  | "not_found"
+  | "inactive"
+  | "not_started"
+  | "expired"
+  | "limit"
+  | "client_limit"
+  | "first_order_only"
+  | "min_amount";
+
+/** Размер скидки по правилу от стоимости услуг (0, если условия не выполнены). */
+export function promoDiscountAmount(rule: PromoRule, servicesAmount: number): number {
+  if (servicesAmount <= 0 || servicesAmount < rule.minOrderAmount) return 0;
+  let discount = rule.type === "percent" ? (servicesAmount * rule.value) / 100 : rule.value;
+  if (rule.type === "percent" && rule.maxDiscount != null) discount = Math.min(discount, rule.maxDiscount);
+  return round2(Math.max(0, Math.min(discount, servicesAmount)));
+}
 
 export interface UrgencySettings {
   "1d": number;
@@ -83,6 +118,8 @@ export interface PriceOptions {
   deliveryType: "pickup" | "delivery";
   settings: PricingSettings;
   now?: Date;
+  /** Применённый промокод / автоскидка (проверка доступности — на сервере). */
+  promo?: PromoRule | null;
 }
 
 /** Коэффициент срочности по ключу. */
@@ -164,7 +201,9 @@ export function calculatePrice(items: CartItem[], options: PriceOptions): PriceB
       : 0;
   const deliveryFee = options.deliveryType === "delivery" ? settings.deliveryPrice : 0;
 
-  const total = round2(itemsAfterDiscount * coefficient + notaryFee + deliveryFee);
+  const servicesAmount = round2(itemsAfterDiscount * coefficient);
+  const promoDiscount = options.promo ? promoDiscountAmount(options.promo, servicesAmount) : 0;
+  const total = Math.max(0, round2(servicesAmount + notaryFee + deliveryFee - promoDiscount));
 
   // Срок: максимум среди услуг с учётом срочности
   const maxServiceDays = items.length ? Math.max(...items.map((i) => i.durationDays)) : 1;
@@ -185,6 +224,7 @@ export function calculatePrice(items: CartItem[], options: PriceOptions): PriceB
     notaryFee,
     deliveryFee,
     discount,
+    promoDiscount,
     total,
     durationDays: businessDays,
     deadline,

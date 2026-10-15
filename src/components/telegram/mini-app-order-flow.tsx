@@ -15,7 +15,8 @@ import { LanguagePairPicker, OfficePicker } from "@/components/order/placement-p
 import { TgBackButton, TgMainButton } from "@/components/telegram/tg-buttons";
 import { useCatalog, toPricingSettings } from "@/hooks/use-catalog";
 import { useTelegram } from "@/hooks/use-telegram";
-import { calculatePrice } from "@/lib/services/pricing";
+import { usePricing } from "@/hooks/use-pricing";
+import { PromoField } from "@/components/cart/promo-field";
 import { apiFetch, saveOrderToken, uploadOrderFile } from "@/lib/client/api";
 import { formatMoney } from "@/lib/format/money";
 import { isValidRuPhone, phoneMask } from "@/lib/format/phone";
@@ -48,12 +49,7 @@ export function MiniAppOrderFlow() {
   const fileRef = React.useRef<HTMLInputElement>(null);
 
   const settings = toPricingSettings(data?.settings);
-  const pricing = calculatePrice(cart.items, {
-    urgency: cart.options.urgency,
-    notaryRequested: cart.options.notaryRequested,
-    deliveryType: "pickup",
-    settings,
-  });
+  const pricing = usePricing({ deliveryType: "pickup" });
   const count = cart.itemsCount;
   const hasTranslation = cart.items.some((i) => i.category === "translation");
   const placementReady = Boolean(cart.options.officeId) && (!hasTranslation || Boolean(cart.options.languageFrom));
@@ -83,6 +79,7 @@ export function MiniAppOrderFlow() {
           items: cart.items.map((i) => ({ serviceId: i.serviceId, quantity: i.quantity })),
           urgency: cart.options.urgency,
           deliveryType: "pickup",
+          promoCode: cart.options.promoCode,
           officeId: cart.options.officeId,
           languageFrom: hasTranslation ? cart.options.languageFrom : null,
           notaryRequested: cart.options.notaryRequested,
@@ -204,7 +201,8 @@ export function MiniAppOrderFlow() {
               <UrgencySwitch settings={settings} />
               <NotaryCheckbox settings={settings} />
             </section>
-            <section className="rounded-2xl bg-white p-3.5">
+            <section className="space-y-3 rounded-2xl bg-white p-3.5">
+              <PromoField deliveryType="pickup" />
               <PriceLines pricing={pricing} />
             </section>
           </>

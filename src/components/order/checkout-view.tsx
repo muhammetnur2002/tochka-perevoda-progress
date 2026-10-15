@@ -5,10 +5,11 @@ import { useTranslations } from "next-intl";
 import { useCart } from "@/components/cart/cart-provider";
 import { PriceLines } from "@/components/cart/order-summary";
 import { OrderForm, OrderSubmitButton } from "@/components/order/order-form";
-import { useCatalog, toPricingSettings } from "@/hooks/use-catalog";
+import { useCatalog } from "@/hooks/use-catalog";
 import { useAuth } from "@/hooks/use-auth";
 import { useServiceName } from "@/i18n/names";
-import { calculatePrice } from "@/lib/services/pricing";
+import { usePricing } from "@/hooks/use-pricing";
+import { PromoField } from "@/components/cart/promo-field";
 import { formatMoney } from "@/lib/format/money";
 
 /** Оформление: форма слева, итог к оплате справа. */
@@ -20,12 +21,7 @@ export function CheckoutView() {
   const { items, options, hydrated } = useCart();
   const { data } = useCatalog();
   const { profile, user } = useAuth();
-  const pricing = calculatePrice(items, {
-    urgency: options.urgency,
-    notaryRequested: options.notaryRequested,
-    deliveryType: options.deliveryType,
-    settings: toPricingSettings(data?.settings),
-  });
+  const pricing = usePricing();
   const office = data?.offices?.find((o) => o.id === options.officeId);
 
   if (!hydrated) return <div className="h-96 animate-pulse rounded-2xl bg-muted" />;
@@ -69,6 +65,7 @@ export function CheckoutView() {
               <span>{options.deliveryType === "pickup" ? t("pickup") : t("delivery")}</span>
             </div>
           </div>
+          <PromoField />
           <PriceLines pricing={pricing} />
           <OrderSubmitButton />
           <p className="text-xs leading-relaxed text-muted-foreground">

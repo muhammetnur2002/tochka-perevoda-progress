@@ -49,6 +49,12 @@ export default async function AdminOrderPage({ params }: { params: { id: string 
     supabase.from("orders").select("office:offices(name, address, hours, phone)").eq("id", order.id).maybeSingle(),
   ]);
   const office = officeRes.data?.office ?? null;
+  const promoDiscount = Number(order.promo_discount ?? 0);
+  // У автоскидки кода нет — показываем её название
+  const promoName =
+    promoDiscount > 0 && !order.promo_code && order.promo_code_id
+      ? (await supabase.from("promo_codes").select("name").eq("id", order.promo_code_id).maybeSingle()).data?.name ?? null
+      : null;
 
   const { data: myProfile } = me.data.user
     ? await supabase.from("users").select("role").eq("id", me.data.user.id).maybeSingle()
@@ -166,6 +172,13 @@ export default async function AdminOrderPage({ params }: { params: { id: string 
               <span>{t("subtotal", { amount: formatMoney(Number(order.subtotal)) })}</span>
               <span>{t("discount", { amount: formatMoney(Number(order.discount)) })}</span>
               <span>{t("urgency", { k: String(Number(order.urgency_coefficient)) })}</span>
+              {promoDiscount > 0 && (
+                <span>
+                  {order.promo_code
+                    ? t("promoLine", { code: order.promo_code, amount: formatMoney(promoDiscount) })
+                    : t("promoAutoLine", { name: promoName ?? "—", amount: formatMoney(promoDiscount) })}
+                </span>
+              )}
               <span>{t("notaryFee", { amount: formatMoney(Number(order.notary_fee)) })}</span>
               <span>{t("deliveryFee", { amount: formatMoney(Number(order.delivery_fee)) })}</span>
               <span className="font-bold text-brand-800">{t("total", { amount: formatMoney(Number(order.total_price)) })}</span>

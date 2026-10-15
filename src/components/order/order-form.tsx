@@ -118,6 +118,7 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
           urgency: options.urgency,
           languageFrom: needsLanguage ? options.languageFrom : null,
           officeId: options.officeId,
+          promoCode: options.promoCode,
           deliveryType: options.deliveryType,
           deliveryAddress: options.deliveryType === "delivery" ? values.deliveryAddress : null,
           comment: values.comment || null,

@@ -46,6 +46,8 @@ export interface PriceBreakdown {
   notaryFee: number;
   deliveryFee: number;
   discount: number;
+  /** Скидка по промокоду / автоскидке (уже вычтена из total). */
+  promoDiscount: number;
   total: number;
   durationDays: number;
   deadline: Date | null;

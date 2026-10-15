@@ -8,10 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/components/cart/cart-provider";
 import { DeliveryPicker, NotaryCheckbox, PriceLines, UrgencySwitch } from "@/components/cart/order-summary";
+import { PromoField } from "@/components/cart/promo-field";
 import { LanguagePairPicker, OfficePicker } from "@/components/order/placement-pickers";
 import { useCatalog, toPricingSettings } from "@/hooks/use-catalog";
 import { useServiceName } from "@/i18n/names";
-import { calculatePrice } from "@/lib/services/pricing";
+import { usePricing } from "@/hooks/use-pricing";
 import { formatMoney } from "@/lib/format/money";
 import type { ServiceCategory, ServiceRow } from "@/types/database.types";
 import { cn } from "@/lib/utils";
@@ -82,16 +83,11 @@ export function CalculatorView({ initialCategory = "translation" }: { initialCat
   const tc = useTranslations("categories");
   const serviceName = useServiceName();
   const { data, isLoading } = useCatalog();
-  const { items, options, hydrated } = useCart();
+  const { items, hydrated } = useCart();
   const [category, setCategory] = React.useState<ServiceCategory>(initialCategory);
 
   const settings = toPricingSettings(data?.settings);
-  const pricing = calculatePrice(items, {
-    urgency: options.urgency,
-    notaryRequested: options.notaryRequested,
-    deliveryType: options.deliveryType,
-    settings,
-  });
+  const pricing = usePricing();
   const services = (data?.services ?? []).filter((s) => s.category === category);
   const hasTranslation = items.some((i) => i.category === "translation");
 
@@ -142,6 +138,7 @@ export function CalculatorView({ initialCategory = "translation" }: { initialCat
         <NotaryCheckbox settings={settings} />
         <DeliveryPicker settings={settings} />
         <OfficePicker compact />
+        <PromoField />
         <div className="border-t pt-4">
           <PriceLines pricing={pricing} />
         </div>
