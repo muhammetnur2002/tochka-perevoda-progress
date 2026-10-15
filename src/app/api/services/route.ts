@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getLanguages, getPublicSettings, getServices } from "@/lib/services/catalog";
+import { getLanguages, getOffices, getPublicSettings, getServices } from "@/lib/services/catalog";
 import { errorBody, errorStatus } from "@/lib/errors";
 
 // Каталог читается из БД на каждый запрос (кэш — на CDN/прокси по Cache-Control),
@@ -12,14 +12,15 @@ export const dynamic = "force-dynamic";
  */
 export async function GET() {
   try {
-    const [services, languages, settings] = await Promise.all([
+    const [services, languages, offices, settings] = await Promise.all([
       getServices(),
       getLanguages(),
+      getOffices(),
       getPublicSettings(),
     ]);
 
     return NextResponse.json(
-      { services, languages, settings },
+      { services, languages, offices, settings },
       {
         headers: {
           "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",

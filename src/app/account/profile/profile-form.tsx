@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,7 @@ interface ProfileFormProps {
  */
 export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
   const router = useRouter();
+  const t = useTranslations("profile");
   const [name, setName] = React.useState(initial.name);
   const [password, setPassword] = React.useState("");
   const [saving, setSaving] = React.useState(false);
@@ -41,23 +43,23 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (name.trim().length < 2) return toast.error("Укажите имя");
+    if (name.trim().length < 2) return toast.error(t("nameRequired"));
     setSaving(true);
     try {
       const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("Сессия истекла — войдите снова");
+      if (!user) throw new Error(t("sessionExpired"));
       const { error } = await supabase.from("users").update({ name: name.trim() }).eq("id", user.id);
       if (error) throw error;
       if (password) {
-        if (password.length < 8) throw new Error("Пароль — минимум 8 символов");
+        if (password.length < 8) throw new Error(t("passwordShort"));
         const { error: pwError } = await supabase.auth.updateUser({ password });
         if (pwError) throw pwError;
         setPassword("");
       }
-      toast.success("Профиль сохранён");
+      toast.success(t("saved"));
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);
@@ -67,12 +69,12 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
   };
 
   const sendCode = async () => {
-    if (!isValidRuPhone(phone)) return toast.error("Введите номер телефона РФ");
+    if (!isValidRuPhone(phone)) return toast.error(t("phoneInvalid"));
     setPhoneBusy(true);
     try {
       await apiFetch("/api/account/phone", { method: "POST", body: JSON.stringify({ phone }) });
       setCodeSent(true);
-      toast.success("Код отправлен по SMS");
+      toast.success(t("codeSent"));
     } catch (err) {
       toast.error((err as Error).message);
     } finally {
@@ -89,7 +91,7 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
       });
       setCodeSent(false);
       setCode("");
-      toast.success(r.claimedOrders > 0 ? `Телефон подтверждён. Привязано заказов: ${r.claimedOrders}` : "Телефон подтверждён");
+      toast.success(r.claimedOrders > 0 ? t("confirmedWithOrders", { count: r.claimedOrders }) : t("confirmed"));
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);
@@ -102,50 +104,49 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
     <div className="grid max-w-3xl gap-5">
       <form onSubmit={save} className="grid gap-4 rounded-2xl border bg-card p-6 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="name">Имя</Label>
+          <Label htmlFor="name">{t("name")}</Label>
           <Input id="name" className="h-11" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("email")}</Label>
           <Input id="email" className="h-11" value={initial.email} disabled />
         </div>
         <div className="space-y-1.5">
-          <Label>Telegram</Label>
+          <Label>{t("telegram")}</Label>
           <div className="flex h-11 items-center rounded-md border bg-muted px-3 text-sm">
-            {initial.telegramLinked ? `привязан${initial.telegram ? `: @${initial.telegram}` : ""}` : "не привязан"}
+            {initial.telegramLinked ? (initial.telegram ? t("linkedAs", { username: initial.telegram }) : t("linked")) : t("notLinked")}
           </div>
           {!initial.telegramLinked && botUsername && (
             <a className="text-xs text-brand-500 underline" href={`https://t.me/${botUsername}`} target="_blank" rel="noreferrer">
-              Открыть бота @{botUsername}
+              {t("openBot", { bot: botUsername })}
             </a>
           )}
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="password">Новый пароль</Label>
+          <Label htmlFor="password">{t("newPassword")}</Label>
           <Input
             id="password"
             className="h-11"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="оставьте пустым, чтобы не менять"
+            placeholder={t("newPasswordPlaceholder")}
             autoComplete="new-password"
           />
         </div>
         <Button type="submit" className="justify-self-start" size="lg" disabled={saving}>
-          {saving ? <Loader2 className="animate-spin" /> : "Сохранить"}
+          {saving ? <Loader2 className="animate-spin" /> : t("save")}
         </Button>
       </form>
 
       <section className="space-y-3 rounded-2xl border bg-card p-6">
-        <h2 className="text-lg font-bold text-brand-800">Телефон</h2>
+        <h2 className="text-lg font-bold text-brand-800">{t("phoneTitle")}</h2>
         <p className="text-sm text-muted-foreground">
-          На телефон приходят уведомления о заказах. После подтверждения кодом к кабинету привяжутся заказы,
-          оформленные без входа на этот номер.
+          {t("phoneText")}
         </p>
         <div className="flex flex-wrap items-end gap-3">
           <div className="min-w-0 flex-1 basis-56 space-y-1.5">
-            <Label htmlFor="phone">Номер</Label>
+            <Label htmlFor="phone">{t("phoneNumber")}</Label>
             <Input
               id="phone"
               className="h-11"
@@ -161,18 +162,18 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
           </div>
           {initial.phoneVerified && !phoneChanged ? (
             <span className="flex h-11 items-center gap-2 text-sm font-semibold text-emerald-700">
-              <CheckCircle2 className="h-4 w-4" /> подтверждён
+              <CheckCircle2 className="h-4 w-4" /> {t("verified")}
             </span>
           ) : (
             <Button type="button" variant="outline" className="h-11" onClick={sendCode} disabled={phoneBusy}>
-              {codeSent ? "Отправить код ещё раз" : "Получить код"}
+              {codeSent ? t("resendCode") : t("getCode")}
             </Button>
           )}
         </div>
         {codeSent && (
           <div className="flex flex-wrap items-end gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="code">Код из SMS</Label>
+              <Label htmlFor="code">{t("code")}</Label>
               <Input
                 id="code"
                 className="h-11 w-40 tracking-[0.3em]"
@@ -184,7 +185,7 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
               />
             </div>
             <Button type="button" className="h-11" onClick={confirmCode} disabled={phoneBusy || code.length !== 6}>
-              {phoneBusy ? <Loader2 className="animate-spin" /> : "Подтвердить"}
+              {phoneBusy ? <Loader2 className="animate-spin" /> : t("confirm")}
             </Button>
           </div>
         )}

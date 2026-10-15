@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,13 +15,14 @@ import type { ChatMessageRow } from "@/types/database.types";
 
 type Message = Pick<ChatMessageRow, "id" | "sender_id" | "sender_role" | "body" | "created_at" | "read_at">;
 
-const STAFF_LABEL: Record<string, string> = { manager: "Менеджер", admin: "Менеджер" };
+const STAFF_ROLES = new Set(["manager", "admin"]);
 
 /**
  * Чат по заказу (клиент ↔ менеджер). Новые сообщения приходят через Supabase
  * Realtime (RLS: только участники заказа), плюс редкий поллинг на случай обрыва.
  */
 export function ChatPanel({ orderId, className }: { orderId: string; className?: string }) {
+  const t = useTranslations("chat");
   const queryClient = useQueryClient();
   const [text, setText] = React.useState("");
   const [sending, setSending] = React.useState(false);
@@ -73,7 +75,7 @@ export function ChatPanel({ orderId, className }: { orderId: string; className?:
     <div className={cn("flex h-[28rem] flex-col overflow-hidden rounded-xl border bg-slate-50", className)}>
       <div ref={listRef} className="flex-1 space-y-2.5 overflow-y-auto p-4" aria-live="polite">
         {messages.length === 0 && (
-          <p className="pt-10 text-center text-sm text-muted-foreground">Напишите менеджеру — ответим в рабочее время.</p>
+          <p className="pt-10 text-center text-sm text-muted-foreground">{t("empty")}</p>
         )}
         {messages.map((m) => {
           const mine = m.sender_id === data?.me;
@@ -85,8 +87,8 @@ export function ChatPanel({ orderId, className }: { orderId: string; className?:
                   mine ? "rounded-2xl rounded-br-md bg-[#DCF3C8]" : "rounded-2xl rounded-bl-md bg-white shadow-sm",
                 )}
               >
-                {!mine && STAFF_LABEL[m.sender_role] && (
-                  <div className="text-xs font-bold text-brand-500">{STAFF_LABEL[m.sender_role]}</div>
+                {!mine && STAFF_ROLES.has(m.sender_role) && (
+                  <div className="text-xs font-bold text-brand-500">{t("manager")}</div>
                 )}
                 <div className="whitespace-pre-wrap break-words">{m.body}</div>
                 <div className="mt-0.5 text-right text-[11px] text-muted-foreground">{formatDateTime(m.created_at)}</div>
@@ -97,17 +99,17 @@ export function ChatPanel({ orderId, className }: { orderId: string; className?:
       </div>
       <form onSubmit={send} className="flex gap-2 border-t bg-white p-3">
         <label className="sr-only" htmlFor={`chat-${orderId}`}>
-          Сообщение
+          {t("label")}
         </label>
         <Input
           id={`chat-${orderId}`}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Сообщение…"
+          placeholder={t("placeholder")}
           maxLength={2000}
           className="h-11 rounded-full"
         />
-        <Button type="submit" size="icon" className="h-11 w-11 rounded-full" disabled={sending || !text.trim()} aria-label="Отправить">
+        <Button type="submit" size="icon" className="h-11 w-11 rounded-full" disabled={sending || !text.trim()} aria-label={t("send")}>
           <Send />
         </Button>
       </form>

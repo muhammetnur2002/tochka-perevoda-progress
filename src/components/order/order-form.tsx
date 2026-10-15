@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,36 +15,30 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FileDropzone } from "./file-dropzone";
+import { LanguagePairPicker, OfficePicker } from "./placement-pickers";
 import { useCart } from "@/components/cart/cart-provider";
-import { useCatalog } from "@/hooks/use-catalog";
 import { isValidRuPhone, phoneMask } from "@/lib/format/phone";
 import { apiFetch, saveOrderToken, uploadOrderFile } from "@/lib/client/api";
 import { cn } from "@/lib/utils";
 
-const PAY_METHODS = [
-  { id: "sbp", label: "СБП", hint: "через приложение банка" },
-  { id: "qr", label: "QR-код", hint: "сканируйте камерой" },
-  { id: "card", label: "Банковская карта", hint: "Мир, Visa, Mastercard" },
-] as const;
+const PAY_METHODS = ["sbp", "qr", "card"] as const;
 
-/** Клиентская схема формы (сервер повторно валидирует createOrderSchema). */
-const formSchema = z
-  .object({
-    name: z.string().trim().min(2, "Укажите имя").max(120),
-    phone: z.string().refine(isValidRuPhone, "Введите номер телефона РФ"),
-    email: z.string().trim().email("Некорректный email").or(z.literal("")),
+function buildSchema(t: (key: string) => string) {
+  return z.object({
+    name: z.string().trim().min(2, t("errors.name")).max(120),
+    phone: z.string().refine(isValidRuPhone, t("errors.phone")),
+    email: z.string().trim().email(t("errors.email")).or(z.literal("")),
     telegram: z.string().trim().max(64),
     type: z.enum(["individual", "company"]),
     inn: z.string().trim().max(12),
-    languageFrom: z.string(),
-    languageTo: z.string(),
     deliveryAddress: z.string().trim().max(300),
     comment: z.string().trim().max(1000),
-    payMethod: z.enum(["sbp", "qr", "card"]),
-    consent: z.boolean().refine((v) => v, "Без согласия на обработку данных оформить заказ нельзя"),
+    payMethod: z.enum(PAY_METHODS),
+    consent: z.boolean().refine((v) => v, t("errors.consent")),
   });
+}
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 
 interface CreateOrderResponse {
   orderId: string;
@@ -55,20 +50,22 @@ interface CreateOrderResponse {
 interface OrderFormProps {
   source?: "web" | "mini_app";
   defaults?: Partial<Pick<FormValues, "name" | "phone" | "email">>;
-  /** Куда вести после создания (по умолчанию — страница оплаты сайта). */
   onCreated?: (r: CreateOrderResponse & { payMethod: FormValues["payMethod"] }) => void;
 }
 
 export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProps) {
+  const t = useTranslations("checkout");
+  const tp = useTranslations("payment");
   const router = useRouter();
   const { items, options, clear, setDeliveryAddress } = useCart();
-  const { data: catalog } = useCatalog();
-  const languages = catalog?.languages ?? [];
   const [files, setFiles] = React.useState<File[]>([]);
   const [stage, setStage] = React.useState<string | null>(null);
+  const [placementErrors, setPlacementErrors] = React.useState<{ office?: string; language?: string }>({});
+  const schema = React.useMemo(() => buildSchema(t), [t]);
+  const needsLanguage = items.some((i) => i.category === "translation");
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: defaults?.name ?? "",
       phone: defaults?.phone ? phoneMask(defaults.phone) : "",
@@ -76,8 +73,6 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
       telegram: "",
       type: "individual",
       inn: "",
-      languageFrom: options.languageFrom ?? "",
-      languageTo: options.languageTo ?? "",
       deliveryAddress: options.deliveryAddress ?? "",
       comment: "",
       payMethod: "sbp",
@@ -85,14 +80,31 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
     },
   });
 
+  // Ошибки выбора точки и языка снимаются, как только клиент их выбрал
+  React.useEffect(() => {
+    setPlacementErrors((e) => ({
+      office: options.officeId ? undefined : e.office,
+      language: options.languageFrom ? undefined : e.language,
+    }));
+  }, [options.officeId, options.languageFrom]);
+
   const onSubmit = async (values: FormValues) => {
-    if (stage) return; // защита от двойной отправки (две кнопки: мобильная и в итоге)
+    if (stage) return; // защита от двойной отправки
+    const errors = {
+      office: options.officeId ? undefined : t("errors.office"),
+      language: needsLanguage && !options.languageFrom ? t("errors.language") : undefined,
+    };
+    setPlacementErrors(errors);
+    if (errors.office || errors.language) {
+      document.getElementById("placement")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
     if (options.deliveryType === "delivery" && !values.deliveryAddress) {
-      form.setError("deliveryAddress", { message: "Укажите адрес доставки" });
+      form.setError("deliveryAddress", { message: t("errors.address") });
       return;
     }
     try {
-      setStage("Оформляем заказ…");
+      setStage(t("stageCreating"));
       const order = await apiFetch<CreateOrderResponse>("/api/orders", {
         method: "POST",
         body: JSON.stringify({
@@ -104,8 +116,8 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
           inn: values.type === "company" ? values.inn || null : null,
           items: items.map((i) => ({ serviceId: i.serviceId, quantity: i.quantity })),
           urgency: options.urgency,
-          languageFrom: values.languageFrom || null,
-          languageTo: values.languageTo || null,
+          languageFrom: needsLanguage ? options.languageFrom : null,
+          officeId: options.officeId,
           deliveryType: options.deliveryType,
           deliveryAddress: options.deliveryType === "delivery" ? values.deliveryAddress : null,
           comment: values.comment || null,
@@ -118,11 +130,11 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i]!;
-        setStage(`Загружаем файлы: ${i + 1} из ${files.length}`);
+        setStage(t("stageUploading", { current: i + 1, total: files.length }));
         try {
           await uploadOrderFile(order.orderId, file, { token: order.accessToken });
         } catch (err) {
-          toast.warning(`Файл «${file.name}» не загружен: ${(err as Error).message}. Его можно отправить позже.`);
+          toast.warning(t("fileFailed", { name: file.name, error: (err as Error).message }));
         }
       }
 
@@ -138,9 +150,9 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
   if (items.length === 0 && !stage) {
     return (
       <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed p-12 text-center">
-        <p className="text-muted-foreground">Корзина пуста — выберите услуги.</p>
+        <p className="text-muted-foreground">{t("emptyCart")}</p>
         <Button asChild variant="gold">
-          <Link href="/calculator">Перейти к калькулятору</Link>
+          <Link href="/calculator">{t("toCalculator")}</Link>
         </Button>
       </div>
     );
@@ -151,16 +163,21 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
   return (
     <Form {...form}>
       <form id="order-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-5" noValidate>
+        <section id="placement" className="grid gap-5 rounded-2xl border bg-card p-5 lg:grid-cols-2">
+          <OfficePicker error={placementErrors.office} />
+          {needsLanguage && <LanguagePairPicker error={placementErrors.language} />}
+        </section>
+
         <section className="grid gap-4 rounded-2xl border bg-card p-5 sm:grid-cols-2">
-          <h2 className="text-lg font-bold text-brand-800 sm:col-span-2">Контакты</h2>
+          <h2 className="text-lg font-bold text-brand-800 sm:col-span-2">{t("contacts")}</h2>
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Имя *</FormLabel>
+                <FormLabel>{t("name")}</FormLabel>
                 <FormControl>
-                  <Input autoComplete="name" placeholder="Как к вам обращаться" className="h-11" {...field} />
+                  <Input autoComplete="name" placeholder={t("namePlaceholder")} className="h-11" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -171,7 +188,7 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Телефон *</FormLabel>
+                <FormLabel>{t("phone")}</FormLabel>
                 <FormControl>
                   <Input
                     type="tel"
@@ -192,9 +209,9 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t("email")}</FormLabel>
                 <FormControl>
-                  <Input type="email" autoComplete="email" placeholder="для чека и уведомлений" className="h-11" {...field} />
+                  <Input type="email" autoComplete="email" placeholder={t("emailPlaceholder")} className="h-11" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -205,7 +222,7 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
             name="telegram"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Telegram</FormLabel>
+                <FormLabel>{t("telegram")}</FormLabel>
                 <FormControl>
                   <Input placeholder="@username" className="h-11" {...field} />
                 </FormControl>
@@ -213,47 +230,23 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
               </FormItem>
             )}
           />
-          {(["languageFrom", "languageTo"] as const).map((name) => (
-            <FormField
-              key={name}
-              control={form.control}
-              name={name}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{name === "languageFrom" ? "Язык оригинала" : "Язык перевода"}</FormLabel>
-                  <FormControl>
-                    <select
-                      className="flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
-                      {...field}
-                    >
-                      <option value="">Не важно / уточню</option>
-                      {languages.map((l) => (
-                        <option key={l.id} value={l.id}>
-                          {l.name}
-                        </option>
-                      ))}
-                    </select>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          ))}
           <FormField
             control={form.control}
             name="type"
             render={({ field }) => (
               <FormItem className="sm:col-span-2">
-                <div className="flex flex-wrap gap-4 text-sm">
-                  {(["individual", "company"] as const).map((t) => (
-                    <label key={t} className="flex min-h-11 cursor-pointer items-center gap-2">
+                <div className="flex flex-wrap gap-4 text-sm" role="radiogroup">
+                  {(["individual", "company"] as const).map((v) => (
+                    <label key={v} className="flex min-h-11 cursor-pointer items-center gap-2">
                       <input
                         type="radio"
                         name="client-type"
-                        checked={field.value === t}
-                        onChange={() => field.onChange(t)}
+                        value={v}
+                        checked={field.value === v}
+                        onChange={() => field.onChange(v)}
                         className="h-4 w-4 accent-brand-800"
                       />
-                      {t === "individual" ? "Физическое лицо" : "Организация (счёт, ИНН)"}
+                      {t(v)}
                     </label>
                   ))}
                 </div>
@@ -266,9 +259,9 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
               name="inn"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>ИНН</FormLabel>
+                  <FormLabel>{t("inn")}</FormLabel>
                   <FormControl>
-                    <Input inputMode="numeric" placeholder="10 или 12 цифр" className="h-11" {...field} />
+                    <Input inputMode="numeric" placeholder={t("innPlaceholder")} className="h-11" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -281,11 +274,11 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
               name="deliveryAddress"
               render={({ field }) => (
                 <FormItem className="sm:col-span-2">
-                  <FormLabel>Адрес доставки *</FormLabel>
+                  <FormLabel>{t("deliveryAddress")}</FormLabel>
                   <FormControl>
                     <Input
                       autoComplete="street-address"
-                      placeholder="Город, улица, дом, квартира"
+                      placeholder={t("deliveryAddressPlaceholder")}
                       className="h-11"
                       {...field}
                       onBlur={() => setDeliveryAddress(field.value)}
@@ -301,9 +294,9 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
             name="comment"
             render={({ field }) => (
               <FormItem className="sm:col-span-2">
-                <FormLabel>Комментарий</FormLabel>
+                <FormLabel>{t("comment")}</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Например: имена латиницей как в загранпаспорте" rows={3} {...field} />
+                  <Textarea placeholder={t("commentPlaceholder")} rows={3} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -312,12 +305,12 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
         </section>
 
         <section className="space-y-3 rounded-2xl border bg-card p-5">
-          <h2 className="text-lg font-bold text-brand-800">Файлы документов</h2>
+          <h2 className="text-lg font-bold text-brand-800">{t("files")}</h2>
           <FileDropzone files={files} onChange={setFiles} />
         </section>
 
         <section className="space-y-3 rounded-2xl border bg-card p-5">
-          <h2 className="text-lg font-bold text-brand-800">Способ оплаты</h2>
+          <h2 className="text-lg font-bold text-brand-800">{t("payMethod")}</h2>
           <FormField
             control={form.control}
             name="payMethod"
@@ -325,17 +318,17 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
               <div className="grid gap-2.5 sm:grid-cols-3">
                 {PAY_METHODS.map((m) => (
                   <button
-                    key={m.id}
+                    key={m}
                     type="button"
-                    aria-pressed={field.value === m.id}
-                    onClick={() => field.onChange(m.id)}
+                    aria-pressed={field.value === m}
+                    onClick={() => field.onChange(m)}
                     className={cn(
                       "flex min-h-16 flex-col items-start gap-0.5 rounded-xl p-3 text-left text-brand-800",
-                      field.value === m.id ? "border-2 border-gold-400 bg-gold-50" : "border border-input bg-background",
+                      field.value === m ? "border-2 border-gold-400 bg-gold-50" : "border border-input bg-background",
                     )}
                   >
-                    <strong>{m.label}</strong>
-                    <span className="text-xs text-muted-foreground">{m.hint}</span>
+                    <strong>{tp(m)}</strong>
+                    <span className="text-xs text-muted-foreground">{tp(`${m}Hint`)}</span>
                   </button>
                 ))}
               </div>
@@ -358,17 +351,17 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
                   />
                 </FormControl>
                 <span id="consent-text" className="text-sm leading-relaxed text-slate-700">
-                  Я даю{" "}
+                  {t("consentPrefix")}{" "}
                   <Link href="/legal/consent" target="_blank" className="text-brand-500 underline">
-                    согласие на обработку персональных данных
+                    {t("consentLink")}
                   </Link>{" "}
-                  в соответствии с 152-ФЗ, ознакомлен(а) с{" "}
+                  {t("consentMiddle")}{" "}
                   <Link href="/legal/privacy" target="_blank" className="text-brand-500 underline">
-                    политикой конфиденциальности
+                    {t("privacyLink")}
                   </Link>{" "}
-                  и принимаю{" "}
+                  {t("consentAnd")}{" "}
                   <Link href="/legal/terms" target="_blank" className="text-brand-500 underline">
-                    условия оказания услуг
+                    {t("termsLink")}
                   </Link>
                   .
                 </span>
@@ -384,7 +377,7 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
               <Loader2 className="animate-spin" /> {stage}
             </>
           ) : (
-            "Перейти к оплате"
+            t("submit")
           )}
         </Button>
       </form>
@@ -393,10 +386,11 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
 }
 
 /** Кнопка отправки для боковой колонки (связана с формой через form="order-form"). */
-export function OrderSubmitButton({ busy }: { busy?: boolean }) {
+export function OrderSubmitButton() {
+  const t = useTranslations("checkout");
   return (
-    <Button type="submit" form="order-form" variant="gold" size="xl" className="hidden w-full lg:inline-flex" disabled={busy}>
-      Перейти к оплате
+    <Button type="submit" form="order-form" variant="gold" size="xl" className="hidden w-full lg:inline-flex">
+      {t("submit")}
     </Button>
   );
 }

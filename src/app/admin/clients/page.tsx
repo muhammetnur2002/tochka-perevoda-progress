@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/common/page-header";
@@ -13,6 +14,7 @@ export const metadata: Metadata = { title: "Клиенты" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminClientsPage({ searchParams }: { searchParams: { q?: string } }) {
+  const t = await getTranslations("admin.clients");
   const supabase = createClient();
   const q = (searchParams.q ?? "").trim().slice(0, 80);
   let query = supabase
@@ -29,26 +31,26 @@ export default async function AdminClientsPage({ searchParams }: { searchParams:
 
   return (
     <>
-      <PageHeader title="Клиенты" description="База физических и юридических лиц" actions={<ExportButton type="clients" />} />
+      <PageHeader title={t("title")} description={t("description")} actions={<ExportButton type="clients" />} />
       <form className="mb-4 flex max-w-xl gap-2" role="search">
         <label htmlFor="q" className="sr-only">
-          Поиск клиента
+          {t("search")}
         </label>
-        <Input id="q" name="q" defaultValue={q} placeholder="Имя, телефон, email или ИНН" className="h-10" />
-        <Button type="submit">Найти</Button>
+        <Input id="q" name="q" defaultValue={q} placeholder={t("searchPlaceholder")} className="h-10" />
+        <Button type="submit">{t("find")}</Button>
       </form>
       <div className="overflow-x-auto rounded-2xl border bg-card">
         <table className="w-full min-w-[820px] text-sm">
           <thead>
             <tr className="text-left text-xs text-muted-foreground">
-              <th className="px-4 py-3">Клиент</th>
-              <th className="px-4 py-3">Тип</th>
-              <th className="px-4 py-3">Телефон</th>
-              <th className="px-4 py-3">Email</th>
-              <th className="px-4 py-3">Заказов</th>
-              <th className="px-4 py-3 text-right">Сумма</th>
-              <th className="px-4 py-3 text-right">Долг</th>
-              <th className="px-4 py-3">Последний</th>
+              <th className="px-4 py-3">{t("colClient")}</th>
+              <th className="px-4 py-3">{t("type")}</th>
+              <th className="px-4 py-3">{t("phone")}</th>
+              <th className="px-4 py-3">{t("email")}</th>
+              <th className="px-4 py-3">{t("colOrders")}</th>
+              <th className="px-4 py-3 text-right">{t("colSum")}</th>
+              <th className="px-4 py-3 text-right">{t("colDebt")}</th>
+              <th className="px-4 py-3">{t("colLast")}</th>
             </tr>
           </thead>
           <tbody>
@@ -63,9 +65,9 @@ export default async function AdminClientsPage({ searchParams }: { searchParams:
                     <Link href={`/admin/clients/${c.id}`} className="font-bold text-brand-800 hover:underline">
                       {c.name}
                     </Link>
-                    {c.user_id && <span className="ml-2 text-xs text-emerald-700">кабинет</span>}
+                    {c.user_id && <span className="ml-2 text-xs text-emerald-700">{t("hasAccount")}</span>}
                   </td>
-                  <td className="px-4 py-3">{c.type === "company" ? "Юр. лицо" : "Физ. лицо"}</td>
+                  <td className="px-4 py-3">{c.type === "company" ? t("company") : t("individual")}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{c.phone ? formatPhone(c.phone) : "—"}</td>
                   <td className="px-4 py-3">{c.email ?? "—"}</td>
                   <td className="px-4 py-3">{orders.length}</td>
@@ -78,7 +80,7 @@ export default async function AdminClientsPage({ searchParams }: { searchParams:
             {(clients ?? []).length === 0 && (
               <tr>
                 <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
-                  Клиенты не найдены
+                  {t("notFound")}
                 </td>
               </tr>
             )}

@@ -4,7 +4,25 @@
 по СБП/QR/карте, проверка статуса, личный кабинет, Telegram-бот и Mini App,
 CRM-админка (канбан, клиенты, прайс, финансы, отчёты, экспорт) и кабинет переводчика.
 
-г. Казань, ул. Сибирский Тракт, 7/6.
+Три пункта приёма в Казани — клиент выбирает ближайший при заказе:
+ул. Сибирский Тракт, 7/6 · ул. Карла Маркса, 65 · ул. Промысловая, 5, каб. 3.
+
+Переводим **на русский** с 14 языков: туркменский, узбекский, турецкий, азербайджанский,
+казахский, киргизский, персидский (фарси), арабский (Ирак, Сирия), английский, немецкий,
+французский, испанский, итальянский.
+
+## Языки интерфейса
+
+| Раздел | Языки |
+|---|---|
+| Сайт и личный кабинет клиента | русский, English, Türkmençe, Türkçe, Oʻzbekcha, Қазақша, Кыргызча, Azərbaycanca, Français |
+| CRM и кабинет сотрудника | русский, English, Türkmençe |
+| Telegram-бот и Mini App, уведомления, юридические документы | только русский |
+
+Язык хранится в cookie `NEXT_LOCALE` (переключатель в шапке), по умолчанию — из
+`Accept-Language` браузера. Тексты — `messages/<язык>/site.json` (сайт) и `staff.json` (CRM);
+мастер — русский, недостающие ключи берутся из него. После правки русского словаря
+обновите переводы и проверьте: `python scripts/check-messages.py` (тот же контроль — в `pnpm test`).
 
 | Стек | |
 |---|---|
@@ -12,7 +30,8 @@ CRM-админка (канбан, клиенты, прайс, финансы, о
 | Данные | Supabase: PostgreSQL + RLS, Auth, Storage, Realtime |
 | Платежи | ЮKassa (карта, СБП, QR) + mock-провайдер без ключей |
 | Уведомления | Telegram Bot API → SMS.ru → SMTP (с фолбэком и очередью повторов) |
-| Тесты | Vitest (54 unit-теста), SQL-тесты RLS и цен, Playwright smoke |
+| Переводы интерфейса | next-intl (без префиксов в URL), 9 языков сайта, 3 языка CRM |
+| Тесты | Vitest (69 unit-тестов), SQL-тесты RLS и цен, Playwright smoke |
 
 ## Быстрый старт (локально)
 
@@ -73,7 +92,7 @@ SMS, письма и сообщения Telegram печатаются в кон�
 
 1. **Supabase** в регионе, допустимом по 152-ФЗ (self-hosted в Yandex Cloud или managed — см. `docs/152-FZ.md`); включить PITR/бэкапы.
 2. `pnpm db:push` против продакшен-БД; **не** запускать `db:seed`.
-3. Заполнить реальные телефон, email и часы работы в `src/lib/config/constants.ts` и настройку `company` (админка → Настройки).
+3. Заполнить реальные телефон и email в `src/lib/config/constants.ts` и настройку `company` (админка → Настройки); часы работы и телефоны точек — админка → Точки.
 4. Секреты окружения: `SUPABASE_SERVICE_ROLE_KEY`, `ORDER_ACCESS_SECRET` (`openssl rand -hex 32`), `CRON_SECRET`, `TELEGRAM_WEBHOOK_SECRET`.
 5. ЮKassa: `PAYMENT_PROVIDER=yookassa`, `YOOKASSA_SHOP_ID/SECRET_KEY`; в кабинете ЮKassa — HTTP-уведомления на `https://<домен>/api/webhooks/payment` (события `payment.succeeded`, `payment.canceled`); при онлайн-кассе — `YOOKASSA_SEND_RECEIPT=true`.
 6. Telegram: токен @BotFather → `pnpm tg:set-webhook`; в @BotFather → Bot Settings → Configure Mini App → URL `https://<домен>/tg`.

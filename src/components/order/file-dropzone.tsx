@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { Camera, FileText, UploadCloud, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn, formatBytes } from "@/lib/utils";
@@ -20,6 +21,7 @@ const EXTENSIONS = ACCEPT.split(",");
  * (capture="environment" — на телефоне сразу открывается основная камера).
  */
 export function FileDropzone({ files, onChange, maxFiles = 20, maxSize = 50 * 1024 * 1024 }: FileDropzoneProps) {
+  const t = useTranslations("dropzone");
   const fileRef = React.useRef<HTMLInputElement>(null);
   const cameraRef = React.useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = React.useState(false);
@@ -31,18 +33,18 @@ export function FileDropzone({ files, onChange, maxFiles = 20, maxSize = 50 * 10
     for (const f of Array.from(incoming)) {
       const ext = "." + (f.name.split(".").pop() ?? "").toLowerCase();
       if (!EXTENSIONS.includes(ext) && !f.type.startsWith("image/")) {
-        setError(`Формат файла «${f.name}» не поддерживается`);
+        setError(t("unsupported", { name: f.name }));
         continue;
       }
       if (f.size > maxSize) {
-        setError(`Файл «${f.name}» больше ${formatBytes(maxSize)}`);
+        setError(t("tooBig", { name: f.name, size: formatBytes(maxSize) }));
         continue;
       }
       if (files.some((x) => x.name === f.name && x.size === f.size)) continue;
       accepted.push(f);
     }
     const merged = [...files, ...accepted];
-    if (merged.length > maxFiles) setError(`Не больше ${maxFiles} файлов в заказе`);
+    if (merged.length > maxFiles) setError(t("tooMany", { max: maxFiles }));
     onChange(merged.slice(0, maxFiles));
   };
 
@@ -65,16 +67,16 @@ export function FileDropzone({ files, onChange, maxFiles = 20, maxSize = 50 * 10
         )}
       >
         <UploadCloud className="h-9 w-9 text-brand-500" aria-hidden />
-        <p className="font-bold text-brand-800">Перетащите файлы сюда</p>
+        <p className="font-bold text-brand-800">{t("dragHere")}</p>
         <p className="text-xs text-muted-foreground">
-          JPG, PNG, HEIC, PDF, DOC/DOCX, ZIP · до {formatBytes(maxSize)}
+          {t("formats", { size: formatBytes(maxSize) })}
         </p>
         <div className="flex flex-wrap justify-center gap-2">
           <Button type="button" variant="outline" className="h-11" onClick={() => fileRef.current?.click()}>
-            <FileText /> Выбрать файлы
+            <FileText /> {t("choose")}
           </Button>
           <Button type="button" variant="outline" className="h-11" onClick={() => cameraRef.current?.click()}>
-            <Camera /> Сфотографировать
+            <Camera /> {t("camera")}
           </Button>
         </div>
         <input
@@ -127,7 +129,7 @@ export function FileDropzone({ files, onChange, maxFiles = 20, maxSize = 50 * 10
                 variant="ghost"
                 size="icon"
                 onClick={() => onChange(files.filter((_, i) => i !== idx))}
-                aria-label={`Удалить ${f.name}`}
+                aria-label={t("removeAria", { name: f.name })}
               >
                 <X />
               </Button>

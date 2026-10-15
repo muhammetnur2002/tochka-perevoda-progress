@@ -14,6 +14,8 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000",
+    // язык интерфейса берётся из Accept-Language — проверяем русскую версию
+    locale: "ru-RU",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },
@@ -26,7 +28,7 @@ export default defineConfig({
         timeout: 120_000,
       },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "mobile", use: { ...devices["iPhone 13"] } },
+    { name: "chromium", use: { ...devices["Desktop Chrome"], locale: "ru-RU" } },
+    { name: "mobile", use: { ...devices["iPhone 13"], locale: "ru-RU" } },
   ],
 });

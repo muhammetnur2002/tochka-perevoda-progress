@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Download, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,13 +18,15 @@ import {
 
 export default function AccountDataPage() {
   const router = useRouter();
+  const t = useTranslations("dataPage");
+  const tc = useTranslations("common");
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
 
   const handleExport = async () => {
     try {
       const res = await fetch("/api/account/data");
-      if (!res.ok) throw new Error("Не удалось выгрузить данные");
+      if (!res.ok) throw new Error(t("exportFailed"));
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -40,8 +43,8 @@ export default function AccountDataPage() {
     setDeleting(true);
     try {
       const res = await fetch("/api/account/data", { method: "DELETE" });
-      if (!res.ok) throw new Error("Не удалось удалить данные");
-      toast.success("Данные удалены");
+      if (!res.ok) throw new Error(t("deleteFailed"));
+      toast.success(t("deleted"));
       setConfirmOpen(false);
       router.push("/");
       router.refresh();
@@ -54,32 +57,29 @@ export default function AccountDataPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="mb-6 text-2xl font-bold text-brand-900">Мои данные</h1>
+      <h1 className="mb-6 text-2xl font-bold text-brand-900">{t("title")}</h1>
 
       <div className="space-y-4">
         <Card>
-          <CardHeader><CardTitle>Выгрузка персональных данных</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("exportTitle")}</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Согласно 152-ФЗ вы можете получить копию своих персональных данных в
-              машиночитаемом формате (JSON).
+              {t("exportText")}
             </p>
             <Button onClick={handleExport}>
-              <Download className="h-4 w-4" /> Выгрузить данные
+              <Download className="h-4 w-4" /> {t("exportButton")}
             </Button>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-destructive">Удаление данных</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-destructive">{t("deleteTitle")}</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Удаление деперсонализирует ваш профиль, клиентские записи и согласия.
-              Данные заказов сохраняются обезличенно в соответствии с требованиями
-              бухгалтерского учёта.
+              {t("deleteText")}
             </p>
             <Button variant="destructive" onClick={() => setConfirmOpen(true)}>
-              <Trash2 className="h-4 w-4" /> Удалить мои данные
+              <Trash2 className="h-4 w-4" /> {t("deleteButton")}
             </Button>
           </CardContent>
         </Card>
@@ -88,15 +88,15 @@ export default function AccountDataPage() {
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Удалить персональные данные?</DialogTitle>
+            <DialogTitle>{t("confirmTitle")}</DialogTitle>
             <DialogDescription>
-              Действие необратимо. Вы потеряете доступ к истории заказов.
+              {t("confirmText")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmOpen(false)}>Отмена</Button>
+            <Button variant="outline" onClick={() => setConfirmOpen(false)}>{tc("cancel")}</Button>
             <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
-              {deleting ? "Удаление…" : "Удалить"}
+              {deleting ? t("deleting") : t("delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

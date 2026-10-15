@@ -11,6 +11,8 @@ export interface CartOptions {
   deliveryAddress: string | null;
   languageFrom: string | null;
   languageTo: string | null;
+  /** Выбранная точка приёма документов. */
+  officeId: string | null;
 }
 
 interface CartState extends CartOptions {
@@ -35,6 +37,7 @@ interface CartContextValue {
   setDeliveryAddress: (v: string) => void;
   setLanguageFrom: (v: string | null) => void;
   setLanguageTo: (v: string | null) => void;
+  setOfficeId: (v: string | null) => void;
   resetOptions: () => void;
 }
 
@@ -49,6 +52,7 @@ const DEFAULT_OPTIONS: CartOptions = {
   deliveryAddress: null,
   languageFrom: null,
   languageTo: null,
+  officeId: null,
 };
 
 const EMPTY_STATE: CartState = { items: [], ...DEFAULT_OPTIONS };
@@ -118,6 +122,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         deliveryAddress: state.deliveryAddress,
         languageFrom: state.languageFrom,
         languageTo: state.languageTo,
+        officeId: state.officeId,
       },
       itemsCount: state.items.reduce((sum, i) => sum + i.quantity, 0),
       hydrated,
@@ -146,6 +151,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setDeliveryAddress: (deliveryAddress) => setState((s) => ({ ...s, deliveryAddress })),
       setLanguageFrom: (languageFrom) => setState((s) => ({ ...s, languageFrom })),
       setLanguageTo: (languageTo) => setState((s) => ({ ...s, languageTo })),
+      setOfficeId: (officeId) => setState((s) => ({ ...s, officeId })),
       resetOptions: () => setState((s) => ({ ...s, ...DEFAULT_OPTIONS })),
     };
   }, [state, hydrated]);

@@ -31,11 +31,22 @@ export function statusChangedMessage(number: string, status: OrderStatus): Messa
   };
 }
 
-export function readyMessage(number: string, deliveryType: string): Message {
+/** Точка приёма заказа (для адреса в сообщениях). */
+export interface OfficeInfo {
+  address: string;
+  hours: string | null;
+}
+
+export function officeLabel(office: OfficeInfo | null | undefined): string {
+  if (!office) return `г. ${COMPANY.city}`;
+  return `г. ${COMPANY.city}, ${office.address}${office.hours ? ` (${office.hours})` : ""}`;
+}
+
+export function readyMessage(number: string, deliveryType: string, office?: OfficeInfo | null): Message {
   const how =
     deliveryType === "delivery"
       ? "Курьер свяжется с вами для доставки."
-      : `Забрать: ${COMPANY.address}, ${COMPANY.workHours}.`;
+      : `Забрать: ${officeLabel(office)}.`;
   return { subject: `Заказ ${number} готов`, text: `Ваш заказ ${number} готов! ${how}` };
 }
 
@@ -46,10 +57,10 @@ export function paymentReceivedMessage(number: string, amountLabel: string): Mes
   };
 }
 
-export function pickupReminder(number: string): Message {
+export function pickupReminder(number: string, office?: OfficeInfo | null): Message {
   return {
     subject: `Заказ ${number} ждёт вас`,
-    text: `Напоминаем: заказ ${number} готов и ждёт вас по адресу ${COMPANY.address}.`,
+    text: `Напоминаем: заказ ${number} готов и ждёт вас по адресу ${officeLabel(office)}.`,
   };
 }
 

@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { PayView } from "./pay-view";
 
-export const metadata: Metadata = { title: "Оплата заказа", robots: { index: false } };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("meta");
+  return { title: t("pay"), robots: { index: false } };
+}
 
 export default function PayPage({
   params,

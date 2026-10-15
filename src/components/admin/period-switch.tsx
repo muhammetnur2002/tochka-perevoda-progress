@@ -1,15 +1,17 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 const PERIODS = [
-  { days: 7, label: "Неделя" },
-  { days: 30, label: "Месяц" },
-  { days: 90, label: "Квартал" },
-  { days: 365, label: "Год" },
+  { days: 7, key: "week" },
+  { days: 30, key: "month" },
+  { days: 90, key: "quarter" },
+  { days: 365, key: "year" },
 ];
 
 /** Переключатель периода отчёта (через ?days=). */
 export function PeriodSwitch({ path, days }: { path: string; days: number }) {
+  const t = useTranslations("admin.period");
   return (
     <div className="flex flex-wrap gap-1.5">
       {PERIODS.map((p) => (
@@ -21,7 +23,7 @@ export function PeriodSwitch({ path, days }: { path: string; days: number }) {
             days === p.days ? "border-brand-800 bg-brand-800 text-white" : "border-input bg-white text-brand-800",
           )}
         >
-          {p.label}
+          {t(p.key)}
         </Link>
       ))}
     </div>

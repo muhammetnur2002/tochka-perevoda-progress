@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { RefreshCw } from "lucide-react";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { useCart, serviceToCartItem } from "@/components/cart/cart-provider";
@@ -16,6 +17,7 @@ interface RepeatOrderButtonProps extends Omit<ButtonProps, "onClick"> {
  * и открывает калькулятор (согласие и оплата — заново, как требует 152-ФЗ).
  */
 export function RepeatOrderButton({ items, children, ...props }: RepeatOrderButtonProps) {
+  const t = useTranslations("account");
   const router = useRouter();
   const { replaceItems } = useCart();
   const { data } = useCatalog();
@@ -27,10 +29,10 @@ export function RepeatOrderButton({ items, children, ...props }: RepeatOrderButt
       return s ? [serviceToCartItem(s, i.quantity)] : [];
     });
     if (cart.length === 0) {
-      toast.error("Эти услуги больше не доступны в каталоге");
+      toast.error(t("repeatUnavailable"));
       return;
     }
-    if (cart.length < items.length) toast.warning("Часть услуг снята с продажи — они не добавлены");
+    if (cart.length < items.length) toast.warning(t("repeatPartial"));
     replaceItems(cart);
     router.push("/calculator");
   };
@@ -39,7 +41,7 @@ export function RepeatOrderButton({ items, children, ...props }: RepeatOrderButt
     <Button variant="gold" onClick={repeat} disabled={!data} {...props}>
       {children ?? (
         <>
-          <RefreshCw /> Повторить
+          <RefreshCw /> {t("repeat")}
         </>
       )}
     </Button>

@@ -1,0 +1,638 @@
+{
+  "common": {
+    "language": "Langue",
+    "brandName": "Точка Перевода Прогресс",
+    "brandShort": "ТОЧКА ПЕРЕВОДА",
+    "brandSub": "ПРОГРЕСС",
+    "city": "Kazan",
+    "toHome": "à l'accueil",
+    "loading": "Chargement…",
+    "save": "Enregistrer",
+    "saved": "Enregistré",
+    "cancel": "Annuler",
+    "back": "Retour",
+    "close": "Fermer",
+    "download": "Télécharger",
+    "open": "Ouvrir",
+    "remove": "Supprimer",
+    "phonePlaceholder": "+7 (___) ___-__-__",
+    "error": "Une erreur s'est produite",
+    "retry": "Réessayer",
+    "notFoundTitle": "Page introuvable",
+    "notFoundText": "La page demandée n'existe pas ou a été déplacée.",
+    "toMain": "Accueil",
+    "errorText": "Une erreur s'est produite. Veuillez réessayer.",
+    "rub": "₽"
+  },
+  "nav": {
+    "home": "Accueil",
+    "services": "Services et tarifs",
+    "calculator": "Calculateur",
+    "status": "Suivi de commande",
+    "account": "Mon espace",
+    "login": "Se connecter",
+    "logout": "Se déconnecter",
+    "cart": "Panier",
+    "menu": "Menu",
+    "crm": "Admin CRM",
+    "workspace": "Espace de travail",
+    "mainMenu": "Menu principal"
+  },
+  "categories": {
+    "translation": "Traductions",
+    "printing": "Impression",
+    "insurance": "Assurance",
+    "additional": "Autres services"
+  },
+  "units": {
+    "page": "par page",
+    "document": "par document",
+    "item": "l'unité"
+  },
+  "orderStatus": {
+    "new": "Nouvelle",
+    "confirmed": "Confirmée",
+    "in_progress": "En cours",
+    "ready": "Prête",
+    "issued": "Remise",
+    "completed": "Terminée",
+    "cancelled": "Annulée"
+  },
+  "urgency": {
+    "legend": "Délai",
+    "standard": "Standard, 1 à 2 jours ouvrés",
+    "1d": "Urgent — en 1 jour",
+    "same_day": "Le jour même"
+  },
+  "languages": {
+    "tk": "Turkmène",
+    "uz": "Ouzbek",
+    "tr": "Turc",
+    "az": "Azerbaïdjanais",
+    "kk": "Kazakh",
+    "ky": "Kirghiz",
+    "fa": "Persan (Iran, farsi)",
+    "ar-IQ": "Arabe (Irak)",
+    "ar-SY": "Arabe (Syrie)",
+    "en": "Anglais",
+    "de": "Allemand",
+    "fr": "Français",
+    "es": "Espagnol",
+    "it": "Italien",
+    "ru": "Russe"
+  },
+  "services": {
+    "legal": {
+      "name": "Traduction de documents juridiques",
+      "description": "Contrats, statuts de société, procurations, décisions de justice. Prix par page."
+    },
+    "medical": {
+      "name": "Traduction de documents médicaux",
+      "description": "Certificats, extraits, conclusions, comptes rendus d'hospitalisation. Prix par page."
+    },
+    "technical": {
+      "name": "Traduction de documentation technique",
+      "description": "Notices, fiches d'équipement, plans, spécifications techniques. Prix par page."
+    },
+    "military-id": {
+      "name": "Traduction du livret militaire (notariée)",
+      "description": "Traduction avec certification notariale. Prix fixe par document."
+    },
+    "work-book": {
+      "name": "Traduction du carnet de travail (notariée)",
+      "description": "Traduction avec certification notariale. Prix fixe par document."
+    },
+    "diploma": {
+      "name": "Traduction de diplôme (notariée)",
+      "description": "Traduction d'un document d'études avec certification notariale."
+    },
+    "certificate": {
+      "name": "Traduction de certificat (notariée)",
+      "description": "Traduction d'un certificat avec certification notariale."
+    },
+    "passport-all": {
+      "name": "Traduction du passeport (toutes les pages)",
+      "description": "Traduction de toutes les pages du passeport."
+    },
+    "driver-license": {
+      "name": "Traduction du permis de conduire",
+      "description": "Traduction du permis de conduire."
+    },
+    "passport-notary": {
+      "name": "Traduction du passeport (certifiée par notaire)",
+      "description": "Traduction du passeport avec certification notariale."
+    },
+    "power-of-attorney": {
+      "name": "Traduction de procuration (notariée)",
+      "description": "Traduction d'une procuration avec certification notariale."
+    },
+    "photocopy-a4": {
+      "name": "Photocopie A4",
+      "description": "Photocopie noir et blanc au format A4."
+    },
+    "scanning": {
+      "name": "Numérisation",
+      "description": "Numérisation d'une feuille."
+    },
+    "color-print": {
+      "name": "Impression couleur",
+      "description": "Impression couleur d'une feuille."
+    },
+    "color-photocopy": {
+      "name": "Photocopie couleur",
+      "description": "Photocopie couleur d'une feuille."
+    },
+    "bw-print": {
+      "name": "Impression N&B",
+      "description": "Impression noir et blanc d'une feuille."
+    },
+    "print-a3": {
+      "name": "Impression A3",
+      "description": "Impression au format A3."
+    },
+    "print-a2": {
+      "name": "Impression A2",
+      "description": "Impression au format A2."
+    },
+    "print-a1": {
+      "name": "Impression A1",
+      "description": "Impression au format A1."
+    },
+    "laminating": {
+      "name": "Plastification",
+      "description": "Plastification d'une feuille."
+    },
+    "binding": {
+      "name": "Reliure",
+      "description": "Reliure d'un document."
+    },
+    "diploma-stitching": {
+      "name": "Couture de diplômes",
+      "description": "Couture (reliure) d'un diplôme."
+    },
+    "photo": {
+      "name": "Photos d'identité",
+      "description": "Photos pour documents officiels (lot)."
+    },
+    "dms-student": {
+      "name": "Assurance santé DMS pour étudiants (citoyens étrangers)",
+      "description": "Police d'assurance maladie volontaire pour les étudiants étrangers."
+    }
+  },
+  "offices": {
+    "title": "Points d'accueil à Kazan",
+    "choose": "Où souhaitez-vous déposer et récupérer vos documents ?",
+    "hint": "Choisissez le point le plus proche — nous y recevons et remettons les documents.",
+    "hours": "Horaires",
+    "hoursTbd": "horaires à confirmer par téléphone",
+    "phone": "Téléphone",
+    "route": "Itinéraire",
+    "selected": "sélectionné",
+    "pickupAt": "Retrait : {address}",
+    "officeLabel": "Point d'accueil"
+  },
+  "languagePair": {
+    "title": "Langue de traduction",
+    "from": "De quelle langue",
+    "to": "Vers quelle langue",
+    "choose": "Choisissez la langue du document",
+    "toRussianOnly": "Nous traduisons vers le russe",
+    "hint": "La traduction est faite de la langue choisie vers le russe."
+  },
+  "home": {
+    "badge": "Agence de traduction · Kazan",
+    "heroTitle": "Traduction de documents avec certification notariale",
+    "heroText": "Traduction du turkmène, de l'ouzbek, du turc, de l'azerbaïdjanais, du kazakh, du kirghiz, du persan, de l'arabe et des langues européennes vers le russe. Impression et assurance. Commande et paiement en ligne en quelques minutes.",
+    "ctaCalc": "Calculer le prix",
+    "ctaCatalog": "Catalogue des services",
+    "ctaStatus": "Suivre ma commande",
+    "factNotary": "Certifié par notaire",
+    "factDays": "1 à 2 jours",
+    "factServices": "24 services au tarif",
+    "factOffices": "3 points d'accueil",
+    "logoAlt": "Logo «Точка Перевода Прогресс»",
+    "servicesTitle": "Services et tarifs",
+    "servicesSubtitle": "Tarifs à jour. Le calculateur donne le prix exact selon le délai et le nombre de pages.",
+    "allServices": "Tous les services et tarifs",
+    "whyTitle": "Pourquoi nous choisir",
+    "why": {
+      "days": {
+        "title": "Délai de 1 à 2 jours",
+        "text": "La plupart des traductions sont prêtes en 1 à 2 jours ouvrés. Options urgente et express disponibles."
+      },
+      "notary": {
+        "title": "Certification notariale",
+        "text": "Nous faisons certifier les traductions chez le notaire — tout au même endroit, sans déplacements inutiles."
+      },
+      "prices": {
+        "title": "Prix transparents",
+        "text": "Calcul exact dans le calculateur avant la commande. Paiement par carte, SBP ou QR code."
+      },
+      "telegram": {
+        "title": "Service Telegram",
+        "text": "Commande et suivi directement dans Telegram. Vous êtes prévenu automatiquement quand c'est prêt."
+      }
+    },
+    "languagesTitle": "Langues traduites",
+    "languagesText": "Nous traduisons vers le russe depuis 14 langues :",
+    "stepsTitle": "Comment commander",
+    "steps": {
+      "1": {
+        "title": "Choisissez les services",
+        "text": "Ajoutez les services au panier et indiquez la langue du document."
+      },
+      "2": {
+        "title": "Choisissez un point",
+        "text": "Indiquez le point d'accueil le plus proche à Kazan."
+      },
+      "3": {
+        "title": "Joignez les fichiers et payez",
+        "text": "Photo ou scan depuis votre téléphone. Paiement par SBP, QR ou carte."
+      },
+      "4": {
+        "title": "Recevez le résultat",
+        "text": "Nous vous prévenons quand c'est prêt. Récupérez-le au point choisi."
+      }
+    },
+    "faqTitle": "Questions fréquentes",
+    "faq": {
+      "price": {
+        "q": "Combien coûte la traduction d'une page ?",
+        "a": "Documents juridiques et médicaux — 550 ₽ par page, documentation technique — 650 ₽. Passeport, diplôme, certificat — prix fixe indiqué dans le catalogue."
+      },
+      "time": {
+        "q": "En combien de temps la traduction sera-t-elle prête ?",
+        "a": "Délai standard : 1 à 2 jours ouvrés. Urgent : en 1 jour (×1,5) ou le jour même (×2)."
+      },
+      "notary": {
+        "q": "Faites-vous certifier les traductions chez le notaire ?",
+        "a": "Oui. Les services marqués «notariée» incluent déjà la certification ; pour les autres traductions, vous pouvez l'ajouter dans le panier."
+      },
+      "languages": {
+        "q": "De quelles langues traduisez-vous ?",
+        "a": "Du turkmène, de l'ouzbek, du turc, de l'azerbaïdjanais, du kazakh, du kirghiz, du persan (farsi), de l'arabe (Irak, Syrie), de l'anglais, de l'allemand, du français, de l'espagnol et de l'italien — vers le russe."
+      },
+      "status": {
+        "q": "Comment suivre ma commande ?",
+        "a": "Avec le numéro de commande et le téléphone sur la page «Suivi de commande», dans votre espace personnel ou sur Telegram."
+      },
+      "where": {
+        "q": "Où êtes-vous situés ?",
+        "a": "Nous avons trois points d'accueil à Kazan : ул. Сибирский Тракт, 7/6 ; ул. Карла Маркса, 65 ; ул. Промысловая, 5, bureau 3."
+      }
+    },
+    "contactsTitle": "Contacts",
+    "orderCta": "Passer commande",
+    "metaTitle": "Traduction, impression et assurance à Kazan",
+    "metaDescription": "Agence de traduction «Точка Перевода Прогресс» à Kazan : traduction de documents du turkmène, de l'ouzbek, du turc et d'autres langues vers le russe, certification notariale, impression, assurance. Commande, paiement et suivi en ligne.",
+    "mapTitle": "Carte des points d'accueil",
+    "officesText": "Choisissez le point le plus proche — vous pouvez y déposer vos documents et y récupérer la traduction."
+  },
+  "catalog": {
+    "title": "Catalogue des services et tarifs",
+    "subtitle": "Choisissez une catégorie. Pour les services marqués «notariée», la certification est incluse dans le prix ; pour les autres, elle s'ajoute à part.",
+    "all": "Tous les services",
+    "notarial": "notariée",
+    "add": "Ajouter",
+    "added": "Ajouté : {name}",
+    "addAria": "Ajouter : {name}",
+    "empty": "Aucun service trouvé."
+  },
+  "calculator": {
+    "title": "Calculateur et panier",
+    "subtitle": "Indiquez le nombre de pages ou de documents — le total et le délai se mettent à jour aussitôt.",
+    "categoriesAria": "Catégories de services",
+    "yourOrder": "Votre commande",
+    "empty": "Le panier est vide. Ajoutez un service avec le bouton «+».",
+    "withNotary": "avec certification",
+    "increase": "Augmenter : {name}",
+    "decrease": "Diminuer : {name}",
+    "notaryLabel": "Certification notariale pour les traductions non certifiées",
+    "notaryPrice": "+{price} × {count} doc.",
+    "notaryTbd": "(prix précisé par le gestionnaire)",
+    "services": "Services",
+    "discount": "Remise sur volume",
+    "urgencySurcharge": "Supplément urgence",
+    "notary": "Certification",
+    "delivery": "Livraison",
+    "total": "Total",
+    "ready": "Prêt le",
+    "sameDay": "aujourd'hui avant 19h00",
+    "checkout": "Passer commande",
+    "disclaimer": "Estimation. Le prix final est fixé par le serveur selon les tarifs en vigueur lors de la commande.",
+    "receiving": "Réception",
+    "pickup": "Retrait au point d'accueil",
+    "courier": "Livraison par coursier",
+    "courierPrice": "Livraison (+{price})"
+  },
+  "cartDrawer": {
+    "title": "Panier",
+    "description": "Services choisis et estimation du prix",
+    "empty": "Le panier est vide",
+    "toCatalog": "Voir le catalogue",
+    "sum": "Montant",
+    "urgency": "Urgence (×{coef})",
+    "total": "Total",
+    "calculate": "Calcul exact",
+    "checkout": "Passer commande"
+  },
+  "checkout": {
+    "title": "Finaliser la commande",
+    "backToCart": "← Retour au panier",
+    "contacts": "Coordonnées",
+    "name": "Nom *",
+    "namePlaceholder": "Comment vous appeler",
+    "phone": "Téléphone *",
+    "email": "E-mail",
+    "emailPlaceholder": "pour le reçu et les notifications",
+    "telegram": "Telegram",
+    "individual": "Particulier",
+    "company": "Organisation (facture, INN)",
+    "inn": "INN",
+    "innPlaceholder": "10 ou 12 chiffres",
+    "deliveryAddress": "Adresse de livraison *",
+    "deliveryAddressPlaceholder": "Ville, rue, numéro, appartement",
+    "comment": "Commentaire",
+    "commentPlaceholder": "Par exemple : noms en lettres latines comme dans le passeport",
+    "files": "Fichiers des documents",
+    "payMethod": "Mode de paiement",
+    "consentPrefix": "Je donne mon",
+    "consentLink": "consentement au traitement des données personnelles",
+    "consentMiddle": "conformément à la loi fédérale 152-FZ, j'ai pris connaissance de la",
+    "privacyLink": "politique de confidentialité",
+    "consentAnd": "et j'accepte les",
+    "termsLink": "conditions de prestation des services",
+    "submit": "Passer au paiement",
+    "stageCreating": "Création de la commande…",
+    "stageUploading": "Envoi des fichiers : {current} sur {total}",
+    "fileFailed": "Le fichier «{name}» n'a pas été envoyé : {error}. Vous pourrez l'envoyer plus tard.",
+    "emptyCart": "Le panier est vide — choisissez des services.",
+    "toCalculator": "Aller au calculateur",
+    "totalTitle": "Total à payer",
+    "receiving": "Réception",
+    "pickup": "Retrait sur place",
+    "delivery": "Livraison",
+    "serverPriceNote": "Le prix est recalculé par le serveur selon les tarifs en vigueur. Le numéro de commande vous sera envoyé par SMS et sur Telegram.",
+    "changeItems": "Modifier la commande",
+    "errors": {
+      "name": "Indiquez votre nom",
+      "phone": "Saisissez un numéro de téléphone russe",
+      "email": "E-mail invalide",
+      "consent": "Impossible de commander sans consentement au traitement des données",
+      "address": "Indiquez l'adresse de livraison",
+      "office": "Choisissez un point d'accueil",
+      "language": "Indiquez la langue du document"
+    }
+  },
+  "dropzone": {
+    "dragHere": "Glissez les fichiers ici",
+    "formats": "JPG, PNG, HEIC, PDF, DOC/DOCX, ZIP · jusqu'à {size}",
+    "choose": "Choisir des fichiers",
+    "camera": "Prendre une photo",
+    "unsupported": "Le format du fichier «{name}» n'est pas pris en charge",
+    "tooBig": "Le fichier «{name}» dépasse {size}",
+    "tooMany": "Pas plus de {max} fichiers par commande",
+    "removeAria": "Supprimer {name}"
+  },
+  "payment": {
+    "title": "Paiement de la commande {number}",
+    "sbp": "SBP",
+    "sbpHint": "via l'application bancaire",
+    "qr": "QR code",
+    "qrHint": "scannez avec l'appareil photo",
+    "card": "Carte bancaire",
+    "cardHint": "Mir, Visa, Mastercard",
+    "order": "Commande {number}",
+    "qrAria": "QR code pour payer par SBP",
+    "cardText": "Une page sécurisée ЮKassa va s'ouvrir. Après le paiement, vous reviendrez sur le site.",
+    "qrText": "Scannez le QR code avec l'appareil photo ou ouvrez l'application bancaire — le montant s'affichera automatiquement. Le statut se mettra à jour tout seul.",
+    "openBank": "Ouvrir l'application bancaire",
+    "goPay": "Passer au paiement",
+    "iPaid": "J'ai payé",
+    "mockNote": "Mode test : le paiement est simulé par un fournisseur fictif (clés ЮKassa non configurées)",
+    "noAccessTitle": "Pas d'accès au paiement",
+    "noAccessText": "Ouvrez le lien sur l'appareil utilisé pour la commande ou connectez-vous à votre espace personnel."
+  },
+  "success": {
+    "paidTitle": "Commande {number} payée",
+    "createdTitle": "Commande {number} enregistrée",
+    "paidText": "Merci ! Nous avons commencé le travail. Les notifications de statut arriveront sur Telegram, par SMS ou par e-mail.",
+    "pendingText": "Le paiement est en cours de traitement — dès que la banque le confirmera, nous vous enverrons une notification.",
+    "keepNumber": "Conservez le numéro de commande — avec votre téléphone, il permet de suivre son statut.",
+    "track": "Suivre le statut",
+    "myOrders": "Mes commandes"
+  },
+  "mockSbp": {
+    "title": "QR code SBP de test",
+    "text": "La plateforme fonctionne en mode démo sans ЮKassa connectée, ce QR mène donc à une page de test. Retournez sur la page de paiement et cliquez sur «J'ai payé»."
+  },
+  "statusPage": {
+    "title": "Suivi de commande",
+    "number": "Numéro de commande",
+    "phone": "Téléphone",
+    "check": "Vérifier",
+    "notFound": "Commande introuvable. Vérifiez le numéro et le téléphone indiqués lors de la commande.",
+    "order": "Commande",
+    "services": "Services",
+    "readiness": "Prête le",
+    "tbd": "à préciser",
+    "sum": "Montant",
+    "paid": "payée",
+    "unpaid": "en attente de paiement",
+    "receiving": "Réception",
+    "courier": "livraison par coursier"
+  },
+  "timeline": {
+    "aria": "Avancement de la commande",
+    "cancelled": "Commande annulée",
+    "now": "maintenant"
+  },
+  "files": {
+    "none": "Aucun fichier.",
+    "download": "Télécharger",
+    "downloadAria": "Télécharger {name}",
+    "kind": {
+      "source": "original",
+      "translation": "traduction",
+      "receipt": "reçu",
+      "photo": "photo",
+      "other": "fichier"
+    }
+  },
+  "chat": {
+    "empty": "Écrivez au gestionnaire — nous répondons pendant les heures d'ouverture.",
+    "manager": "Gestionnaire",
+    "placeholder": "Message…",
+    "label": "Message",
+    "send": "Envoyer"
+  },
+  "auth": {
+    "backToSite": "← Retour au site",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "login": {
+      "title": "Connexion",
+      "description": "Connectez-vous à votre espace personnel",
+      "submit": "Se connecter",
+      "success": "Vous êtes connecté",
+      "invalid": "E-mail ou mot de passe incorrect",
+      "forgot": "Mot de passe oublié ?",
+      "noAccount": "Pas de compte ? S'inscrire"
+    },
+    "register": {
+      "title": "Inscription",
+      "description": "Créez un compte pour suivre vos commandes",
+      "name": "Nom",
+      "namePlaceholder": "Ivanov Ivan",
+      "phone": "Téléphone",
+      "passwordPlaceholder": "8 caractères minimum",
+      "submit": "S'inscrire",
+      "created": "Compte créé",
+      "confirmEmail": "Confirmez votre e-mail — nous vous avons envoyé un lien",
+      "phoneInvalid": "Saisissez un numéro de téléphone russe valide",
+      "haveAccount": "Vous avez déjà un compte ?",
+      "login": "Se connecter"
+    },
+    "reset": {
+      "title": "Réinitialiser le mot de passe",
+      "description": "Nous enverrons un lien de réinitialisation à votre e-mail",
+      "submit": "Envoyer le lien",
+      "sent": "Lien envoyé. Vérifiez votre boîte mail.",
+      "backToLogin": "← Retour à la connexion"
+    },
+    "update": {
+      "title": "Nouveau mot de passe",
+      "description": "Choisissez un mot de passe d'au moins 8 caractères",
+      "submit": "Enregistrer le mot de passe",
+      "tooShort": "8 caractères minimum",
+      "done": "Mot de passe mis à jour"
+    }
+  },
+  "account": {
+    "title": "Mon espace",
+    "tabsAria": "Sections de l'espace personnel",
+    "tabs": {
+      "orders": "Commandes",
+      "profile": "Profil",
+      "data": "Mes données"
+    },
+    "empty": "Aucune commande pour l'instant. Les commandes passées sans connexion avec votre numéro apparaîtront ici après confirmation du téléphone dans le profil.",
+    "calculate": "Calculer le prix",
+    "from": "du {date}",
+    "files": "{count, plural, one {# fichier} many {# fichiers} other {# fichiers}}",
+    "pay": "Payer",
+    "payAmount": "Payer {amount}",
+    "statusBtn": "Statut",
+    "repeat": "Recommander",
+    "repeatUnavailable": "Ces services ne sont plus disponibles dans le catalogue",
+    "repeatPartial": "Certains services ne sont plus proposés — ils n'ont pas été ajoutés",
+    "allOrders": "← Toutes les commandes",
+    "readiness": "Prête le : {date}",
+    "deliveryTo": "Livraison : {address}",
+    "addressTbd": "adresse à préciser",
+    "composition": "Détail et paiement",
+    "total": "Total",
+    "paid": "Payé",
+    "filesTitle": "Fichiers et reçus",
+    "chatTitle": "Discussion avec le gestionnaire",
+    "paymentStatus": {
+      "pending": "en attente",
+      "waiting_for_capture": "en traitement",
+      "succeeded": "payé",
+      "canceled": "annulé",
+      "refunded": "remboursé"
+    },
+    "metaOrders": "Mes commandes",
+    "metaOrder": "Commande",
+    "metaProfile": "Profil",
+    "translationPair": "Traduction : {from} → {to}",
+    "titleTemplate": "Mon espace"
+  },
+  "profile": {
+    "name": "Nom",
+    "email": "E-mail",
+    "telegram": "Telegram",
+    "linked": "lié",
+    "notLinked": "non lié",
+    "openBot": "Ouvrir le bot @{bot}",
+    "newPassword": "Nouveau mot de passe",
+    "newPasswordPlaceholder": "laissez vide pour ne pas le changer",
+    "save": "Enregistrer",
+    "saved": "Profil enregistré",
+    "nameRequired": "Indiquez votre nom",
+    "sessionExpired": "Session expirée — reconnectez-vous",
+    "passwordShort": "Mot de passe : 8 caractères minimum",
+    "phoneTitle": "Téléphone",
+    "phoneText": "Les notifications de commande sont envoyées sur ce téléphone. Après confirmation par code, les commandes passées sans connexion avec ce numéro seront liées à votre espace.",
+    "phoneNumber": "Numéro",
+    "phoneInvalid": "Saisissez un numéro de téléphone russe",
+    "verified": "confirmé",
+    "getCode": "Recevoir le code",
+    "resendCode": "Renvoyer le code",
+    "codeSent": "Code envoyé par SMS",
+    "code": "Code reçu par SMS",
+    "confirm": "Confirmer",
+    "confirmed": "Téléphone confirmé",
+    "confirmedWithOrders": "Téléphone confirmé. Commandes liées : {count}",
+    "linkedAs": "lié : @{username}"
+  },
+  "dataPage": {
+    "title": "Mes données",
+    "exportTitle": "Export des données personnelles",
+    "exportText": "Conformément à la loi fédérale 152-FZ, vous pouvez obtenir une copie de vos données personnelles dans un format lisible par machine (JSON).",
+    "exportButton": "Exporter les données",
+    "exportFailed": "Impossible d'exporter les données",
+    "deleteTitle": "Suppression des données",
+    "deleteText": "La suppression anonymise votre profil, vos fiches client et vos consentements. Les données des commandes sont conservées de façon anonyme conformément aux obligations comptables.",
+    "deleteButton": "Supprimer mes données",
+    "confirmTitle": "Supprimer les données personnelles ?",
+    "confirmText": "Cette action est irréversible. Vous perdrez l'accès à l'historique des commandes.",
+    "deleting": "Suppression…",
+    "delete": "Supprimer",
+    "deleted": "Données supprimées",
+    "deleteFailed": "Impossible de supprimer les données"
+  },
+  "footer": {
+    "services": "Services",
+    "translations": "Traduction de documents",
+    "printing": "Impression",
+    "insurance": "Assurance",
+    "calculator": "Calculateur de prix",
+    "clients": "Clients",
+    "order": "Passer commande",
+    "status": "Suivre ma commande",
+    "account": "Mon espace",
+    "login": "Se connecter",
+    "info": "Informations",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions de prestation des services",
+    "consent": "Consentement au traitement des données",
+    "rights": "Tous droits réservés.",
+    "legalName": "Agence de traduction «Точка Перевода Прогресс»"
+  },
+  "legal": {
+    "officialNotice": "Le texte officiel de ce document est en russe. La traduction de l'interface est fournie pour votre commodité."
+  },
+  "roles": {
+    "guest": "Invité",
+    "client": "Client",
+    "manager": "Gestionnaire",
+    "translator": "Traducteur",
+    "notary": "Notaire",
+    "printer": "Impression",
+    "admin": "Administrateur"
+  },
+  "meta": {
+    "siteTitle": "Agence de traduction à Kazan",
+    "calculator": "Calculateur du prix de traduction",
+    "calculatorDescription": "Calculez en ligne le prix de la traduction, de la certification notariale et de l'impression : nombre de pages, délai, point d'accueil et date de disponibilité.",
+    "checkout": "Finaliser la commande",
+    "mockSbp": "Paiement SBP de test",
+    "pay": "Paiement de la commande",
+    "success": "Commande enregistrée",
+    "services": "Services et tarifs",
+    "servicesDescription": "Tarifs complets de l'agence de traduction «Точка Перевода Прогресс» : traduction de documents, impression, assurance. Prix par page et par document.",
+    "status": "Suivi de commande",
+    "statusDescription": "Vérifiez le statut de votre commande avec son numéro et votre téléphone : reçue, en cours, prête à être remise."
+  }
+}

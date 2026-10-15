@@ -1,6 +1,6 @@
 import "server-only";
-import type { LanguageRow, ServiceRow, SettingRow } from "@/types/database.types";
-import { SEED_LANGUAGES, SEED_SERVICES } from "@/lib/seed/services";
+import type { LanguageRow, OfficeRow, ServiceRow, SettingRow } from "@/types/database.types";
+import { SEED_LANGUAGES, SEED_OFFICES, SEED_SERVICES } from "@/lib/seed/services";
 import { isDemoMode } from "@/lib/config/env";
 import { createClient } from "@/lib/supabase/server";
 
@@ -42,14 +42,16 @@ export async function getServices(): Promise<ServiceRow[]> {
   return data ?? [];
 }
 
-/** Языки перевода. */
+/** Языки перевода: исходные (is_source) и русский как язык перевода. */
 export async function getLanguages(): Promise<LanguageRow[]> {
   if (isDemoMode() || !hasSupabaseConfig()) {
-    return SEED_LANGUAGES.map((l) => ({
+    return SEED_LANGUAGES.map((l, i) => ({
       id: l.code,
       code: l.code,
       name: l.name,
       is_active: true,
+      is_source: l.isSource,
+      sort_order: i,
     }));
   }
 
@@ -58,9 +60,35 @@ export async function getLanguages(): Promise<LanguageRow[]> {
     .from("languages")
     .select("*")
     .eq("is_active", true)
-    .order("name");
+    .order("sort_order");
 
   if (error) throw new Error(`Не удалось загрузить языки: ${error.message}`);
+  return data ?? [];
+}
+
+/** Активные точки приёма документов. */
+export async function getOffices(): Promise<OfficeRow[]> {
+  if (isDemoMode() || !hasSupabaseConfig()) {
+    const now = new Date().toISOString();
+    return SEED_OFFICES.map((o, i) => ({
+      id: o.slug,
+      slug: o.slug,
+      name: o.name,
+      city: "Казань",
+      address: o.address,
+      hours: null,
+      phone: null,
+      lat: null,
+      lng: null,
+      is_active: true,
+      sort_order: i + 1,
+      created_at: now,
+      updated_at: now,
+    }));
+  }
+  const supabase = createClient();
+  const { data, error } = await supabase.from("offices").select("*").eq("is_active", true).order("sort_order");
+  if (error) throw new Error(`Не удалось загрузить точки: ${error.message}`);
   return data ?? [];
 }
 

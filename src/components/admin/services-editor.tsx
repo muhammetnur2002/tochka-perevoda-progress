@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { saveServiceAction } from "@/app/admin/actions";
-import { SERVICE_CATEGORY_LABELS } from "@/lib/config/constants";
 import type { ServiceCategory, ServiceRow, ServiceUnit } from "@/types/database.types";
 import { cn } from "@/lib/utils";
 
@@ -21,15 +21,16 @@ interface Rule {
   priority: number;
 }
 
-const UNIT_LABEL: Record<ServiceUnit, string> = { page: "страница", document: "документ", item: "шт." };
 const CATEGORIES: ServiceCategory[] = ["translation", "printing", "insurance", "additional"];
 
-function ruleText(rules: Rule[]): string {
+type RuleKey = "perPage" | "fixed" | "urgent" | "volume";
+
+function ruleText(rules: Rule[], t: (key: RuleKey, values?: Record<string, string | number>) => string): string {
   const parts = rules.map((r) => {
-    if (r.rule_type === "per_page") return "за страницу";
-    if (r.rule_type === "fixed") return "фикс.";
-    if (r.rule_type === "urgent") return `срочн. ×${Number(r.value)}`;
-    if (r.rule_type === "volume") return `−${Math.round((1 - Number(r.value)) * 100)}% от ${r.min_qty}`;
+    if (r.rule_type === "per_page") return t("perPage");
+    if (r.rule_type === "fixed") return t("fixed");
+    if (r.rule_type === "urgent") return t("urgent", { k: String(Number(r.value)) });
+    if (r.rule_type === "volume") return t("volume", { pct: Math.round((1 - Number(r.value)) * 100), min: r.min_qty ?? 0 });
     return r.rule_type;
   });
   return [...new Set(parts)].join(" · ") || "—";
@@ -80,6 +81,9 @@ function fromService(s: ServiceRow): Draft {
 
 /** Таблица услуг с инлайн-правкой цены/срока/активности и созданием новой услуги. */
 export function ServicesEditor({ services, rules }: { services: ServiceRow[]; rules: Rule[] }) {
+  const t = useTranslations("admin.services");
+  const tCat = useTranslations("categories");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [category, setCategory] = React.useState<ServiceCategory>("translation");
   const [drafts, setDrafts] = React.useState<Record<string, Draft>>({});
@@ -105,7 +109,7 @@ export function ServicesEditor({ services, rules }: { services: ServiceRow[]; ru
     start(async () => {
       const r = await saveServiceAction(id, toPayload(d));
       if (r.ok) {
-        toast.success(r.message ?? "Сохранено");
+        toast.success(r.message ?? tCommon("saved"));
         if (id) setDrafts(({ [id]: _, ...rest }) => rest);
         after?.();
         router.refresh();
@@ -127,11 +131,11 @@ export function ServicesEditor({ services, rules }: { services: ServiceRow[]; ru
               category === c ? "border-brand-800 bg-brand-800 text-white" : "border-input bg-white text-brand-800",
             )}
           >
-            {SERVICE_CATEGORY_LABELS[c]} · {services.filter((s) => s.category === c).length}
+            {tCat(c)} · {services.filter((s) => s.category === c).length}
           </button>
         ))}
         <Button className="ml-auto" onClick={() => setCreating(true)}>
-          <Plus /> Новая услуга
+          <Plus /> {t("newService")}
         </Button>
       </div>
 
@@ -139,12 +143,12 @@ export function ServicesEditor({ services, rules }: { services: ServiceRow[]; ru
         <table className="w-full min-w-[900px] text-sm">
           <thead>
             <tr className="text-left text-xs text-muted-foreground">
-              <th className="px-4 py-3">Услуга</th>
-              <th className="px-4 py-3">Единица</th>
-              <th className="px-4 py-3">Срок, дн.</th>
-              <th className="px-4 py-3">Цена, ₽</th>
-              <th className="px-4 py-3">Активна</th>
-              <th className="px-4 py-3">Правила</th>
+              <th className="px-4 py-3">{t("colService")}</th>
+              <th className="px-4 py-3">{t("colUnit")}</th>
+              <th className="px-4 py-3">{t("colDays")}</th>
+              <th className="px-4 py-3">{t("colPrice")}</th>
+              <th className="px-4 py-3">{t("colActive")}</th>
+              <th className="px-4 py-3">{t("colRules")}</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
@@ -158,10 +162,10 @@ export function ServicesEditor({ services, rules }: { services: ServiceRow[]; ru
                     <div className="font-bold">{s.name}</div>
                     <div className="text-xs text-muted-foreground">
                       {s.slug}
-                      {s.is_notarial && " · заверение включено"}
+                      {s.is_notarial && ` · ${t("notaryIncluded")}`}
                     </div>
                   </td>
-                  <td className="px-4 py-2.5">{UNIT_LABEL[s.unit]}</td>
+                  <td className="px-4 py-2.5">{t(`units.${s.unit}`)}</td>
                   <td className="px-4 py-2.5">
                     <Input
                       type="number"
@@ -170,7 +174,7 @@ export function ServicesEditor({ services, rules }: { services: ServiceRow[]; ru
                       value={d.duration_days}
                       onChange={(e) => patch(s, { duration_days: e.target.value })}
                       className="h-9 w-20"
-                      aria-label={`Срок: ${s.name}`}
+                      aria-label={t("daysOf", { name: s.name })}
                     />
                   </td>
                   <td className="px-4 py-2.5">
@@ -181,7 +185,7 @@ export function ServicesEditor({ services, rules }: { services: ServiceRow[]; ru
                       value={d.price}
                       onChange={(e) => patch(s, { price: e.target.value })}
                       className="h-9 w-28"
-                      aria-label={`Цена: ${s.name}`}
+                      aria-label={t("priceOf", { name: s.name })}
                     />
                   </td>
                   <td className="px-4 py-2.5">
@@ -190,13 +194,13 @@ export function ServicesEditor({ services, rules }: { services: ServiceRow[]; ru
                       checked={d.is_active}
                       onChange={(e) => patch(s, { is_active: e.target.checked })}
                       className="h-5 w-5 accent-brand-800"
-                      aria-label={`Активна: ${s.name}`}
+                      aria-label={t("activeOf", { name: s.name })}
                     />
                   </td>
-                  <td className="px-4 py-2.5 text-xs text-muted-foreground">{ruleText(rules.filter((r) => r.service_id === s.id))}</td>
+                  <td className="px-4 py-2.5 text-xs text-muted-foreground">{ruleText(rules.filter((r) => r.service_id === s.id), (k, v) => t(`rules.${k}`, v))}</td>
                   <td className="px-4 py-2.5 text-right">
                     <Button size="sm" variant={dirty ? "default" : "outline"} disabled={!dirty || pending} onClick={() => save(s.id, d)}>
-                      Сохранить
+                      {tCommon("save")}
                     </Button>
                   </td>
                 </tr>
@@ -209,7 +213,7 @@ export function ServicesEditor({ services, rules }: { services: ServiceRow[]; ru
       <Dialog open={creating} onOpenChange={setCreating}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Новая услуга</DialogTitle>
+            <DialogTitle>{t("newService")}</DialogTitle>
           </DialogHeader>
           <form
             className="grid gap-3 sm:grid-cols-2"
@@ -219,11 +223,11 @@ export function ServicesEditor({ services, rules }: { services: ServiceRow[]; ru
             }}
           >
             <div className="space-y-1 sm:col-span-2">
-              <Label htmlFor="n-name">Название</Label>
+              <Label htmlFor="n-name">{t("name")}</Label>
               <Input id="n-name" required value={newDraft.name} onChange={(e) => setNewDraft({ ...newDraft, name: e.target.value })} />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="n-slug">Код (латиница)</Label>
+              <Label htmlFor="n-slug">{t("slug")}</Label>
               <Input
                 id="n-slug"
                 required
@@ -233,7 +237,7 @@ export function ServicesEditor({ services, rules }: { services: ServiceRow[]; ru
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="n-cat">Категория</Label>
+              <Label htmlFor="n-cat">{t("category")}</Label>
               <select
                 id="n-cat"
                 value={newDraft.category}
@@ -242,42 +246,42 @@ export function ServicesEditor({ services, rules }: { services: ServiceRow[]; ru
               >
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
-                    {SERVICE_CATEGORY_LABELS[c]}
+                    {tCat(c)}
                   </option>
                 ))}
               </select>
             </div>
             <div className="space-y-1">
-              <Label htmlFor="n-price">Цена, ₽</Label>
+              <Label htmlFor="n-price">{t("colPrice")}</Label>
               <Input id="n-price" type="number" min={0} required value={newDraft.price} onChange={(e) => setNewDraft({ ...newDraft, price: e.target.value })} />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="n-unit">Единица</Label>
+              <Label htmlFor="n-unit">{t("colUnit")}</Label>
               <select
                 id="n-unit"
                 value={newDraft.unit}
                 onChange={(e) => setNewDraft({ ...newDraft, unit: e.target.value as ServiceUnit })}
                 className="h-10 w-full rounded-md border bg-white px-2 text-sm"
               >
-                <option value="page">страница</option>
-                <option value="document">документ</option>
-                <option value="item">штука</option>
+                <option value="page">{t("units.page")}</option>
+                <option value="document">{t("units.document")}</option>
+                <option value="item">{t("units.item")}</option>
               </select>
             </div>
             <div className="space-y-1">
-              <Label htmlFor="n-days">Срок, рабочих дней</Label>
+              <Label htmlFor="n-days">{t("workingDays")}</Label>
               <Input id="n-days" type="number" min={1} max={30} value={newDraft.duration_days} onChange={(e) => setNewDraft({ ...newDraft, duration_days: e.target.value })} />
             </div>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" className="h-4 w-4" checked={newDraft.is_notarial} onChange={(e) => setNewDraft({ ...newDraft, is_notarial: e.target.checked })} />
-              Заверение включено в цену
+              {t("notaryInPrice")}
             </label>
             <div className="space-y-1 sm:col-span-2">
-              <Label htmlFor="n-desc">Описание</Label>
+              <Label htmlFor="n-desc">{t("descriptionLabel")}</Label>
               <Input id="n-desc" value={newDraft.description} onChange={(e) => setNewDraft({ ...newDraft, description: e.target.value })} />
             </div>
             <Button type="submit" disabled={pending} className="sm:col-span-2">
-              Добавить услугу
+              {t("addService")}
             </Button>
           </form>
         </DialogContent>

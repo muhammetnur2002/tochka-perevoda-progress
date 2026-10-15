@@ -1,4 +1,4 @@
-/** @type {import('next').NextConfig} */
+import createNextIntlPlugin from "next-intl/plugin";
 
 const isProd = process.env.NODE_ENV === "production";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -27,6 +27,7 @@ const csp = [
   .join("; ")
   .replace(/\s+/g, " ");
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
   reactStrictMode: true,
@@ -62,4 +63,7 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+// Языки интерфейса: src/i18n/request.ts (словари в messages/*.json)
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
+export default withNextIntl(nextConfig);

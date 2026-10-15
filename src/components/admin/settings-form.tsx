@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,8 @@ function Field({ id, label, hint, children }: { id: string; label: string; hint?
 
 /** Настройки платформы (таблица settings). Каждая группа сохраняется отдельно. */
 export function SettingsForm({ initial }: { initial: Settings }) {
+  const t = useTranslations("admin.settings");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [pending, start] = React.useTransition();
   const urgency = (initial.urgency ?? {}) as Record<string, number>;
@@ -50,7 +53,7 @@ export function SettingsForm({ initial }: { initial: Settings }) {
           return;
         }
       }
-      toast.success("Сохранено");
+      toast.success(tCommon("saved"));
       router.refresh();
     });
 
@@ -59,20 +62,20 @@ export function SettingsForm({ initial }: { initial: Settings }) {
   return (
     <div className="grid max-w-4xl gap-5">
       <section className="grid gap-4 rounded-2xl border bg-card p-5 sm:grid-cols-2">
-        <h2 className="text-lg font-bold text-brand-800 sm:col-span-2">Тарифы</h2>
-        <Field id="u1d" label="Коэффициент «за 1 день»">
+        <h2 className="text-lg font-bold text-brand-800 sm:col-span-2">{t("tariffs")}</h2>
+        <Field id="u1d" label={t("urgency1d")}>
           <Input id="u1d" type="number" step="0.05" min="1" value={u1d} onChange={(e) => setU1d(e.target.value)} />
         </Field>
-        <Field id="usame" label="Коэффициент «в день обращения»">
+        <Field id="usame" label={t("urgencySameDay")}>
           <Input id="usame" type="number" step="0.05" min="1" value={uSame} onChange={(e) => setUSame(e.target.value)} />
         </Field>
-        <Field id="notary" label="Нотариальное заверение, ₽ за документ" hint="Для переводов без заверения в цене. 0 — стоимость уточняет менеджер.">
+        <Field id="notary" label={t("notaryFee")} hint={t("notaryFeeHint")}>
           <Input id="notary" type="number" min="0" value={notary} onChange={(e) => setNotary(e.target.value)} />
         </Field>
-        <Field id="delivery" label="Доставка, ₽" hint="0 — бесплатно">
+        <Field id="delivery" label={t("delivery")} hint={t("deliveryHint")}>
           <Input id="delivery" type="number" min="0" value={delivery} onChange={(e) => setDelivery(e.target.value)} />
         </Field>
-        <Field id="prepay" label="Предоплата, %" hint="Доля суммы, которую клиент платит онлайн при оформлении">
+        <Field id="prepay" label={t("prepayment")} hint={t("prepaymentHint")}>
           <Input id="prepay" type="number" min="1" max="100" value={prepay} onChange={(e) => setPrepay(e.target.value)} />
         </Field>
         <div className="flex items-end">
@@ -80,7 +83,7 @@ export function SettingsForm({ initial }: { initial: Settings }) {
             disabled={pending}
             onClick={() => {
               if (![u1d, uSame, notary, delivery, prepay].every(positive) || Number(u1d) < 1 || Number(uSame) < 1) {
-                toast.error("Проверьте значения: числа ≥ 0, коэффициенты ≥ 1");
+                toast.error(t("invalidValues"));
                 return;
               }
               saveMany([
@@ -91,14 +94,14 @@ export function SettingsForm({ initial }: { initial: Settings }) {
               ]);
             }}
           >
-            Сохранить тарифы
+            {t("saveTariffs")}
           </Button>
         </div>
       </section>
 
       <section className="grid gap-3 rounded-2xl border bg-card p-5">
-        <h2 className="text-lg font-bold text-brand-800">Производственный календарь</h2>
-        <Field id="holidays" label="Праздничные и нерабочие дни (ГГГГ-ММ-ДД, по одному в строке)" hint="Выходные (сб, вс) учитываются автоматически.">
+        <h2 className="text-lg font-bold text-brand-800">{t("calendar")}</h2>
+        <Field id="holidays" label={t("holidays")} hint={t("holidaysHint")}>
           <Textarea id="holidays" rows={8} className="font-mono text-sm" value={holidays} onChange={(e) => setHolidays(e.target.value)} />
         </Field>
         <Button
@@ -110,25 +113,25 @@ export function SettingsForm({ initial }: { initial: Settings }) {
               .map((d) => d.trim())
               .filter(Boolean);
             const bad = days.find((d) => !/^\d{4}-\d{2}-\d{2}$/.test(d));
-            if (bad) return toast.error(`Неверная дата: ${bad}`);
+            if (bad) return toast.error(t("invalidDate", { date: bad }));
             saveMany([["holidays", [...new Set(days)].sort()]]);
           }}
         >
-          Сохранить календарь
+          {t("saveCalendar")}
         </Button>
       </section>
 
       <section className="grid gap-4 rounded-2xl border bg-card p-5 sm:grid-cols-2">
-        <h2 className="text-lg font-bold text-brand-800 sm:col-span-2">Уведомления и хранение</h2>
+        <h2 className="text-lg font-bold text-brand-800 sm:col-span-2">{t("notifications")}</h2>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" className="h-4 w-4" checked={notifyStatus} onChange={(e) => setNotifyStatus(e.target.checked)} />
-          Сообщать клиенту о смене статуса
+          {t("notifyStatus")}
         </label>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" className="h-4 w-4" checked={notifyReady} onChange={(e) => setNotifyReady(e.target.checked)} />
-          Сообщать клиенту о готовности
+          {t("notifyReady")}
         </label>
-        <Field id="retention" label="Хранить файлы после выдачи, дней" hint="Затем файлы удаляются из хранилища (152-ФЗ). Минимум 7.">
+        <Field id="retention" label={t("retention")} hint={t("retentionHint")}>
           <Input id="retention" type="number" min="7" value={retention} onChange={(e) => setRetention(e.target.value)} />
         </Field>
         <div className="flex items-end">
@@ -141,7 +144,7 @@ export function SettingsForm({ initial }: { initial: Settings }) {
               ])
             }
           >
-            Сохранить
+            {tCommon("save")}
           </Button>
         </div>
       </section>

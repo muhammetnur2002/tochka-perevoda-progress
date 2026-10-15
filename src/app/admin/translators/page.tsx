@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/common/page-header";
 import { ExecutorsPanel } from "@/components/admin/executors-panel";
 import { createClient } from "@/lib/supabase/server";
@@ -7,6 +8,7 @@ export const metadata: Metadata = { title: "Исполнители" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminTranslatorsPage() {
+  const [t, tLang] = await Promise.all([getTranslations("admin.executors"), getTranslations("languages")]);
   const supabase = createClient();
   const {
     data: { user },
@@ -18,7 +20,7 @@ export default async function AdminTranslatorsPage() {
       .in("role", ["translator", "notary", "printer", "manager", "admin"])
       .order("role"),
     supabase.from("translators").select("*"),
-    supabase.from("languages").select("id, name").order("name"),
+    supabase.from("languages").select("id, code, name").order("sort_order"),
     supabase.from("users").select("role").eq("id", user?.id ?? "").maybeSingle(),
     supabase.from("order_assignments").select("user_id, status").in("status", ["assigned", "accepted", "in_progress"]),
   ]);
@@ -29,12 +31,12 @@ export default async function AdminTranslatorsPage() {
   return (
     <>
       <PageHeader
-        title="Исполнители"
-        description="Переводчики, нотариус и печать: загрузка, языки, доступность. Роли выдаёт администратор."
+        title={t("title")}
+        description={t("description")}
       />
       <ExecutorsPanel
         isAdmin={me?.role === "admin"}
-        languages={languages ?? []}
+        languages={(languages ?? []).map((l) => ({ id: l.id, name: tLang.has(l.code) ? tLang(l.code) : l.name }))}
         staff={(staff ?? []).map((s) => {
           const t = (translators ?? []).find((x) => x.user_id === s.id) ?? null;
           return {

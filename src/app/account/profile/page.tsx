@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { requireUser } from "@/lib/auth/guards";
 import { ProfileForm } from "./profile-form";
 
-export const metadata: Metadata = { title: "Профиль" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("account");
+  return { title: t("metaProfile") };
+}
 export const dynamic = "force-dynamic";
 
 export default async function ProfilePage() {

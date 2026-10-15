@@ -1,5 +1,8 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { ORDER_STATUS_FLOW, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/config/constants";
+import { ORDER_STATUS_FLOW, type OrderStatus } from "@/lib/config/constants";
 import { formatDateTime } from "@/lib/format/date";
 
 interface OrderTimelineProps {
@@ -12,10 +15,12 @@ interface OrderTimelineProps {
 
 /** Статус-бар заказа: new → confirmed → in_progress → ready → issued → completed. */
 export function OrderTimeline({ status, history = [], createdAt, className }: OrderTimelineProps) {
+  const t = useTranslations("timeline");
+  const ts = useTranslations("orderStatus");
   if (status === "cancelled") {
     return (
       <div className={cn("rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm font-semibold text-destructive", className)}>
-        Заказ отменён
+        {t("cancelled")}
       </div>
     );
   }
@@ -28,7 +33,7 @@ export function OrderTimeline({ status, history = [], createdAt, className }: Or
   };
 
   return (
-    <ol className={cn("grid grid-cols-3 gap-2 sm:grid-cols-6", className)} aria-label="Ход выполнения заказа">
+    <ol className={cn("grid grid-cols-3 gap-2 sm:grid-cols-6", className)} aria-label={t("aria")}>
       {ORDER_STATUS_FLOW.map((step, index) => {
         const done = index < current;
         const active = index === current;
@@ -41,9 +46,9 @@ export function OrderTimeline({ status, history = [], createdAt, className }: Or
               )}
             />
             <strong className={cn("text-sm", done || active ? "text-brand-800" : "text-slate-500")}>
-              {ORDER_STATUS_LABELS[step]}
+              {ts(step)}
             </strong>
-            <span className="text-xs text-muted-foreground">{dateOf(step) ?? (active ? "сейчас" : "")}</span>
+            <span className="text-xs text-muted-foreground">{dateOf(step) ?? (active ? t("now") : "")}</span>
           </li>
         );
       })}

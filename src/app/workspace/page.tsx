@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { FileList } from "@/components/order/file-list";
 import { TaskActions } from "@/components/workspace/task-actions";
 import { requireUser } from "@/lib/auth/guards";
@@ -10,17 +11,19 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = { title: "Задачи" };
 export const dynamic = "force-dynamic";
 
-const STATUS: Record<string, [string, string]> = {
-  assigned: ["Назначена", "bg-gold-50 text-gold-900"],
-  accepted: ["Принята", "bg-brand-50 text-brand-700"],
-  in_progress: ["В работе", "bg-brand-50 text-brand-700"],
-  done: ["Сдана", "bg-emerald-50 text-emerald-800"],
-  rejected: ["Отклонена", "bg-slate-100 text-slate-600"],
+const STATUS_CLASS: Record<string, string> = {
+  assigned: "bg-gold-50 text-gold-900",
+  accepted: "bg-brand-50 text-brand-700",
+  in_progress: "bg-brand-50 text-brand-700",
+  done: "bg-emerald-50 text-emerald-800",
+  rejected: "bg-slate-100 text-slate-600",
 };
-const ROLE_TASK: Record<string, string> = { translator: "Перевод", notary: "Нотариальное заверение", printer: "Печать", manager: "Ведение заказа" };
+const TASK_ROLES = ["translator", "notary", "printer", "manager"];
 
 export default async function WorkspacePage({ searchParams }: { searchParams: { tab?: string; task?: string } }) {
   const profile = await requireUser("/workspace");
+  const [t, tLang] = await Promise.all([getTranslations("workspace"), getTranslations("languages")]);
+  const roleTask = (r: string) => (TASK_ROLES.includes(r) ? t(`roleTask.${r}`) : r);
   const supabase = createClient();
   const tab = searchParams.tab === "done" ? "done" : "active";
 
@@ -30,8 +33,12 @@ export default async function WorkspacePage({ searchParams }: { searchParams: { 
     .eq("user_id", profile.id)
     .order("due_at", { ascending: true, nullsFirst: false })
     .limit(200);
-  const { data: languages } = await supabase.from("languages").select("id, name");
-  const lang = (id: string | null) => (languages ?? []).find((l) => l.id === id)?.name ?? "—";
+  const { data: languages } = await supabase.from("languages").select("id, code, name");
+  const lang = (id: string | null) => {
+    const l = (languages ?? []).find((x) => x.id === id);
+    if (!l) return "—";
+    return tLang.has(l.code) ? tLang(l.code) : l.name;
+  };
 
   const list = (tasks ?? []).filter((t) => (tab === "done" ? ["done", "rejected"].includes(t.status) : !["done", "rejected"].includes(t.status)));
   const activeCount = (tasks ?? []).filter((t) => !["done", "rejected"].includes(t.status)).length;
@@ -45,49 +52,50 @@ export default async function WorkspacePage({ searchParams }: { searchParams: { 
 
   return (
     <div className="flex flex-wrap items-start gap-5">
-      <section aria-label="Задачи" className="min-w-0 flex-[1_1_340px] space-y-2.5">
+      <section aria-label={t("tasks")} className="min-w-0 flex-[1_1_340px] space-y-2.5">
         <div className="flex flex-wrap items-center gap-2">
-          {(["active", "done"] as const).map((t) => (
+          {(["active", "done"] as const).map((tab_) => (
             <Link
-              key={t}
-              href={`/workspace?tab=${t}`}
+              key={tab_}
+              href={`/workspace?tab=${tab_}`}
               className={cn(
                 "inline-flex min-h-10 items-center rounded-full border px-4 text-sm font-bold",
-                tab === t ? "border-brand-800 bg-brand-800 text-white" : "border-input bg-white text-brand-800",
+                tab === tab_ ? "border-brand-800 bg-brand-800 text-white" : "border-input bg-white text-brand-800",
               )}
             >
-              {t === "active" ? "Активные" : "Сданные"}
+              {tab_ === "active" ? t("tabActive") : t("tabDone")}
             </Link>
           ))}
           <span className="ml-auto text-sm text-muted-foreground">
-            Загрузка: <strong className="text-brand-800">{activeCount}</strong>
-            {translator ? ` из ${translator.capacity_per_day}` : ""}
+            {t("load")} <strong className="text-brand-800">{activeCount}</strong>
+            {translator ? ` ${t("of", { n: translator.capacity_per_day })}` : ""}
           </span>
         </div>
-        {list.length === 0 && <p className="rounded-2xl border bg-white p-5 text-sm text-muted-foreground">Задач нет.</p>}
-        {list.map((t) => {
-          const due = t.due_at ?? t.order?.deadline ?? null;
-          const hot = due && !["done", "rejected"].includes(t.status) && new Date(due).getTime() - now < 86_400_000;
-          const [label, cls] = STATUS[t.status] ?? [t.status, ""];
+        {list.length === 0 && <p className="rounded-2xl border bg-white p-5 text-sm text-muted-foreground">{t("noTasks")}</p>}
+        {list.map((task) => {
+          const due = task.due_at ?? task.order?.deadline ?? null;
+          const hot = due && !["done", "rejected"].includes(task.status) && new Date(due).getTime() - now < 86_400_000;
+          const label = task.status in STATUS_CLASS ? t(`status.${task.status}`) : task.status;
+          const cls = STATUS_CLASS[task.status] ?? "";
           return (
             <Link
-              key={t.id}
-              href={`/workspace?tab=${tab}&task=${t.id}`}
+              key={task.id}
+              href={`/workspace?tab=${tab}&task=${task.id}`}
               className={cn(
                 "block space-y-1.5 rounded-2xl bg-white p-3.5",
-                selected?.id === t.id ? "border-2 border-gold-400" : "border border-slate-200 hover:border-brand-800",
+                selected?.id === task.id ? "border-2 border-gold-400" : "border border-slate-200 hover:border-brand-800",
               )}
             >
               <span className="flex justify-between gap-2">
-                <strong className="text-brand-800">{t.order?.public_number}</strong>
+                <strong className="text-brand-800">{task.order?.public_number}</strong>
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-extrabold ${cls}`}>{label}</span>
               </span>
-              <span className="block text-sm">{(t.order?.items ?? []).map((i) => i.name_snapshot).join(", ")}</span>
+              <span className="block text-sm">{(task.order?.items ?? []).map((i) => i.name_snapshot).join(", ")}</span>
               <span className="flex justify-between text-xs">
                 <span className="text-muted-foreground">
-                  {ROLE_TASK[t.role]} · {lang(t.order?.language_from ?? null)} → {lang(t.order?.language_to ?? null)}
+                  {roleTask(task.role)} · {lang(task.order?.language_from ?? null)} → {lang(task.order?.language_to ?? null)}
                 </span>
-                <span className={cn("font-bold", hot ? "text-red-700" : "text-slate-600")}>{due ? formatDateTime(due) : "без срока"}</span>
+                <span className={cn("font-bold", hot ? "text-red-700" : "text-slate-600")}>{due ? formatDateTime(due) : t("noDeadline")}</span>
               </span>
             </Link>
           );
@@ -95,14 +103,14 @@ export default async function WorkspacePage({ searchParams }: { searchParams: { 
       </section>
 
       {selected?.order && (
-        <section aria-label="Задача" className="min-w-0 flex-[999_1_560px] space-y-4 rounded-2xl border bg-white p-6">
+        <section aria-label={t("task")} className="min-w-0 flex-[999_1_560px] space-y-4 rounded-2xl border bg-white p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <div className="text-sm text-muted-foreground">{ROLE_TASK[selected.role]} по заказу</div>
+              <div className="text-sm text-muted-foreground">{t("taskForOrder", { task: roleTask(selected.role) })}</div>
               <h1 className="text-2xl font-extrabold text-brand-800">{selected.order.public_number}</h1>
             </div>
             <div className="text-right">
-              <div className="text-sm text-muted-foreground">Сдать до</div>
+              <div className="text-sm text-muted-foreground">{t("dueBy")}</div>
               <strong className="text-lg text-brand-800">
                 {selected.due_at ?? selected.order.deadline ? formatDateTime((selected.due_at ?? selected.order.deadline)!) : "—"}
               </strong>
@@ -110,29 +118,29 @@ export default async function WorkspacePage({ searchParams }: { searchParams: { 
           </div>
           <div className="grid gap-2.5 text-sm sm:grid-cols-3">
             <div className="rounded-xl bg-muted p-3">
-              <div className="text-xs text-muted-foreground">Услуга</div>
+              <div className="text-xs text-muted-foreground">{t("service")}</div>
               <strong>{(selected.order.items ?? []).map((i) => `${i.name_snapshot} × ${i.quantity}`).join(", ")}</strong>
             </div>
             <div className="rounded-xl bg-muted p-3">
-              <div className="text-xs text-muted-foreground">Направление</div>
+              <div className="text-xs text-muted-foreground">{t("direction")}</div>
               <strong>
                 {lang(selected.order.language_from)} → {lang(selected.order.language_to)}
               </strong>
             </div>
             <div className="rounded-xl bg-muted p-3">
-              <div className="text-xs text-muted-foreground">Назначена</div>
+              <div className="text-xs text-muted-foreground">{t("assignedAt")}</div>
               <strong>{formatDateTime(selected.assigned_at)}</strong>
             </div>
           </div>
           {selected.order.comment && (
             <p className="whitespace-pre-wrap rounded-xl bg-gold-50 p-3.5 text-sm text-gold-900">
-              <strong>Комментарий клиента:</strong> {selected.order.comment}
+              <strong>{t("clientComment")}</strong> {selected.order.comment}
             </p>
           )}
           <div>
-            <h2 className="mb-2 font-bold text-brand-800">Файлы заказа</h2>
+            <h2 className="mb-2 font-bold text-brand-800">{t("orderFiles")}</h2>
             <FileList files={files ?? []} />
-            <p className="mt-1.5 text-xs text-muted-foreground">Ссылки на скачивание действуют 5 минут и выдаются только по назначенным задачам.</p>
+            <p className="mt-1.5 text-xs text-muted-foreground">{t("filesHint")}</p>
           </div>
           <TaskActions assignmentId={selected.id} orderId={selected.order.id} status={selected.status} role={selected.role} />
         </section>

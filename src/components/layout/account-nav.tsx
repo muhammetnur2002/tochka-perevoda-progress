@@ -2,19 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 const TABS = [
-  { href: "/account", label: "Заказы" },
-  { href: "/account/profile", label: "Профиль" },
-  { href: "/account/data", label: "Мои данные" },
-];
+  { href: "/account", key: "orders" },
+  { href: "/account/profile", key: "profile" },
+  { href: "/account/data", key: "data" },
+] as const;
 
 /** Вкладки личного кабинета. */
 export function AccountNav() {
   const pathname = usePathname();
+  const tr = useTranslations("account");
   return (
-    <nav aria-label="Разделы кабинета" className="flex flex-wrap gap-2">
+    <nav aria-label={tr("tabsAria")} className="flex flex-wrap gap-2">
       {TABS.map((t) => {
         const active = t.href === "/account" ? pathname === "/account" || pathname.startsWith("/account/orders") : pathname.startsWith(t.href);
         return (
@@ -27,7 +29,7 @@ export function AccountNav() {
               active ? "border-brand-800 bg-brand-800 text-white" : "border-input bg-background text-brand-800",
             )}
           >
-            {t.label}
+            {tr(`tabs.${t.key}`)}
           </Link>
         );
       })}

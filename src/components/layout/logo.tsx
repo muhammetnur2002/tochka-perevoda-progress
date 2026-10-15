@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { COMPANY } from "@/lib/config/constants";
@@ -18,8 +21,9 @@ interface LogoProps {
  * надпись «ТОЧКА ПЕРЕВОДА / ПРОГРЕСС» текстом — чёткая на любом размере.
  */
 export function Logo({ className, variant = "full", size = 44, inverted = false }: LogoProps) {
+  const t = useTranslations("common");
   return (
-    <Link href="/" className={cn("flex items-center gap-2.5", className)} aria-label={`${COMPANY.name} — на главную`}>
+    <Link href="/" className={cn("flex items-center gap-2.5", className)} aria-label={`${COMPANY.name} — ${t("toHome")}`}>
       <Image src="/brand/logo-mark.png" alt="" width={size} height={size} priority className="shrink-0 object-contain" style={{ width: size, height: size }} />
       {variant === "full" && (
         <span className="flex flex-col leading-[1.05]">

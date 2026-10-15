@@ -1,18 +1,11 @@
 "use client";
 
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { openFile } from "@/lib/client/api";
 import { formatBytes } from "@/lib/utils";
-
-const KIND: Record<string, string> = {
-  source: "исходник",
-  translation: "перевод",
-  receipt: "чек",
-  photo: "фото",
-  other: "файл",
-};
 
 interface FileItem {
   id: string;
@@ -23,7 +16,9 @@ interface FileItem {
 
 /** Список файлов заказа с выдачей подписанной ссылки (5 минут) по клику. */
 export function FileList({ files, token }: { files: FileItem[]; token?: string | null }) {
-  if (files.length === 0) return <p className="text-sm text-muted-foreground">Файлов нет.</p>;
+  const t = useTranslations("files");
+  const kind = (k: string) => (t.has(`kind.${k}`) ? t(`kind.${k}`) : k);
+  if (files.length === 0) return <p className="text-sm text-muted-foreground">{t("none")}</p>;
   return (
     <ul className="space-y-2">
       {files.map((f) => (
@@ -31,16 +26,16 @@ export function FileList({ files, token }: { files: FileItem[]; token?: string |
           <span className="min-w-0 flex-1">
             <span className="block truncate font-semibold">{f.original_name}</span>
             <span className="text-xs text-muted-foreground">
-              {KIND[f.kind] ?? f.kind} · {formatBytes(Number(f.size_bytes))}
+              {kind(f.kind)} · {formatBytes(Number(f.size_bytes))}
             </span>
           </span>
           <Button
             variant="outline"
             size="sm"
             onClick={() => openFile(f.id, token).catch((e: Error) => toast.error(e.message))}
-            aria-label={`Скачать ${f.original_name}`}
+            aria-label={t("downloadAria", { name: f.original_name })}
           >
-            <Download /> Скачать
+            <Download /> {t("download")}
           </Button>
         </li>
       ))}

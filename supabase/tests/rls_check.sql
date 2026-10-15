@@ -90,6 +90,8 @@ do $$ begin
 end $$;
 
 -- -----------------------------------------------------------------------------
+insert into public.offices (slug, name, address, is_active) values ('rls-hidden', 'Скрытая', 'ул. Тестовая, 1', false);
+
 \echo '4. Клиент видит только своё'
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}', true);
@@ -123,6 +125,16 @@ do $$ begin
   begin
     update public.orders set total_price = 1 where id = '00000000-0000-0000-0000-0000000000a1';
     assert not found, 'Клиент изменил цену своего заказа';
+  end;
+  -- точки приёма: клиент видит только активные и не может их менять
+  assert (select count(*) from public.offices) = (select count(*) from public.offices where is_active),
+    'Клиент видит скрытые точки приёма';
+  update public.offices set address = 'взлом' where true;
+  assert not found, 'Клиент изменил адрес точки приёма';
+  begin
+    insert into public.offices (slug, name, address) values ('rls-hack', 'X', 'X');
+    raise exception 'FAIL: клиент создал точку приёма';
+  exception when insufficient_privilege then null;
   end;
 end $$;
 reset role;

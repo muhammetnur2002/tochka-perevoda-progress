@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/common/page-header";
 import { OrderStatusBadge } from "@/components/order/order-status-badge";
 import { ClientEditForm } from "@/components/admin/client-edit-form";
@@ -12,6 +13,7 @@ export const metadata: Metadata = { title: "Клиент" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminClientPage({ params }: { params: { id: string } }) {
+  const t = await getTranslations("admin.clients");
   const supabase = createClient();
   const { data: client } = await supabase.from("clients").select("*").eq("id", params.id).maybeSingle();
   if (!client) notFound();
@@ -28,12 +30,12 @@ export default async function AdminClientPage({ params }: { params: { id: string
   return (
     <>
       <Link href="/admin/clients" className="inline-flex min-h-10 items-center text-sm font-bold text-brand-500">
-        ← Все клиенты
+        ← {t("allClients")}
       </Link>
-      <PageHeader title={client.name} description={`Заказов: ${(orders ?? []).length} · на сумму ${formatMoney(total)}`} />
+      <PageHeader title={client.name} description={t("summary", { n: (orders ?? []).length, amount: formatMoney(total) })} />
       <div className="grid gap-5 xl:grid-cols-[1fr_380px]">
         <section className="rounded-2xl border bg-card p-4">
-          <h2 className="mb-3 font-bold text-brand-800">Заказы</h2>
+          <h2 className="mb-3 font-bold text-brand-800">{t("orders")}</h2>
           <ul className="divide-y">
             {(orders ?? []).map((o) => (
               <li key={o.id} className="flex flex-wrap items-center gap-3 py-2.5 text-sm">
@@ -54,8 +56,8 @@ export default async function AdminClientPage({ params }: { params: { id: string
             initial={{ name: client.name, phone: client.phone, email: client.email, inn: client.inn, type: client.type }}
           />
           <section className="rounded-2xl border bg-card p-4 text-sm">
-            <h2 className="mb-2 font-bold text-brand-800">Согласия 152-ФЗ</h2>
-            {(consents ?? []).length === 0 && <p className="text-muted-foreground">Нет записей</p>}
+            <h2 className="mb-2 font-bold text-brand-800">{t("consents")}</h2>
+            {(consents ?? []).length === 0 && <p className="text-muted-foreground">{t("noRecords")}</p>}
             <ul className="space-y-1 text-muted-foreground">
               {(consents ?? []).map((c, i) => (
                 <li key={i}>

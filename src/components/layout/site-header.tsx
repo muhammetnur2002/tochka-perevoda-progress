@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Menu, ShoppingCart, User } from "lucide-react";
 import { Logo } from "./logo";
 import { Button } from "@/components/ui/button";
@@ -20,16 +21,19 @@ import { CartDrawer } from "@/components/cart/cart-drawer";
 import { useCart } from "@/components/cart/cart-provider";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { homePathForRole, isStaffRole, ROLE_LABELS } from "@/lib/auth/roles";
+import { homePathForRole, isStaffRole } from "@/lib/auth/roles";
+import { LocaleSwitcher } from "./locale-switcher";
 
 const NAV = [
-  { href: "/", label: "Главная" },
-  { href: "/services", label: "Услуги и цены" },
-  { href: "/calculator", label: "Калькулятор" },
-  { href: "/status", label: "Статус заказа" },
-];
+  { href: "/", key: "home" },
+  { href: "/services", key: "services" },
+  { href: "/calculator", key: "calculator" },
+  { href: "/status", key: "status" },
+] as const;
 
 export function SiteHeader() {
+  const t = useTranslations("nav");
+  const tr = useTranslations("roles");
   const pathname = usePathname();
   const { itemsCount } = useCart();
   const { user, profile, signOut } = useAuth();
@@ -52,18 +56,19 @@ export function SiteHeader() {
                   pathname === item.href && "text-brand-800",
                 )}
               >
-                {item.label}
+                {t(item.key)}
               </Link>
             ))}
           </nav>
         </div>
 
         <div className="flex items-center gap-2">
+          <LocaleSwitcher className="hidden sm:inline-flex" />
           <Button
             variant="outline"
             size="icon"
             className="relative"
-            aria-label="Корзина"
+            aria-label={t("cart")}
             onClick={() => setCartOpen(true)}
           >
             <ShoppingCart className="h-5 w-5" />
@@ -80,7 +85,7 @@ export function SiteHeader() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Аккаунт">
+                <Button variant="ghost" size="icon" aria-label={t("account")}>
                   <User className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
@@ -88,41 +93,42 @@ export function SiteHeader() {
                 <DropdownMenuLabel>
                   {profile?.name || user.email}
                   <span className="block text-xs font-normal text-muted-foreground">
-                    {ROLE_LABELS[profile?.role ?? "client"]}
+                    {tr(profile?.role ?? "client")}
                   </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/account">Личный кабинет</Link>
+                  <Link href="/account">{t("account")}</Link>
                 </DropdownMenuItem>
                 {isStaff && (
                   <DropdownMenuItem asChild>
                     <Link href={homePathForRole(profile?.role)}>
-                      {homePathForRole(profile?.role) === "/admin" ? "CRM-админка" : "Рабочее место"}
+                      {homePathForRole(profile?.role) === "/admin" ? t("crm") : t("workspace")}
                     </Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>Выйти</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signOut()}>{t("logout")}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Button asChild size="sm">
-              <Link href="/login">Войти</Link>
+              <Link href="/login">{t("login")}</Link>
             </Button>
           )}
 
           <div className="lg:hidden">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Меню">
+                <Button variant="ghost" size="icon" aria-label={t("menu")}>
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="left">
                 <SheetHeader>
-                  <SheetTitle>Меню</SheetTitle>
+                  <SheetTitle>{t("menu")}</SheetTitle>
                 </SheetHeader>
+                <LocaleSwitcher className="mt-4 w-full [&_select]:w-full" />
                 <nav className="mt-4 flex flex-col gap-1">
                   {NAV.map((item) => (
                     <Link
@@ -130,7 +136,7 @@ export function SiteHeader() {
                       href={item.href}
                       className="rounded-md px-3 py-3 text-base font-medium hover:bg-muted"
                     >
-                      {item.label}
+                      {t(item.key)}
                     </Link>
                   ))}
                 </nav>

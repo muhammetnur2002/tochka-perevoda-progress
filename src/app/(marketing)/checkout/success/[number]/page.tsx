@@ -1,21 +1,26 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { CheckCircle2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = { title: "Заказ оформлен", robots: { index: false } };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("meta");
+  return { title: t("success"), robots: { index: false } };
+}
 
 /**
  * Страница после оплаты. Сюда же возвращает ЮKassa (return_url) — к этому
  * моменту вебхук мог ещё не прийти, поэтому без ?paid=1 пишем «обрабатывается».
  */
-export default function CheckoutSuccessPage({
+export default async function CheckoutSuccessPage({
   params,
   searchParams,
 }: {
   params: { number: string };
   searchParams: { paid?: string };
 }) {
+  const t = await getTranslations("success");
   const number = decodeURIComponent(params.number);
   const paid = searchParams.paid === "1";
   const statusHref = `/status?number=${encodeURIComponent(number)}`;
@@ -30,20 +35,16 @@ export default function CheckoutSuccessPage({
         )}
       </span>
       <h1 className="text-3xl font-extrabold text-brand-800 md:text-4xl">
-        {paid ? `Заказ ${number} оплачен` : `Заказ ${number} оформлен`}
+        {paid ? t("paidTitle", { number }) : t("createdTitle", { number })}
       </h1>
-      <p className="mt-4 text-lg leading-relaxed text-slate-700">
-        {paid
-          ? "Спасибо! Мы начали работу. Уведомления о статусе придут в Telegram, по SMS или на email."
-          : "Платёж обрабатывается — как только банк подтвердит оплату, мы пришлём уведомление."}
-      </p>
-      <p className="mt-2 text-sm text-muted-foreground">Сохраните номер заказа — по нему и телефону можно проверить статус.</p>
+      <p className="mt-4 text-lg leading-relaxed text-slate-700">{paid ? t("paidText") : t("pendingText")}</p>
+      <p className="mt-2 text-sm text-muted-foreground">{t("keepNumber")}</p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Button asChild size="lg">
-          <Link href={statusHref}>Отследить статус</Link>
+          <Link href={statusHref}>{t("track")}</Link>
         </Button>
         <Button asChild size="lg" variant="outline">
-          <Link href="/account">Мои заказы</Link>
+          <Link href="/account">{t("myOrders")}</Link>
         </Button>
       </div>
     </div>

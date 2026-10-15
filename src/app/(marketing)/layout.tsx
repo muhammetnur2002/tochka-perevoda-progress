@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 
-export const metadata: Metadata = {
-  title: {
-    default: "Бюро переводов в Казани",
-    template: "%s · Точка Перевода Прогресс",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("meta");
+  return { title: { default: t("siteTitle"), template: "%s · Точка Перевода Прогресс" } };
+}
 
 /** Общая обёртка публичных страниц (шапка + подвал). */
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {

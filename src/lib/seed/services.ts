@@ -168,19 +168,28 @@ export const SEED_SERVICES: SeedService[] = [
 ];
 
 /** Языки перевода (зеркало сида языков). */
-export const SEED_LANGUAGES: { code: string; name: string }[] = [
-  { code: "ru", name: "Русский" },
-  { code: "en", name: "Английский" },
-  { code: "tt", name: "Татарский" },
-  { code: "de", name: "Немецкий" },
-  { code: "fr", name: "Французский" },
-  { code: "es", name: "Испанский" },
-  { code: "it", name: "Итальянский" },
-  { code: "zh", name: "Китайский" },
-  { code: "ar", name: "Арабский" },
-  { code: "tr", name: "Турецкий" },
-  { code: "uz", name: "Узбекский" },
-  { code: "ky", name: "Киргизский" },
-  { code: "kk", name: "Казахский" },
-  { code: "tg", name: "Таджикский" },
+/** Языки перевода (зеркало 0010_offices_languages.sql): 14 исходных → русский. */
+export const SEED_LANGUAGES: { code: string; name: string; isSource: boolean }[] = [
+  { code: "tk", name: "Туркменский", isSource: true },
+  { code: "uz", name: "Узбекский", isSource: true },
+  { code: "tr", name: "Турецкий", isSource: true },
+  { code: "az", name: "Азербайджанский", isSource: true },
+  { code: "kk", name: "Казахский", isSource: true },
+  { code: "ky", name: "Киргизский", isSource: true },
+  { code: "fa", name: "Персидский (Иран, фарси)", isSource: true },
+  { code: "ar-IQ", name: "Арабский (Ирак)", isSource: true },
+  { code: "ar-SY", name: "Арабский (Сирия)", isSource: true },
+  { code: "en", name: "Английский", isSource: true },
+  { code: "de", name: "Немецкий", isSource: true },
+  { code: "fr", name: "Французский", isSource: true },
+  { code: "es", name: "Испанский", isSource: true },
+  { code: "it", name: "Итальянский", isSource: true },
+  { code: "ru", name: "Русский", isSource: false },
+];
+
+/** Точки приёма (зеркало 0010): часы и телефоны задаются в админке. */
+export const SEED_OFFICES: { slug: string; name: string; address: string }[] = [
+  { slug: "sibirsky-trakt", name: "Сибирский Тракт", address: "ул. Сибирский Тракт, 7/6" },
+  { slug: "karla-marksa", name: "Карла Маркса", address: "ул. Карла Маркса, 65" },
+  { slug: "promyslovaya", name: "Промысловая", address: "ул. Промысловая, 5, каб. 3" },
 ];

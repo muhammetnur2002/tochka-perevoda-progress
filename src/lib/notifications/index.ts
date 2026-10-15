@@ -125,7 +125,7 @@ async function orderRecipient(orderId: string) {
   const admin = createAdminClient();
   const { data: order } = await admin
     .from("orders")
-    .select("id, user_id, public_number, status, delivery_type, total_price, client:clients(phone, email)")
+    .select("id, user_id, public_number, status, delivery_type, total_price, client:clients(phone, email), office:offices(address, hours)")
     .eq("id", orderId)
     .maybeSingle();
   if (!order) return null;
@@ -167,7 +167,7 @@ export async function notifyOrderStatusChange(orderId: string): Promise<void> {
 
   const msg =
     status === "ready"
-      ? readyMessage(order.public_number, order.delivery_type)
+      ? readyMessage(order.public_number, order.delivery_type, order.office)
       : statusChangedMessage(order.public_number, status);
   await deliverWithFallback(order.id, recipient, msg);
 }
@@ -253,7 +253,7 @@ export async function notifyUnclaimedOrders(): Promise<number> {
   for (const row of rows ?? []) {
     if (await alreadyNotified(row.id, "ждёт вас")) continue;
     const found = await orderRecipient(row.id);
-    if (found) await deliverWithFallback(row.id, found.recipient, pickupReminder(row.public_number));
+    if (found) await deliverWithFallback(row.id, found.recipient, pickupReminder(row.public_number, found.order.office));
     const days = Math.floor((Date.now() - new Date(row.updated_at).getTime()) / 86_400_000);
     await broadcastToManagers(row.id, unclaimedManagerWarning(row.public_number, days));
     count += 1;

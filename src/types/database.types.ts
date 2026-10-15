@@ -116,6 +116,25 @@ export type LanguageRow = {
   code: string;
   name: string;
   is_active: boolean;
+  /** Исходный язык перевода (перевод выполняется на русский). */
+  is_source: boolean;
+  sort_order: number;
+};
+
+export type OfficeRow = {
+  id: string;
+  slug: string;
+  name: string;
+  city: string;
+  address: string;
+  hours: string | null;
+  phone: string | null;
+  lat: number | null;
+  lng: number | null;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
 };
 
 export type OrderRow = {
@@ -123,6 +142,7 @@ export type OrderRow = {
   public_number: string;
   client_id: string;
   user_id: string | null;
+  office_id: string | null;
   status: OrderStatus;
   language_from: string | null;
   language_to: string | null;
@@ -356,6 +376,7 @@ export type Database = {
         [Fk<"price_rules_service_id_fkey", "service_id", "services">]
       >;
       languages: Table<LanguageRow, Ins<LanguageRow, "code" | "name">>;
+      offices: Table<OfficeRow, Ins<OfficeRow, "slug" | "name" | "address">>;
       orders: Table<
         OrderRow,
         Ins<OrderRow, "client_id">,
@@ -364,6 +385,7 @@ export type Database = {
           Fk<"orders_user_id_fkey", "user_id", "users">,
           Fk<"orders_language_from_fkey", "language_from", "languages">,
           Fk<"orders_language_to_fkey", "language_to", "languages">,
+          Fk<"orders_office_id_fkey", "office_id", "offices">,
         ]
       >;
       order_items: Table<

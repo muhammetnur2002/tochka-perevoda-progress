@@ -1,0 +1,638 @@
+{
+  "common": {
+    "language": "Language",
+    "brandName": "Точка Перевода Прогресс",
+    "brandShort": "ТОЧКА ПЕРЕВОДА",
+    "brandSub": "ПРОГРЕСС",
+    "city": "Kazan",
+    "toHome": "to the home page",
+    "loading": "Loading…",
+    "save": "Save",
+    "saved": "Saved",
+    "cancel": "Cancel",
+    "back": "Back",
+    "close": "Close",
+    "download": "Download",
+    "open": "Open",
+    "remove": "Remove",
+    "phonePlaceholder": "+7 (___) ___-__-__",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "notFoundTitle": "Page not found",
+    "notFoundText": "The page you requested does not exist or has been moved.",
+    "toMain": "Go to home page",
+    "errorText": "An error occurred. Please try again.",
+    "rub": "₽"
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services & prices",
+    "calculator": "Calculator",
+    "status": "Order status",
+    "account": "My account",
+    "login": "Log in",
+    "logout": "Log out",
+    "cart": "Cart",
+    "menu": "Menu",
+    "crm": "CRM admin",
+    "workspace": "Workspace",
+    "mainMenu": "Main menu"
+  },
+  "categories": {
+    "translation": "Translations",
+    "printing": "Printing",
+    "insurance": "Insurance",
+    "additional": "Other services"
+  },
+  "units": {
+    "page": "per page",
+    "document": "per document",
+    "item": "per item"
+  },
+  "orderStatus": {
+    "new": "New",
+    "confirmed": "Confirmed",
+    "in_progress": "In progress",
+    "ready": "Ready",
+    "issued": "Handed over",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "urgency": {
+    "legend": "Urgency",
+    "standard": "Standard, 1–2 business days",
+    "1d": "Urgent — within 1 day",
+    "same_day": "Same day"
+  },
+  "languages": {
+    "tk": "Turkmen",
+    "uz": "Uzbek",
+    "tr": "Turkish",
+    "az": "Azerbaijani",
+    "kk": "Kazakh",
+    "ky": "Kyrgyz",
+    "fa": "Persian (Iran, Farsi)",
+    "ar-IQ": "Arabic (Iraq)",
+    "ar-SY": "Arabic (Syria)",
+    "en": "English",
+    "de": "German",
+    "fr": "French",
+    "es": "Spanish",
+    "it": "Italian",
+    "ru": "Russian"
+  },
+  "services": {
+    "legal": {
+      "name": "Translation of legal documents",
+      "description": "Contracts, company formation documents, powers of attorney, court decisions. Price per page."
+    },
+    "medical": {
+      "name": "Translation of medical documents",
+      "description": "Medical certificates, extracts from medical records, medical reports, discharge summaries. Price per page."
+    },
+    "technical": {
+      "name": "Translation of technical documentation",
+      "description": "Manuals, equipment data sheets, drawings, technical specifications. Price per page."
+    },
+    "military-id": {
+      "name": "Military ID translation (notarized)",
+      "description": "Translation with notarization. Fixed price per document."
+    },
+    "work-book": {
+      "name": "Employment record book translation (notarized)",
+      "description": "Translation with notarization. Fixed price per document."
+    },
+    "diploma": {
+      "name": "Diploma translation (notarized)",
+      "description": "Translation of an education document with notarization."
+    },
+    "certificate": {
+      "name": "Certificate translation (notarized)",
+      "description": "Translation of a certificate with notarization."
+    },
+    "passport-all": {
+      "name": "Passport translation (all pages)",
+      "description": "Translation of all passport pages."
+    },
+    "driver-license": {
+      "name": "Driver's license translation",
+      "description": "Translation of a driver's license."
+    },
+    "passport-notary": {
+      "name": "Passport translation (notarized)",
+      "description": "Passport translation with notarization."
+    },
+    "power-of-attorney": {
+      "name": "Power of attorney translation (notarized)",
+      "description": "Translation of a power of attorney with notarization."
+    },
+    "photocopy-a4": {
+      "name": "A4 photocopy",
+      "description": "Black-and-white A4 photocopy."
+    },
+    "scanning": {
+      "name": "Scanning",
+      "description": "Scanning of one sheet."
+    },
+    "color-print": {
+      "name": "Color printing",
+      "description": "Color printing of one sheet."
+    },
+    "color-photocopy": {
+      "name": "Color photocopy",
+      "description": "Color photocopy of one sheet."
+    },
+    "bw-print": {
+      "name": "Black-and-white printing",
+      "description": "Black-and-white printing of one sheet."
+    },
+    "print-a3": {
+      "name": "A3 printing",
+      "description": "Printing in A3 format."
+    },
+    "print-a2": {
+      "name": "A2 printing",
+      "description": "Printing in A2 format."
+    },
+    "print-a1": {
+      "name": "A1 printing",
+      "description": "Printing in A1 format."
+    },
+    "laminating": {
+      "name": "Laminating",
+      "description": "Laminating of one sheet."
+    },
+    "binding": {
+      "name": "Binding",
+      "description": "Binding of one document."
+    },
+    "diploma-stitching": {
+      "name": "Diploma stitching",
+      "description": "Stitching of a diploma."
+    },
+    "photo": {
+      "name": "ID photos",
+      "description": "Photos for documents (set)."
+    },
+    "dms-student": {
+      "name": "Voluntary health insurance (VHI) for students (foreign citizens)",
+      "description": "Voluntary health insurance policy for international students."
+    }
+  },
+  "offices": {
+    "title": "Drop-off points in Kazan",
+    "choose": "Where would you like to drop off and pick up your documents?",
+    "hint": "Choose the nearest point — we accept and hand over documents there.",
+    "hours": "Opening hours",
+    "hoursTbd": "please call to check opening hours",
+    "phone": "Phone",
+    "route": "Directions",
+    "selected": "selected",
+    "pickupAt": "Pickup: {address}",
+    "officeLabel": "Drop-off point"
+  },
+  "languagePair": {
+    "title": "Translation language",
+    "from": "From",
+    "to": "To",
+    "choose": "Choose the language of your document",
+    "toRussianOnly": "We translate into Russian",
+    "hint": "Translation is done from the selected language into Russian."
+  },
+  "home": {
+    "badge": "Translation bureau · Kazan",
+    "heroTitle": "Document translation with notarization",
+    "heroText": "Translation from Turkmen, Uzbek, Turkish, Azerbaijani, Kazakh, Kyrgyz, Persian, Arabic and European languages into Russian. Printing and insurance. Order and pay online in a couple of minutes.",
+    "ctaCalc": "Calculate the price",
+    "ctaCatalog": "Service catalog",
+    "ctaStatus": "Check order status",
+    "factNotary": "Notarized",
+    "factDays": "1–2 days",
+    "factServices": "24 services in the price list",
+    "factOffices": "3 drop-off points",
+    "logoAlt": "«Точка Перевода Прогресс» logo",
+    "servicesTitle": "Services & prices",
+    "servicesSubtitle": "Current price list. The calculator gives the exact price based on urgency and the number of pages.",
+    "allServices": "All services & prices",
+    "whyTitle": "Why choose us",
+    "why": {
+      "days": {
+        "title": "Ready in 1–2 days",
+        "text": "Most translations are ready within 1–2 business days. Urgent and express options are available."
+      },
+      "notary": {
+        "title": "Notarization",
+        "text": "We have translations certified by a notary — all in one place, no extra trips."
+      },
+      "prices": {
+        "title": "Transparent prices",
+        "text": "See the exact price in the calculator before you order. Pay by card, SBP or QR code."
+      },
+      "telegram": {
+        "title": "Telegram service",
+        "text": "Order and track status right in Telegram. You get a notification automatically when it's ready."
+      }
+    },
+    "languagesTitle": "Languages we translate from",
+    "languagesText": "We translate into Russian from 14 languages:",
+    "stepsTitle": "How to place an order",
+    "steps": {
+      "1": {
+        "title": "Choose services",
+        "text": "Add services to your cart and specify the language of your document."
+      },
+      "2": {
+        "title": "Choose a location",
+        "text": "Select the nearest drop-off point in Kazan."
+      },
+      "3": {
+        "title": "Attach files and pay",
+        "text": "A photo or scan from your phone is enough. Pay by SBP, QR code or card."
+      },
+      "4": {
+        "title": "Get your result",
+        "text": "We will notify you when it's ready. Pick it up at the selected location."
+      }
+    },
+    "faqTitle": "Frequently asked questions",
+    "faq": {
+      "price": {
+        "q": "How much does it cost to translate one page?",
+        "a": "Legal and medical documents — 550 ₽ per page, technical documentation — 650 ₽. Passport, diploma and certificate translations have fixed prices listed in the catalog."
+      },
+      "time": {
+        "q": "How quickly will the translation be ready?",
+        "a": "The standard time is 1–2 business days. Urgent: within 1 day (×1.5) or on the same day (×2)."
+      },
+      "notary": {
+        "q": "Do you have translations notarized?",
+        "a": "Yes. Services marked «notarized» already include notarization; for other translations you can add it in the cart."
+      },
+      "languages": {
+        "q": "Which languages do you translate from?",
+        "a": "From Turkmen, Uzbek, Turkish, Azerbaijani, Kazakh, Kyrgyz, Persian (Farsi), Arabic (Iraq, Syria), English, German, French, Spanish and Italian — into Russian."
+      },
+      "status": {
+        "q": "How can I track my order status?",
+        "a": "Use your order number and phone number on the «Order status» page, in your account or in Telegram."
+      },
+      "where": {
+        "q": "Where are you located?",
+        "a": "We have three drop-off points in Kazan: Sibirsky Trakt St., 7/6; Karla Marksa St., 65; Promyslovaya St., 5, office 3."
+      }
+    },
+    "contactsTitle": "Contacts",
+    "orderCta": "Place an order",
+    "metaTitle": "Translation, printing and insurance in Kazan",
+    "metaDescription": "«Точка Перевода Прогресс» translation bureau in Kazan: document translation from Turkmen, Uzbek, Turkish and other languages into Russian, notarization, printing, insurance. Online ordering, payment and status tracking.",
+    "mapTitle": "Map of drop-off points",
+    "officesText": "Choose the nearest point — you can drop off your documents and pick up the finished translation there."
+  },
+  "catalog": {
+    "title": "Service catalog and prices",
+    "subtitle": "Choose a category. For services marked «notarized», notarization is included in the price; for others it is added separately.",
+    "all": "All services",
+    "notarial": "notarized",
+    "add": "Add",
+    "added": "Added: {name}",
+    "addAria": "Add: {name}",
+    "empty": "No services found."
+  },
+  "calculator": {
+    "title": "Calculator and cart",
+    "subtitle": "Enter the number of pages or documents — the total and the ready date update instantly.",
+    "categoriesAria": "Service categories",
+    "yourOrder": "Your order",
+    "empty": "Your cart is empty. Add a service with the «+» button.",
+    "withNotary": "with notarization",
+    "increase": "Increase: {name}",
+    "decrease": "Decrease: {name}",
+    "notaryLabel": "Notarization for translations that don't include it",
+    "notaryPrice": "+{price} × {count} doc.",
+    "notaryTbd": "(a manager will confirm the price)",
+    "services": "Services",
+    "discount": "Volume discount",
+    "urgencySurcharge": "Urgency surcharge",
+    "notary": "Notarization",
+    "delivery": "Delivery",
+    "total": "Total",
+    "ready": "Ready by",
+    "sameDay": "today by 7:00 PM",
+    "checkout": "Place order",
+    "disclaimer": "Preliminary estimate. The final price is fixed on the server according to the current price list when you place the order.",
+    "receiving": "Receiving",
+    "pickup": "Pickup at a drop-off point",
+    "courier": "Courier delivery",
+    "courierPrice": "Delivery (+{price})"
+  },
+  "cartDrawer": {
+    "title": "Cart",
+    "description": "Selected services and preliminary estimate",
+    "empty": "Your cart is empty",
+    "toCatalog": "Go to catalog",
+    "sum": "Subtotal",
+    "urgency": "Urgency (×{coef})",
+    "total": "Total",
+    "calculate": "Get exact price",
+    "checkout": "Place order"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "backToCart": "← Back to cart",
+    "contacts": "Contact details",
+    "name": "Name *",
+    "namePlaceholder": "How should we address you?",
+    "phone": "Phone *",
+    "email": "Email",
+    "emailPlaceholder": "for receipts and notifications",
+    "telegram": "Telegram",
+    "individual": "Individual",
+    "company": "Company (invoice, INN)",
+    "inn": "INN (Taxpayer ID)",
+    "innPlaceholder": "10 or 12 digits",
+    "deliveryAddress": "Delivery address *",
+    "deliveryAddressPlaceholder": "City, street, building, apartment",
+    "comment": "Comment",
+    "commentPlaceholder": "For example: names in Latin letters as in the international passport",
+    "files": "Document files",
+    "payMethod": "Payment method",
+    "consentPrefix": "I give my",
+    "consentLink": "consent to the processing of personal data",
+    "consentMiddle": "in accordance with Federal Law 152-FZ, I have read the",
+    "privacyLink": "privacy policy",
+    "consentAnd": "and accept the",
+    "termsLink": "terms of service",
+    "submit": "Proceed to payment",
+    "stageCreating": "Placing your order…",
+    "stageUploading": "Uploading files: {current} of {total}",
+    "fileFailed": "File «{name}» was not uploaded: {error}. You can send it later.",
+    "emptyCart": "Your cart is empty — please choose services.",
+    "toCalculator": "Go to calculator",
+    "totalTitle": "Total to pay",
+    "receiving": "Receiving",
+    "pickup": "Pickup",
+    "delivery": "Delivery",
+    "serverPriceNote": "The price is recalculated on the server using the current price list. You will receive the order number by SMS and in Telegram.",
+    "changeItems": "Edit order",
+    "errors": {
+      "name": "Please enter your name",
+      "phone": "Enter a Russian phone number",
+      "email": "Invalid email",
+      "consent": "You cannot place an order without consenting to data processing",
+      "address": "Please enter a delivery address",
+      "office": "Please choose a drop-off point",
+      "language": "Please specify the language of your document"
+    }
+  },
+  "dropzone": {
+    "dragHere": "Drag files here",
+    "formats": "JPG, PNG, HEIC, PDF, DOC/DOCX, ZIP · up to {size}",
+    "choose": "Choose files",
+    "camera": "Take a photo",
+    "unsupported": "The format of file «{name}» is not supported",
+    "tooBig": "File «{name}» is larger than {size}",
+    "tooMany": "No more than {max} files per order",
+    "removeAria": "Remove {name}"
+  },
+  "payment": {
+    "title": "Payment for order {number}",
+    "sbp": "SBP (Faster Payments System)",
+    "sbpHint": "via your banking app",
+    "qr": "QR code",
+    "qrHint": "scan with your camera",
+    "card": "Bank card",
+    "cardHint": "Mir, Visa, Mastercard",
+    "order": "Order {number}",
+    "qrAria": "QR code for payment via SBP",
+    "cardText": "A secure YooKassa page will open. After payment you will return to the website.",
+    "qrText": "Scan the QR code with your camera or open your banking app — the amount will be filled in automatically. The status will update by itself.",
+    "openBank": "Open banking app",
+    "goPay": "Proceed to payment",
+    "iPaid": "I have paid",
+    "mockNote": "Test mode: payment is simulated by a mock provider (YooKassa keys are not set)",
+    "noAccessTitle": "No access to payment",
+    "noAccessText": "Open the link on the same device you used to place the order, or log in to your account."
+  },
+  "success": {
+    "paidTitle": "Order {number} has been paid",
+    "createdTitle": "Order {number} has been placed",
+    "paidText": "Thank you! We have started working on it. Status notifications will be sent via Telegram, SMS or email.",
+    "pendingText": "Your payment is being processed — we will notify you as soon as the bank confirms it.",
+    "keepNumber": "Save your order number — you can use it with your phone number to check the status.",
+    "track": "Track status",
+    "myOrders": "My orders"
+  },
+  "mockSbp": {
+    "title": "Test SBP QR code",
+    "text": "The platform is running in demo mode without YooKassa connected, so this QR code leads to a test page. Go back to the payment page and click «I have paid»."
+  },
+  "statusPage": {
+    "title": "Order status",
+    "number": "Order number",
+    "phone": "Phone",
+    "check": "Check",
+    "notFound": "Order not found. Please check the order number and the phone number you provided when ordering.",
+    "order": "Order",
+    "services": "Services",
+    "readiness": "Ready by",
+    "tbd": "to be confirmed",
+    "sum": "Amount",
+    "paid": "paid",
+    "unpaid": "awaiting payment",
+    "receiving": "Receiving",
+    "courier": "courier delivery"
+  },
+  "timeline": {
+    "aria": "Order progress",
+    "cancelled": "Order cancelled",
+    "now": "now"
+  },
+  "files": {
+    "none": "No files.",
+    "download": "Download",
+    "downloadAria": "Download {name}",
+    "kind": {
+      "source": "original",
+      "translation": "translation",
+      "receipt": "receipt",
+      "photo": "photo",
+      "other": "file"
+    }
+  },
+  "chat": {
+    "empty": "Write to a manager — we will reply during business hours.",
+    "manager": "Manager",
+    "placeholder": "Message…",
+    "label": "Message",
+    "send": "Send"
+  },
+  "auth": {
+    "backToSite": "← Back to website",
+    "email": "Email",
+    "password": "Password",
+    "login": {
+      "title": "Log in",
+      "description": "Log in to your account",
+      "submit": "Log in",
+      "success": "You are logged in",
+      "invalid": "Incorrect email or password",
+      "forgot": "Forgot your password?",
+      "noAccount": "No account? Sign up"
+    },
+    "register": {
+      "title": "Sign up",
+      "description": "Create an account to track your orders",
+      "name": "Name",
+      "namePlaceholder": "John Smith",
+      "phone": "Phone",
+      "passwordPlaceholder": "At least 8 characters",
+      "submit": "Sign up",
+      "created": "Account created",
+      "confirmEmail": "Confirm your email — we have sent you a link",
+      "phoneInvalid": "Enter a valid Russian phone number",
+      "haveAccount": "Already have an account?",
+      "login": "Log in"
+    },
+    "reset": {
+      "title": "Password recovery",
+      "description": "We will send a reset link to your email",
+      "submit": "Send link",
+      "sent": "Link sent. Please check your email.",
+      "backToLogin": "← Back to log in"
+    },
+    "update": {
+      "title": "New password",
+      "description": "Create a password of at least 8 characters",
+      "submit": "Save password",
+      "tooShort": "At least 8 characters",
+      "done": "Password updated"
+    }
+  },
+  "account": {
+    "title": "My account",
+    "tabsAria": "Account sections",
+    "tabs": {
+      "orders": "Orders",
+      "profile": "Profile",
+      "data": "My data"
+    },
+    "empty": "No orders yet. Orders placed with your phone number without logging in will appear here after you confirm your phone number in your profile.",
+    "calculate": "Calculate the price",
+    "from": "from {date}",
+    "files": "{count, plural, one {# file} other {# files}}",
+    "pay": "Pay",
+    "payAmount": "Pay {amount}",
+    "statusBtn": "Status",
+    "repeat": "Reorder",
+    "repeatUnavailable": "These services are no longer available in the catalog",
+    "repeatPartial": "Some services have been discontinued — they were not added",
+    "allOrders": "← All orders",
+    "readiness": "Ready by: {date}",
+    "deliveryTo": "Delivery: {address}",
+    "addressTbd": "address to be confirmed",
+    "composition": "Items and payment",
+    "total": "Total",
+    "paid": "Paid",
+    "filesTitle": "Files and receipts",
+    "chatTitle": "Chat with a manager",
+    "paymentStatus": {
+      "pending": "pending",
+      "waiting_for_capture": "processing",
+      "succeeded": "paid",
+      "canceled": "cancelled",
+      "refunded": "refunded"
+    },
+    "metaOrders": "My orders",
+    "metaOrder": "Order",
+    "metaProfile": "Profile",
+    "translationPair": "Translation: {from} → {to}",
+    "titleTemplate": "My account"
+  },
+  "profile": {
+    "name": "Name",
+    "email": "Email",
+    "telegram": "Telegram",
+    "linked": "linked",
+    "notLinked": "not linked",
+    "openBot": "Open bot @{bot}",
+    "newPassword": "New password",
+    "newPasswordPlaceholder": "leave blank to keep the current one",
+    "save": "Save",
+    "saved": "Profile saved",
+    "nameRequired": "Please enter your name",
+    "sessionExpired": "Your session has expired — please log in again",
+    "passwordShort": "Password must be at least 8 characters",
+    "phoneTitle": "Phone",
+    "phoneText": "Order notifications are sent to your phone. After you confirm it with a code, orders placed with this number without logging in will be linked to your account.",
+    "phoneNumber": "Number",
+    "phoneInvalid": "Enter a Russian phone number",
+    "verified": "verified",
+    "getCode": "Get code",
+    "resendCode": "Resend code",
+    "codeSent": "Code sent by SMS",
+    "code": "SMS code",
+    "confirm": "Confirm",
+    "confirmed": "Phone number confirmed",
+    "confirmedWithOrders": "Phone number confirmed. Orders linked: {count}",
+    "linkedAs": "linked: @{username}"
+  },
+  "dataPage": {
+    "title": "My data",
+    "exportTitle": "Export of personal data",
+    "exportText": "Under Federal Law 152-FZ, you can get a copy of your personal data in a machine-readable format (JSON).",
+    "exportButton": "Export data",
+    "exportFailed": "Failed to export data",
+    "deleteTitle": "Data deletion",
+    "deleteText": "Deletion anonymizes your profile, client records and consents. Order data is kept in anonymized form as required by accounting regulations.",
+    "deleteButton": "Delete my data",
+    "confirmTitle": "Delete personal data?",
+    "confirmText": "This action cannot be undone. You will lose access to your order history.",
+    "deleting": "Deleting…",
+    "delete": "Delete",
+    "deleted": "Data deleted",
+    "deleteFailed": "Failed to delete data"
+  },
+  "footer": {
+    "services": "Services",
+    "translations": "Document translation",
+    "printing": "Printing",
+    "insurance": "Insurance",
+    "calculator": "Price calculator",
+    "clients": "For clients",
+    "order": "Place an order",
+    "status": "Check status",
+    "account": "My account",
+    "login": "Log in",
+    "info": "Information",
+    "privacy": "Privacy policy",
+    "terms": "Terms of service",
+    "consent": "Consent to personal data processing",
+    "rights": "All rights reserved.",
+    "legalName": "«Точка Перевода Прогресс» translation bureau"
+  },
+  "legal": {
+    "officialNotice": "The official text of this document is in Russian. The interface translation is provided for convenience."
+  },
+  "roles": {
+    "guest": "Guest",
+    "client": "Client",
+    "manager": "Manager",
+    "translator": "Translator",
+    "notary": "Notary",
+    "printer": "Printing",
+    "admin": "Administrator"
+  },
+  "meta": {
+    "siteTitle": "Translation bureau in Kazan",
+    "calculator": "Translation price calculator",
+    "calculatorDescription": "Calculate the cost of translation, notarization and printing online: number of pages, urgency, drop-off point and ready date.",
+    "checkout": "Checkout",
+    "mockSbp": "Test SBP payment",
+    "pay": "Order payment",
+    "success": "Order placed",
+    "services": "Services & prices",
+    "servicesDescription": "Full price list of the «Точка Перевода Прогресс» translation bureau: document translation, printing, insurance. Prices per page and per document.",
+    "status": "Order status",
+    "statusDescription": "Check your order status by order number and phone: accepted, in progress, ready for pickup."
+  }
+}

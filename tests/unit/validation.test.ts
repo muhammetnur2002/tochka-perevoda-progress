@@ -5,12 +5,14 @@ import { serviceSchema } from "@/lib/validation/service";
 import { chatMessageSchema } from "@/lib/validation/chat";
 
 const UUID = "3f1c0b7e-8d0a-4a51-9a40-1f6f4d8f2b11";
+const OFFICE = "9a7e2c1d-4b3f-4e5a-8c6d-0f1e2d3c4b5a";
 
 const base = {
   name: "Айгуль",
   phone: "8 (917) 123-45-67",
   consent: true,
   items: [{ serviceId: UUID, quantity: 2 }],
+  officeId: OFFICE,
 };
 
 describe("createOrderSchema", () => {
@@ -27,6 +29,18 @@ describe("createOrderSchema", () => {
     const r = createOrderSchema.safeParse({ ...base, consent: false });
     expect(r.success).toBe(false);
     expect(r.error?.issues[0]?.message).toMatch(/согласие/i);
+  });
+
+  it("точка приёма обязательна, язык оригинала — UUID или пусто", () => {
+    const { officeId: _omit, ...noOffice } = base;
+    const r = createOrderSchema.safeParse(noOffice);
+    expect(r.success).toBe(false);
+    expect(r.error?.issues[0]?.message).toBe("Выберите точку приёма");
+    expect(createOrderSchema.safeParse({ ...base, officeId: "karla-marksa" }).success).toBe(false);
+    expect(createOrderSchema.parse({ ...base, languageFrom: UUID }).languageFrom).toBe(UUID);
+    expect(createOrderSchema.safeParse({ ...base, languageFrom: "tk" }).success).toBe(false);
+    // язык перевода клиент не задаёт — всегда русский, ставит сервер
+    expect(createOrderSchema.parse({ ...base, languageTo: UUID })).not.toHaveProperty("languageTo");
   });
 
   it("для доставки обязателен адрес", () => {

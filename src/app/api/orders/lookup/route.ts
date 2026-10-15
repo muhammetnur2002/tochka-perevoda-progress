@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     const { data: order, error } = await admin
       .from("orders")
       .select(
-        "id, public_number, status, total_price, paid_amount, deadline, delivery_type, created_at, client:clients(phone), items:order_items(name_snapshot, quantity)",
+        "id, public_number, status, total_price, paid_amount, deadline, delivery_type, created_at, client:clients(phone), items:order_items(name_snapshot, quantity), office:offices(address, hours, phone)",
       )
       .eq("public_number", number)
       .maybeSingle();
@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
         paid: Number(order.paid_amount) >= Number(order.total_price),
         deadline: order.deadline,
         delivery_type: order.delivery_type,
+        office: order.office,
         created_at: order.created_at,
         items: order.items ?? [],
         history: history ?? [],

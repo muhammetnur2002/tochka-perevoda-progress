@@ -1,13 +1,13 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import type { LanguageRow, ServiceRow } from "@/types/database.types";
+import type { LanguageRow, OfficeRow, ServiceRow } from "@/types/database.types";
 import { settingsToPricing } from "@/lib/services/pricing";
-import type { UrgencyKey } from "@/types/domain";
 
 export interface CatalogResponse {
   services: ServiceRow[];
   languages: LanguageRow[];
+  offices: OfficeRow[];
   settings: Record<string, unknown>;
 }
 
@@ -30,10 +30,3 @@ export function useCatalog() {
 export function toPricingSettings(settings: Record<string, unknown> | undefined) {
   return settingsToPricing(settings);
 }
-
-/** Человекочитаемые подписи срочности. */
-export const URGENCY_LABELS: Record<UrgencyKey, string> = {
-  standard: "Обычный срок (1–2 дня)",
-  "1d": "Срочно (1 день, +50%)",
-  same_day: "Экспресс (в день обращения, ×2)",
-};

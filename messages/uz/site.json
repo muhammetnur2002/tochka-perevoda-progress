@@ -1,0 +1,638 @@
+{
+  "common": {
+    "language": "Til",
+    "brandName": "Точка Перевода Прогресс",
+    "brandShort": "ТОЧКА ПЕРЕВОДА",
+    "brandSub": "ПРОГРЕСС",
+    "city": "Qozon",
+    "toHome": "bosh sahifaga",
+    "loading": "Yuklanmoqda…",
+    "save": "Saqlash",
+    "saved": "Saqlandi",
+    "cancel": "Bekor qilish",
+    "back": "Orqaga",
+    "close": "Yopish",
+    "download": "Yuklab olish",
+    "open": "Ochish",
+    "remove": "Oʻchirish",
+    "phonePlaceholder": "+7 (___) ___-__-__",
+    "error": "Nimadir notoʻgʻri ketdi",
+    "retry": "Qayta urinish",
+    "notFoundTitle": "Sahifa topilmadi",
+    "notFoundText": "Soʻralgan sahifa mavjud emas yoki koʻchirilgan.",
+    "toMain": "Bosh sahifaga",
+    "errorText": "Xatolik yuz berdi. Qaytadan urinib koʻring.",
+    "rub": "₽"
+  },
+  "nav": {
+    "home": "Bosh sahifa",
+    "services": "Xizmatlar va narxlar",
+    "calculator": "Kalkulyator",
+    "status": "Buyurtma holati",
+    "account": "Shaxsiy kabinet",
+    "login": "Kirish",
+    "logout": "Chiqish",
+    "cart": "Savat",
+    "menu": "Menyu",
+    "crm": "CRM-admin panel",
+    "workspace": "Ish joyi",
+    "mainMenu": "Asosiy menyu"
+  },
+  "categories": {
+    "translation": "Tarjimalar",
+    "printing": "Poligrafiya",
+    "insurance": "Sugʻurta",
+    "additional": "Qoʻshimcha"
+  },
+  "units": {
+    "page": "sahifa uchun",
+    "document": "hujjat uchun",
+    "item": "dona uchun"
+  },
+  "orderStatus": {
+    "new": "Yangi",
+    "confirmed": "Tasdiqlandi",
+    "in_progress": "Jarayonda",
+    "ready": "Tayyor",
+    "issued": "Topshirildi",
+    "completed": "Yakunlandi",
+    "cancelled": "Bekor qilindi"
+  },
+  "urgency": {
+    "legend": "Shoshilinchlik",
+    "standard": "Standart, 1–2 ish kuni",
+    "1d": "Shoshilinch — 1 kunda",
+    "same_day": "Murojaat qilingan kuni"
+  },
+  "languages": {
+    "tk": "Turkman tili",
+    "uz": "Oʻzbek tili",
+    "tr": "Turk tili",
+    "az": "Ozarbayjon tili",
+    "kk": "Qozoq tili",
+    "ky": "Qirgʻiz tili",
+    "fa": "Fors tili (Eron, forsiy)",
+    "ar-IQ": "Arab tili (Iroq)",
+    "ar-SY": "Arab tili (Suriya)",
+    "en": "Ingliz tili",
+    "de": "Nemis tili",
+    "fr": "Fransuz tili",
+    "es": "Ispan tili",
+    "it": "Italyan tili",
+    "ru": "Rus tili"
+  },
+  "services": {
+    "legal": {
+      "name": "Yuridik hujjatlar tarjimasi",
+      "description": "Shartnomalar, taʼsis hujjatlari, ishonchnomalar, sud qarorlari. Narx sahifa uchun."
+    },
+    "medical": {
+      "name": "Tibbiy hujjatlar tarjimasi",
+      "description": "Maʼlumotnomalar, koʻchirmalar, xulosalar, epikrizlar. Narx sahifa uchun."
+    },
+    "technical": {
+      "name": "Texnik hujjatlar tarjimasi",
+      "description": "Yoʻriqnomalar, uskuna pasportlari, chizmalar, texnik shartlar. Narx sahifa uchun."
+    },
+    "military-id": {
+      "name": "Harbiy bilet tarjimasi (notarial)",
+      "description": "Notarial tasdiqlangan tarjima. Hujjat uchun qatʼiy narx."
+    },
+    "work-book": {
+      "name": "Mehnat daftarchasi tarjimasi (notarial)",
+      "description": "Notarial tasdiqlangan tarjima. Hujjat uchun qatʼiy narx."
+    },
+    "diploma": {
+      "name": "Diplom tarjimasi (notarial)",
+      "description": "Taʼlim haqidagi hujjat tarjimasi, notarial tasdiqlash bilan."
+    },
+    "certificate": {
+      "name": "Maʼlumotnoma tarjimasi (notarial)",
+      "description": "Maʼlumotnoma tarjimasi, notarial tasdiqlash bilan."
+    },
+    "passport-all": {
+      "name": "Pasport tarjimasi (barcha sahifalar)",
+      "description": "Pasportning barcha sahifalari tarjimasi."
+    },
+    "driver-license": {
+      "name": "Haydovchilik guvohnomasi tarjimasi",
+      "description": "Haydovchilik guvohnomasi tarjimasi."
+    },
+    "passport-notary": {
+      "name": "Pasport tarjimasi (notarial tasdiqlangan)",
+      "description": "Pasport tarjimasi, notarial tasdiqlash bilan."
+    },
+    "power-of-attorney": {
+      "name": "Ishonchnoma tarjimasi (notarial)",
+      "description": "Ishonchnoma tarjimasi, notarial tasdiqlash bilan."
+    },
+    "photocopy-a4": {
+      "name": "A4 kseronusxa",
+      "description": "A4 formatdagi oq-qora kseronusxa."
+    },
+    "scanning": {
+      "name": "Skanerlash",
+      "description": "Bir varaqni skanerlash."
+    },
+    "color-print": {
+      "name": "Rangli chop etish",
+      "description": "Bir varaqni rangli chop etish."
+    },
+    "color-photocopy": {
+      "name": "Rangli kseronusxa",
+      "description": "Bir varaqning rangli kseronusxasi."
+    },
+    "bw-print": {
+      "name": "Oq-qora chop etish",
+      "description": "Bir varaqni oq-qora chop etish."
+    },
+    "print-a3": {
+      "name": "A3 chop etish",
+      "description": "A3 formatda chop etish."
+    },
+    "print-a2": {
+      "name": "A2 chop etish",
+      "description": "A2 formatda chop etish."
+    },
+    "print-a1": {
+      "name": "A1 chop etish",
+      "description": "A1 formatda chop etish."
+    },
+    "laminating": {
+      "name": "Laminatsiya",
+      "description": "Bir varaqni laminatsiyalash."
+    },
+    "binding": {
+      "name": "Broshyuralash",
+      "description": "Bir hujjatni broshyuralash."
+    },
+    "diploma-stitching": {
+      "name": "Diplomlarni tikish",
+      "description": "Diplomni tikish."
+    },
+    "photo": {
+      "name": "Hujjat uchun foto",
+      "description": "Hujjatlar uchun fotosuratlar (toʻplam)."
+    },
+    "dms-student": {
+      "name": "Talabalar uchun DMS polisi (chet el fuqarolari uchun)",
+      "description": "Chet ellik talabalar uchun ixtiyoriy tibbiy sugʻurta polisi."
+    }
+  },
+  "offices": {
+    "title": "Qozondagi qabul punktlari",
+    "choose": "Hujjatlarni qayerda topshirish va olish sizga qulay?",
+    "hint": "Eng yaqin punktni tanlang — hujjatlarni oʻsha yerda qabul qilamiz va topshiramiz.",
+    "hours": "Ish vaqti",
+    "hoursTbd": "ish vaqtini telefon orqali aniqlang",
+    "phone": "Telefon",
+    "route": "Yoʻnalish",
+    "selected": "tanlandi",
+    "pickupAt": "Olib ketish: {address}",
+    "officeLabel": "Qabul punkti"
+  },
+  "languagePair": {
+    "title": "Tarjima tili",
+    "from": "Qaysi tildan",
+    "to": "Qaysi tilga",
+    "choose": "Hujjat tilini tanlang",
+    "toRussianOnly": "Rus tiliga tarjima qilamiz",
+    "hint": "Tarjima tanlangan tildan rus tiliga bajariladi."
+  },
+  "home": {
+    "badge": "Tarjima byurosi · Qozon",
+    "heroTitle": "Hujjatlarni notarial tasdiqlash bilan tarjima qilish",
+    "heroText": "Turkman, oʻzbek, turk, ozarbayjon, qozoq, qirgʻiz, fors, arab va Yevropa tillaridan rus tiliga tarjima. Poligrafiya va sugʻurta. Onlayn buyurtma va toʻlov bir necha daqiqada.",
+    "ctaCalc": "Narxni hisoblash",
+    "ctaCatalog": "Xizmatlar katalogi",
+    "ctaStatus": "Buyurtma holatini tekshirish",
+    "factNotary": "Notarial",
+    "factDays": "1–2 kun",
+    "factServices": "Narxnomada 24 ta xizmat",
+    "factOffices": "3 ta qabul punkti",
+    "logoAlt": "«Точка Перевода Прогресс» logotipi",
+    "servicesTitle": "Xizmatlar va narxlar",
+    "servicesSubtitle": "Amaldagi narxnoma. Shoshilinchlik va sahifalar sonini hisobga olgan aniq narxni kalkulyator hisoblaydi.",
+    "allServices": "Barcha xizmatlar va narxlar",
+    "whyTitle": "Nega bizni tanlashadi",
+    "why": {
+      "days": {
+        "title": "Muddat 1–2 kun",
+        "text": "Aksariyat tarjimalarni 1–2 ish kunida tayyorlaymiz. Shoshilinch va ekspress rejim ham bor."
+      },
+      "notary": {
+        "title": "Notarial tasdiqlash",
+        "text": "Tarjimalarni notariusda tasdiqlaymiz — hammasi bir joyda, ortiqcha qatnovlarsiz."
+      },
+      "prices": {
+        "title": "Shaffof narxlar",
+        "text": "Buyurtma berishdan oldin kalkulyatorda aniq hisob-kitob. Karta, SBP yoki QR-kod orqali toʻlov."
+      },
+      "telegram": {
+        "title": "Telegram-xizmat",
+        "text": "Buyurtma va uning holati toʻgʻridan-toʻgʻri Telegramda. Tayyorligi haqida xabarnomalar avtomatik keladi."
+      }
+    },
+    "languagesTitle": "Qaysi tillardan tarjima qilamiz",
+    "languagesText": "14 ta tildan rus tiliga tarjima qilamiz:",
+    "stepsTitle": "Buyurtma qanday beriladi",
+    "steps": {
+      "1": {
+        "title": "Xizmatlarni tanlang",
+        "text": "Xizmatlarni savatga qoʻshing va hujjat tilini koʻrsating."
+      },
+      "2": {
+        "title": "Punktni tanlang",
+        "text": "Qozondagi eng yaqin qabul punktini koʻrsating."
+      },
+      "3": {
+        "title": "Fayllarni biriktiring va toʻlang",
+        "text": "Telefondan foto yoki skan. SBP, QR yoki karta orqali toʻlov."
+      },
+      "4": {
+        "title": "Natijani oling",
+        "text": "Tayyor boʻlganda xabar beramiz. Tanlangan punktdan olib keting."
+      }
+    },
+    "faqTitle": "Koʻp beriladigan savollar",
+    "faq": {
+      "price": {
+        "q": "Bir sahifa tarjimasi qancha turadi?",
+        "a": "Yuridik va tibbiy hujjatlar — sahifasi 550 ₽, texnik hujjatlar — 650 ₽. Pasport, diplom, maʼlumotnoma — katalogdagi qatʼiy narxda."
+      },
+      "time": {
+        "q": "Tarjima qancha vaqtda tayyor boʻladi?",
+        "a": "Standart muddat — 1–2 ish kuni. Shoshilinch: 1 kunda (×1,5) yoki murojaat qilingan kuni (×2)."
+      },
+      "notary": {
+        "q": "Tarjimalarni notariusda tasdiqlaysizmi?",
+        "a": "Ha. «Notarial» belgisi bor xizmatlarga tasdiqlash allaqachon kiritilgan, boshqa tarjimalarga uni savatda qoʻshish mumkin."
+      },
+      "languages": {
+        "q": "Qaysi tillardan tarjima qilasiz?",
+        "a": "Turkman, oʻzbek, turk, ozarbayjon, qozoq, qirgʻiz, fors (forsiy), arab (Iroq, Suriya), ingliz, nemis, fransuz, ispan va italyan tillaridan — rus tiliga."
+      },
+      "status": {
+        "q": "Buyurtma holatini qanday kuzatish mumkin?",
+        "a": "«Buyurtma holati» sahifasida buyurtma raqami va telefon orqali, shaxsiy kabinetda yoki Telegramda."
+      },
+      "where": {
+        "q": "Siz qayerda joylashgansiz?",
+        "a": "Qozonda uchta qabul punktimiz bor: Sibirskiy Trakt koʻchasi, 7/6; Karla Marksa koʻchasi, 65; Promyslovaya koʻchasi, 5, 3-xona."
+      }
+    },
+    "contactsTitle": "Kontaktlar",
+    "orderCta": "Buyurtma berish",
+    "metaTitle": "Qozonda tarjima, poligrafiya va sugʻurta",
+    "metaDescription": "Qozondagi «Точка Перевода Прогресс» tarjima byurosi: hujjatlarni turkman, oʻzbek, turk va boshqa tillardan rus tiliga tarjima qilish, notarial tasdiqlash, poligrafiya, sugʻurta. Onlayn buyurtma, toʻlov va holatni kuzatish.",
+    "mapTitle": "Qabul punktlari xaritasi",
+    "officesText": "Eng yaqin punktni tanlang — hujjatlarni topshirish va tayyor tarjimani olish oʻsha yerda."
+  },
+  "catalog": {
+    "title": "Xizmatlar katalogi va narxlar",
+    "subtitle": "Toifani tanlang. «Notarial» belgisi bor xizmatlarda tasdiqlash narxga kiritilgan, boshqalariga alohida qoʻshiladi.",
+    "all": "Barcha xizmatlar",
+    "notarial": "notarial",
+    "add": "Qoʻshish",
+    "added": "Qoʻshildi: {name}",
+    "addAria": "Qoʻshish: {name}",
+    "empty": "Xizmatlar topilmadi."
+  },
+  "calculator": {
+    "title": "Kalkulyator va savat",
+    "subtitle": "Sahifalar yoki hujjatlar sonini kiriting — jami summa va tayyor boʻlish muddati darhol qayta hisoblanadi.",
+    "categoriesAria": "Xizmat toifalari",
+    "yourOrder": "Sizning buyurtmangiz",
+    "empty": "Savat boʻsh. Xizmatni «+» tugmasi bilan qoʻshing.",
+    "withNotary": "tasdiqlash bilan",
+    "increase": "Koʻpaytirish: {name}",
+    "decrease": "Kamaytirish: {name}",
+    "notaryLabel": "Tasdiqlanmagan tarjimalar uchun notarial tasdiqlash",
+    "notaryPrice": "+{price} × {count} hujjat",
+    "notaryTbd": "(narxini menejer aniqlaydi)",
+    "services": "Xizmatlar",
+    "discount": "Hajm uchun chegirma",
+    "urgencySurcharge": "Shoshilinchlik uchun ustama",
+    "notary": "Tasdiqlash",
+    "delivery": "Yetkazib berish",
+    "total": "Jami",
+    "ready": "Tayyor boʻladi",
+    "sameDay": "bugun soat 19:00 gacha",
+    "checkout": "Buyurtma berish",
+    "disclaimer": "Taxminiy hisob. Yakuniy narx buyurtma berilganda amaldagi narxnoma boʻyicha serverda belgilanadi.",
+    "receiving": "Olish usuli",
+    "pickup": "Qabul punktidan olib ketish",
+    "courier": "Kuryer orqali yetkazib berish",
+    "courierPrice": "Yetkazib berish (+{price})"
+  },
+  "cartDrawer": {
+    "title": "Savat",
+    "description": "Tanlangan xizmatlar va taxminiy hisob",
+    "empty": "Savat boʻsh",
+    "toCatalog": "Katalogga oʻtish",
+    "sum": "Summa",
+    "urgency": "Shoshilinchlik (×{coef})",
+    "total": "Jami",
+    "calculate": "Aniq hisoblash",
+    "checkout": "Buyurtma berish"
+  },
+  "checkout": {
+    "title": "Buyurtmani rasmiylashtirish",
+    "backToCart": "← Savatga qaytish",
+    "contacts": "Aloqa maʼlumotlari",
+    "name": "Ism *",
+    "namePlaceholder": "Sizga qanday murojaat qilaylik",
+    "phone": "Telefon *",
+    "email": "Email",
+    "emailPlaceholder": "chek va xabarnomalar uchun",
+    "telegram": "Telegram",
+    "individual": "Jismoniy shaxs",
+    "company": "Tashkilot (hisob, INN)",
+    "inn": "INN",
+    "innPlaceholder": "10 yoki 12 ta raqam",
+    "deliveryAddress": "Yetkazib berish manzili *",
+    "deliveryAddressPlaceholder": "Shahar, koʻcha, uy, xonadon",
+    "comment": "Izoh",
+    "commentPlaceholder": "Masalan: ismlar xorijiy pasportdagidek lotin harflarida",
+    "files": "Hujjat fayllari",
+    "payMethod": "Toʻlov usuli",
+    "consentPrefix": "Men",
+    "consentLink": "shaxsiy maʼlumotlarimni qayta ishlashga roziman",
+    "consentMiddle": "(152-ФЗ ga muvofiq),",
+    "privacyLink": "maxfiylik siyosati",
+    "consentAnd": "bilan tanishdim va",
+    "termsLink": "xizmat koʻrsatish shartlarini qabul qilaman",
+    "submit": "Toʻlovga oʻtish",
+    "stageCreating": "Buyurtma rasmiylashtirilmoqda…",
+    "stageUploading": "Fayllar yuklanmoqda: {current} / {total}",
+    "fileFailed": "«{name}» fayli yuklanmadi: {error}. Uni keyinroq yuborish mumkin.",
+    "emptyCart": "Savat boʻsh — xizmatlarni tanlang.",
+    "toCalculator": "Kalkulyatorga oʻtish",
+    "totalTitle": "Toʻlov uchun jami",
+    "receiving": "Olish usuli",
+    "pickup": "Olib ketish",
+    "delivery": "Yetkazib berish",
+    "serverPriceNote": "Narx serverda amaldagi narxnoma boʻyicha qayta hisoblanadi. Buyurtma raqami SMS va Telegram orqali keladi.",
+    "changeItems": "Tarkibni oʻzgartirish",
+    "errors": {
+      "name": "Ismingizni kiriting",
+      "phone": "Rossiya telefon raqamini kiriting",
+      "email": "Email notoʻgʻri",
+      "consent": "Maʼlumotlarni qayta ishlashga roziliksiz buyurtma berib boʻlmaydi",
+      "address": "Yetkazib berish manzilini kiriting",
+      "office": "Qabul punktini tanlang",
+      "language": "Hujjat tilini koʻrsating"
+    }
+  },
+  "dropzone": {
+    "dragHere": "Fayllarni shu yerga torting",
+    "formats": "JPG, PNG, HEIC, PDF, DOC/DOCX, ZIP · {size} gacha",
+    "choose": "Fayllarni tanlash",
+    "camera": "Suratga olish",
+    "unsupported": "«{name}» fayl formati qoʻllab-quvvatlanmaydi",
+    "tooBig": "«{name}» fayli {size} dan katta",
+    "tooMany": "Bir buyurtmada {max} tadan koʻp fayl boʻlmasligi kerak",
+    "removeAria": "{name} ni oʻchirish"
+  },
+  "payment": {
+    "title": "{number} buyurtma uchun toʻlov",
+    "sbp": "SBP",
+    "sbpHint": "bank ilovasi orqali",
+    "qr": "QR-kod",
+    "qrHint": "kamera bilan skanerlang",
+    "card": "Bank kartasi",
+    "cardHint": "Mir, Visa, Mastercard",
+    "order": "Buyurtma {number}",
+    "qrAria": "SBP orqali toʻlash uchun QR-kod",
+    "cardText": "ЮKassa himoyalangan sahifasi ochiladi. Toʻlovdan soʻng saytga qaytasiz.",
+    "qrText": "QR-kodni kamera bilan skanerlang yoki bank ilovasini oching — summa avtomatik qoʻyiladi. Holat oʻzi yangilanadi.",
+    "openBank": "Bank ilovasini ochish",
+    "goPay": "Toʻlovga oʻtish",
+    "iPaid": "Men toʻladim",
+    "mockNote": "Test rejimi: toʻlov mock-provayder orqali taqlid qilinadi (ЮKassa kalitlari berilmagan)",
+    "noAccessTitle": "Toʻlovga ruxsat yoʻq",
+    "noAccessText": "Havolani buyurtma bergan qurilmangizda oching yoki shaxsiy kabinetga kiring."
+  },
+  "success": {
+    "paidTitle": "{number} buyurtma toʻlandi",
+    "createdTitle": "{number} buyurtma rasmiylashtirildi",
+    "paidText": "Rahmat! Ishni boshladik. Holat haqidagi xabarnomalar Telegram, SMS yoki email orqali keladi.",
+    "pendingText": "Toʻlov qayta ishlanmoqda — bank toʻlovni tasdiqlashi bilan sizga xabar yuboramiz.",
+    "keepNumber": "Buyurtma raqamini saqlab qoʻying — u va telefon raqami orqali holatni tekshirish mumkin.",
+    "track": "Holatni kuzatish",
+    "myOrders": "Mening buyurtmalarim"
+  },
+  "mockSbp": {
+    "title": "SBP test QR-kodi",
+    "text": "Platforma ЮKassa ulanmagan demo rejimda ishlamoqda, shuning uchun bu QR test sahifasiga olib boradi. Toʻlov sahifasiga qayting va «Men toʻladim» tugmasini bosing."
+  },
+  "statusPage": {
+    "title": "Buyurtma holati",
+    "number": "Buyurtma raqami",
+    "phone": "Telefon",
+    "check": "Tekshirish",
+    "notFound": "Buyurtma topilmadi. Raqamni va buyurtma berishda koʻrsatilgan telefonni tekshiring.",
+    "order": "Buyurtma",
+    "services": "Xizmatlar",
+    "readiness": "Tayyor boʻladi",
+    "tbd": "aniqlanmoqda",
+    "sum": "Summa",
+    "paid": "toʻlangan",
+    "unpaid": "toʻlov kutilmoqda",
+    "receiving": "Olish usuli",
+    "courier": "kuryer orqali yetkazib berish"
+  },
+  "timeline": {
+    "aria": "Buyurtmaning bajarilish jarayoni",
+    "cancelled": "Buyurtma bekor qilindi",
+    "now": "hozir"
+  },
+  "files": {
+    "none": "Fayllar yoʻq.",
+    "download": "Yuklab olish",
+    "downloadAria": "{name} ni yuklab olish",
+    "kind": {
+      "source": "asl nusxa",
+      "translation": "tarjima",
+      "receipt": "chek",
+      "photo": "foto",
+      "other": "fayl"
+    }
+  },
+  "chat": {
+    "empty": "Menejerga yozing — ish vaqtida javob beramiz.",
+    "manager": "Menejer",
+    "placeholder": "Xabar…",
+    "label": "Xabar",
+    "send": "Yuborish"
+  },
+  "auth": {
+    "backToSite": "← Saytga qaytish",
+    "email": "Email",
+    "password": "Parol",
+    "login": {
+      "title": "Kirish",
+      "description": "Shaxsiy kabinetga kiring",
+      "submit": "Kirish",
+      "success": "Siz tizimga kirdingiz",
+      "invalid": "Email yoki parol notoʻgʻri",
+      "forgot": "Parolni unutdingizmi?",
+      "noAccount": "Akkauntingiz yoʻqmi? Roʻyxatdan oʻting"
+    },
+    "register": {
+      "title": "Roʻyxatdan oʻtish",
+      "description": "Buyurtmalarni kuzatish uchun akkaunt yarating",
+      "name": "Ism",
+      "namePlaceholder": "Karimov Alisher",
+      "phone": "Telefon",
+      "passwordPlaceholder": "Kamida 8 ta belgi",
+      "submit": "Roʻyxatdan oʻtish",
+      "created": "Akkaunt yaratildi",
+      "confirmEmail": "Emailni tasdiqlang — havolani yubordik",
+      "phoneInvalid": "Toʻgʻri Rossiya telefon raqamini kiriting",
+      "haveAccount": "Akkauntingiz bormi?",
+      "login": "Kirish"
+    },
+    "reset": {
+      "title": "Parolni tiklash",
+      "description": "Emailingizga tiklash havolasini yuboramiz",
+      "submit": "Havolani yuborish",
+      "sent": "Havola yuborildi. Pochtangizni tekshiring.",
+      "backToLogin": "← Kirishga qaytish"
+    },
+    "update": {
+      "title": "Yangi parol",
+      "description": "Kamida 8 ta belgidan iborat parol oʻylab toping",
+      "submit": "Parolni saqlash",
+      "tooShort": "Kamida 8 ta belgi",
+      "done": "Parol yangilandi"
+    }
+  },
+  "account": {
+    "title": "Shaxsiy kabinet",
+    "tabsAria": "Kabinet boʻlimlari",
+    "tabs": {
+      "orders": "Buyurtmalar",
+      "profile": "Profil",
+      "data": "Mening maʼlumotlarim"
+    },
+    "empty": "Hozircha buyurtmalar yoʻq. Tizimga kirmasdan sizning telefon raqamingizga berilgan buyurtmalar profilda telefon tasdiqlangandan soʻng shu yerda paydo boʻladi.",
+    "calculate": "Narxni hisoblash",
+    "from": "{date} dagi",
+    "files": "{count, plural, one {# ta fayl} other {# ta fayl}}",
+    "pay": "Toʻlash",
+    "payAmount": "{amount} toʻlash",
+    "statusBtn": "Holat",
+    "repeat": "Takrorlash",
+    "repeatUnavailable": "Bu xizmatlar endi katalogda mavjud emas",
+    "repeatPartial": "Ayrim xizmatlar sotuvdan olingan — ular qoʻshilmadi",
+    "allOrders": "← Barcha buyurtmalar",
+    "readiness": "Tayyor boʻladi: {date}",
+    "deliveryTo": "Yetkazib berish: {address}",
+    "addressTbd": "manzil aniqlanmoqda",
+    "composition": "Tarkib va toʻlov",
+    "total": "Jami",
+    "paid": "Toʻlangan",
+    "filesTitle": "Fayllar va cheklar",
+    "chatTitle": "Menejer bilan chat",
+    "paymentStatus": {
+      "pending": "kutilmoqda",
+      "waiting_for_capture": "qayta ishlanmoqda",
+      "succeeded": "toʻlangan",
+      "canceled": "bekor qilingan",
+      "refunded": "qaytarilgan"
+    },
+    "metaOrders": "Mening buyurtmalarim",
+    "metaOrder": "Buyurtma",
+    "metaProfile": "Profil",
+    "translationPair": "Tarjima: {from} → {to}",
+    "titleTemplate": "Shaxsiy kabinet"
+  },
+  "profile": {
+    "name": "Ism",
+    "email": "Email",
+    "telegram": "Telegram",
+    "linked": "ulangan",
+    "notLinked": "ulanmagan",
+    "openBot": "@{bot} botini ochish",
+    "newPassword": "Yangi parol",
+    "newPasswordPlaceholder": "oʻzgartirmaslik uchun boʻsh qoldiring",
+    "save": "Saqlash",
+    "saved": "Profil saqlandi",
+    "nameRequired": "Ismingizni kiriting",
+    "sessionExpired": "Seans muddati tugadi — qaytadan kiring",
+    "passwordShort": "Parol — kamida 8 ta belgi",
+    "phoneTitle": "Telefon",
+    "phoneText": "Buyurtmalar haqidagi xabarnomalar telefonga keladi. Kod bilan tasdiqlangandan soʻng, shu raqamga tizimga kirmasdan berilgan buyurtmalar kabinetga biriktiriladi.",
+    "phoneNumber": "Raqam",
+    "phoneInvalid": "Rossiya telefon raqamini kiriting",
+    "verified": "tasdiqlangan",
+    "getCode": "Kod olish",
+    "resendCode": "Kodni qayta yuborish",
+    "codeSent": "Kod SMS orqali yuborildi",
+    "code": "SMS dagi kod",
+    "confirm": "Tasdiqlash",
+    "confirmed": "Telefon tasdiqlandi",
+    "confirmedWithOrders": "Telefon tasdiqlandi. Biriktirilgan buyurtmalar: {count}",
+    "linkedAs": "ulangan: @{username}"
+  },
+  "dataPage": {
+    "title": "Mening maʼlumotlarim",
+    "exportTitle": "Shaxsiy maʼlumotlarni yuklab olish",
+    "exportText": "152-ФЗ ga muvofiq siz shaxsiy maʼlumotlaringiz nusxasini mashina oʻqiy oladigan formatda (JSON) olishingiz mumkin.",
+    "exportButton": "Maʼlumotlarni yuklab olish",
+    "exportFailed": "Maʼlumotlarni yuklab boʻlmadi",
+    "deleteTitle": "Maʼlumotlarni oʻchirish",
+    "deleteText": "Oʻchirish profilingiz, mijoz yozuvlari va roziliklaringizni shaxssizlashtiradi. Buyurtma maʼlumotlari buxgalteriya hisobi talablariga muvofiq anonim holda saqlanadi.",
+    "deleteButton": "Maʼlumotlarimni oʻchirish",
+    "confirmTitle": "Shaxsiy maʼlumotlar oʻchirilsinmi?",
+    "confirmText": "Bu amalni qaytarib boʻlmaydi. Buyurtmalar tarixiga kirish imkoniyatini yoʻqotasiz.",
+    "deleting": "Oʻchirilmoqda…",
+    "delete": "Oʻchirish",
+    "deleted": "Maʼlumotlar oʻchirildi",
+    "deleteFailed": "Maʼlumotlarni oʻchirib boʻlmadi"
+  },
+  "footer": {
+    "services": "Xizmatlar",
+    "translations": "Hujjatlar tarjimasi",
+    "printing": "Poligrafiya",
+    "insurance": "Sugʻurta",
+    "calculator": "Narx kalkulyatori",
+    "clients": "Mijozlarga",
+    "order": "Buyurtma berish",
+    "status": "Holatni tekshirish",
+    "account": "Shaxsiy kabinet",
+    "login": "Kirish",
+    "info": "Maʼlumot",
+    "privacy": "Maxfiylik siyosati",
+    "terms": "Xizmat koʻrsatish shartlari",
+    "consent": "Shaxsiy maʼlumotlarni qayta ishlashga rozilik",
+    "rights": "Barcha huquqlar himoyalangan.",
+    "legalName": "«Точка Перевода Прогресс» tarjima byurosi"
+  },
+  "legal": {
+    "officialNotice": "Hujjatning rasmiy matni — rus tilida. Interfeys tarjimasi qulaylik uchun berilgan."
+  },
+  "roles": {
+    "guest": "Mehmon",
+    "client": "Mijoz",
+    "manager": "Menejer",
+    "translator": "Tarjimon",
+    "notary": "Notarius",
+    "printer": "Chop etish",
+    "admin": "Administrator"
+  },
+  "meta": {
+    "siteTitle": "Qozondagi tarjima byurosi",
+    "calculator": "Tarjima narxi kalkulyatori",
+    "calculatorDescription": "Tarjima, notarial tasdiqlash va poligrafiya narxini onlayn hisoblang: sahifalar soni, shoshilinchlik, qabul punkti va tayyor boʻlish sanasi.",
+    "checkout": "Buyurtmani rasmiylashtirish",
+    "mockSbp": "SBP test toʻlovi",
+    "pay": "Buyurtma uchun toʻlov",
+    "success": "Buyurtma rasmiylashtirildi",
+    "services": "Xizmatlar va narxlar",
+    "servicesDescription": "«Точка Перевода Прогресс» tarjima byurosining toʻliq narxnomasi: hujjatlar tarjimasi, poligrafiya, sugʻurta. Sahifa va hujjat uchun narxlar.",
+    "status": "Buyurtma holati",
+    "statusDescription": "Buyurtma holatini raqam va telefon orqali tekshiring: qabul qilindi, jarayonda, topshirishga tayyor."
+  }
+}

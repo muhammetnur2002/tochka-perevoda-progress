@@ -102,11 +102,23 @@ async function handleMessage(msg: TelegramMessage): Promise<void> {
   );
 }
 
+async function officesText(): Promise<string> {
+  const { data } = await createAdminClient()
+    .from("offices")
+    .select("address, hours, phone")
+    .eq("is_active", true)
+    .order("sort_order");
+  return (data ?? [])
+    .map((o) => `📍 ${o.address}${o.hours ? `, ${o.hours}` : ""}${o.phone ? `, ${o.phone}` : ""}`)
+    .join("\n");
+}
+
 async function cmdStart(chatId: number, payload?: string): Promise<void> {
   if (payload === "order") {
     await sendTelegramMessage(chatId, "Оформим заказ — нажмите кнопку 👇", orderButton());
     return;
   }
+  const offices = await officesText();
   await sendTelegramMessage(
     chatId,
     [
@@ -116,8 +128,8 @@ async function cmdStart(chatId: number, payload?: string): Promise<void> {
       "• прислать фото документа и оплатить по СБП;",
       "• узнать статус: /status ТП-2026-000123.",
       "",
-      `📍 ${COMPANY.address}`,
-      `🕘 ${COMPANY.workHours}`,
+      `Пункты приёма в Казани — выберите ближайший:`,
+      offices,
     ].join("\n"),
     mainMenu(),
   );

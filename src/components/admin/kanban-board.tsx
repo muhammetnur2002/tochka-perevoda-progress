@@ -14,14 +14,15 @@ import {
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createClient } from "@/lib/supabase/client";
 import { apiFetch } from "@/lib/client/api";
 import { canTransition } from "@/lib/auth/roles";
-import { ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/config/constants";
+import type { OrderStatus } from "@/lib/config/constants";
 import { formatMoney } from "@/lib/format/money";
 import { formatDateTime } from "@/lib/format/date";
 import { cn } from "@/lib/utils";
@@ -36,21 +37,17 @@ export interface KanbanOrder {
   source: string;
   language_from: string | null;
   created_at: string;
+  office_id: string | null;
+  office: { name: string } | null;
   client: { name: string; phone: string | null } | null;
   items: { service_id: string | null; name_snapshot: string; quantity: number }[];
   assignments: { role: string; status: string; user_id: string; user: { name: string | null } | null }[];
 }
 
 const COLUMNS: OrderStatus[] = ["new", "confirmed", "in_progress", "ready", "issued", "completed"];
-const SOURCE: Record<string, string> = { web: "Сайт", mini_app: "Mini App", bot: "Бот", admin: "Админка", walkin: "Офис" };
-const QUICK = [
-  { id: "all", label: "Все" },
-  { id: "hot", label: "Срок < 24 ч" },
-  { id: "overdue", label: "Просрочены" },
-  { id: "unpaid", label: "Не оплачены" },
-  { id: "tg", label: "Из Telegram" },
-] as const;
-type Quick = (typeof QUICK)[number]["id"];
+const SOURCES = ["web", "mini_app", "bot", "admin", "walkin"];
+const QUICK = ["all", "hot", "overdue", "unpaid", "tg"] as const;
+type Quick = (typeof QUICK)[number];
 
 const DAY = 86_400_000;
 const isOpen = (o: KanbanOrder) => ["new", "confirmed", "in_progress"].includes(o.status);
@@ -60,6 +57,8 @@ const isOverdue = (o: KanbanOrder) => isOpen(o) && !!o.deadline && new Date(o.de
 const executorOf = (o: KanbanOrder) => o.assignments.find((a) => a.role !== "manager" && a.status !== "rejected");
 
 function OrderCard({ order, onNext }: { order: KanbanOrder; onNext?: () => void }) {
+  const t = useTranslations("admin.kanban");
+  const tSource = useTranslations("admin.sources");
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: order.id, data: { order } });
   const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
   const executor = executorOf(order);
@@ -83,23 +82,29 @@ function OrderCard({ order, onNext }: { order: KanbanOrder; onNext?: () => void 
         isDragging && "z-50 rotate-1 cursor-grabbing shadow-card",
       )}
     >
-      <div {...listeners} {...attributes} className="cursor-grab space-y-1.5" aria-label={`Перетащить заказ ${order.public_number}`}>
+      <div {...listeners} {...attributes} className="cursor-grab space-y-1.5" aria-label={t("dragOrder", { number: order.public_number })}>
         <div className="flex items-center justify-between gap-1.5">
           <strong className="text-brand-800">{order.public_number}</strong>
-          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-600">{SOURCE[order.source] ?? order.source}</span>
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-600">{SOURCES.includes(order.source) ? tSource(order.source) : order.source}</span>
         </div>
         <div className="text-slate-600">{order.client?.name ?? "—"}</div>
+        {order.office && (
+          <div className="flex items-center gap-1 text-xs font-semibold text-slate-500">
+            <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            <span className="truncate">{order.office.name}</span>
+          </div>
+        )}
         <div className="leading-snug">{order.items.map((i) => `${i.name_snapshot}${i.quantity > 1 ? ` × ${i.quantity}` : ""}`).join(", ")}</div>
         <div className="flex items-center justify-between">
           <strong>{formatMoney(Number(order.total_price))}</strong>
-          <span className={cn("text-xs font-extrabold", paid ? "text-emerald-700" : "text-red-700")}>{paid ? "оплачен" : "не оплачен"}</span>
+          <span className={cn("text-xs font-extrabold", paid ? "text-emerald-700" : "text-red-700")}>{paid ? t("paid") : t("unpaid")}</span>
         </div>
         <div className="flex items-center justify-between gap-1.5">
           <span className={cn("text-xs font-bold", hot ? "text-red-700" : "text-slate-500")}>
-            {order.deadline ? (isOverdue(order) ? "просрочен · " : "") + formatDateTime(order.deadline) : "без срока"}
+            {order.deadline ? (isOverdue(order) ? `${t("overdueMark")} · ` : "") + formatDateTime(order.deadline) : t("noDeadline")}
           </span>
           <span
-            title={executor?.user?.name ?? "Исполнитель не назначен"}
+            title={executor?.user?.name ?? t("noExecutor")}
             className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-50 text-[11px] font-extrabold text-brand-700"
           >
             {initials}
@@ -111,13 +116,13 @@ function OrderCard({ order, onNext }: { order: KanbanOrder; onNext?: () => void 
           href={`/admin/orders/${order.id}`}
           className="flex min-h-9 flex-1 items-center justify-center rounded-lg border text-xs font-bold text-brand-800 hover:border-brand-800"
         >
-          Открыть
+          {t("open")}
         </Link>
         {onNext && (
           <button
             type="button"
             onClick={onNext}
-            aria-label="Следующий статус"
+            aria-label={t("nextStatus")}
             className="flex min-h-9 w-10 items-center justify-center rounded-lg bg-brand-800 text-white hover:bg-brand-700"
           >
             <ArrowRight className="h-4 w-4" />
@@ -129,16 +134,17 @@ function OrderCard({ order, onNext }: { order: KanbanOrder; onNext?: () => void 
 }
 
 function Column({ status, orders, onMove }: { status: OrderStatus; orders: KanbanOrder[]; onMove: (o: KanbanOrder, to: OrderStatus) => void }) {
+  const tStatus = useTranslations("orderStatus");
   const { setNodeRef, isOver } = useDroppable({ id: status });
   const next = COLUMNS[COLUMNS.indexOf(status) + 1];
   return (
     <section
       ref={setNodeRef}
-      aria-label={ORDER_STATUS_LABELS[status]}
+      aria-label={tStatus(status)}
       className={cn("flex min-h-[520px] flex-col gap-2 rounded-2xl p-2 transition-colors", isOver ? "bg-gold-50 ring-2 ring-gold-300" : "bg-[#EBEFF5]")}
     >
       <div className="flex items-center justify-between px-1 pb-1">
-        <strong className="text-sm text-brand-800">{ORDER_STATUS_LABELS[status]}</strong>
+        <strong className="text-sm text-brand-800">{tStatus(status)}</strong>
         <span className="rounded-full bg-white px-2 text-xs font-extrabold text-slate-600">{orders.length}</span>
       </div>
       {orders.map((o) => (
@@ -150,12 +156,15 @@ function Column({ status, orders, onMove }: { status: OrderStatus; orders: Kanba
 
 /** Канбан заказов: перетаскивание между статусами, оптимистичное обновление, Realtime. */
 export function KanbanBoard() {
+  const t = useTranslations("admin.kanban");
+  const tStatus = useTranslations("orderStatus");
   const queryClient = useQueryClient();
   const queryKey = React.useMemo(() => ["admin-orders"], []);
   const [quick, setQuick] = React.useState<Quick>("all");
   const [search, setSearch] = React.useState("");
   const [service, setService] = React.useState("");
   const [executor, setExecutor] = React.useState("");
+  const [office, setOffice] = React.useState("");
 
   const { data, isLoading } = useQuery({
     queryKey,
@@ -163,6 +172,17 @@ export function KanbanBoard() {
     refetchInterval: 60_000,
   });
   const orders = data?.orders ?? [];
+
+  // Точки приёма — для фильтра (менеджер видит и неактивные)
+  const { data: offices } = useQuery({
+    queryKey: ["admin-offices-list"],
+    queryFn: async () => {
+      const { data: rows, error } = await createClient().from("offices").select("id, name").order("sort_order");
+      if (error) throw error;
+      return rows ?? [];
+    },
+    staleTime: 5 * 60_000,
+  });
 
   React.useEffect(() => {
     const supabase = createClient();
@@ -186,7 +206,7 @@ export function KanbanBoard() {
   const move = async (order: KanbanOrder, to: OrderStatus) => {
     if (order.status === to) return;
     if (!canTransition(order.status, to)) {
-      toast.error(`Нельзя: «${ORDER_STATUS_LABELS[order.status]}» → «${ORDER_STATUS_LABELS[to]}»`);
+      toast.error(t("cannotMove", { from: tStatus(order.status), to: tStatus(to) }));
       return;
     }
     const previous = queryClient.getQueryData<{ orders: KanbanOrder[] }>(queryKey);
@@ -195,7 +215,7 @@ export function KanbanBoard() {
     );
     try {
       await apiFetch(`/api/orders/${order.id}`, { method: "PATCH", body: JSON.stringify({ status: to }) });
-      toast.success(`${order.public_number}: ${ORDER_STATUS_LABELS[to]}`);
+      toast.success(`${order.public_number}: ${tStatus(to)}`);
     } catch (err) {
       queryClient.setQueryData(queryKey, previous);
       toast.error((err as Error).message);
@@ -223,6 +243,7 @@ export function KanbanBoard() {
     if (quick === "tg" && !["mini_app", "bot"].includes(o.source)) return false;
     if (service && !o.items.some((i) => i.name_snapshot === service)) return false;
     if (executor && !o.assignments.some((a) => a.user_id === executor && a.status !== "rejected")) return false;
+    if (office && o.office_id !== office) return false;
     if (q && !`${o.public_number} ${o.client?.name ?? ""} ${o.client?.phone ?? ""}`.toLowerCase().includes(q)) return false;
     return true;
   });
@@ -232,39 +253,47 @@ export function KanbanBoard() {
       <div className="flex flex-wrap items-center gap-2">
         {QUICK.map((f) => (
           <button
-            key={f.id}
+            key={f}
             type="button"
-            onClick={() => setQuick(f.id)}
-            aria-pressed={quick === f.id}
+            onClick={() => setQuick(f)}
+            aria-pressed={quick === f}
             className={cn(
               "min-h-9 rounded-full border px-3.5 text-sm font-bold",
-              quick === f.id ? "border-brand-800 bg-brand-800 text-white" : "border-input bg-white text-brand-800",
+              quick === f ? "border-brand-800 bg-brand-800 text-white" : "border-input bg-white text-brand-800",
             )}
           >
-            {f.label}
+            {t(`quick.${f}`)}
           </button>
         ))}
         <label className="sr-only" htmlFor="kanban-search">
-          Поиск
+          {t("search")}
         </label>
         <Input
           id="kanban-search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Номер, клиент, телефон"
+          placeholder={t("searchPlaceholder")}
           className="h-9 w-56"
         />
-        <select aria-label="Услуга" value={service} onChange={(e) => setService(e.target.value)} className="h-9 max-w-56 rounded-md border bg-white px-2 text-sm">
-          <option value="">Все услуги</option>
+        <select aria-label={t("service")} value={service} onChange={(e) => setService(e.target.value)} className="h-9 max-w-56 rounded-md border bg-white px-2 text-sm">
+          <option value="">{t("allServices")}</option>
           {services.map((s) => (
             <option key={s}>{s}</option>
           ))}
         </select>
-        <select aria-label="Исполнитель" value={executor} onChange={(e) => setExecutor(e.target.value)} className="h-9 rounded-md border bg-white px-2 text-sm">
-          <option value="">Все исполнители</option>
+        <select aria-label={t("executor")} value={executor} onChange={(e) => setExecutor(e.target.value)} className="h-9 rounded-md border bg-white px-2 text-sm">
+          <option value="">{t("allExecutors")}</option>
           {executors.map(([id, name]) => (
             <option key={id} value={id}>
               {name}
+            </option>
+          ))}
+        </select>
+        <select aria-label={t("office")} value={office} onChange={(e) => setOffice(e.target.value)} className="h-9 max-w-56 rounded-md border bg-white px-2 text-sm">
+          <option value="">{t("allOffices")}</option>
+          {(offices ?? []).map((o) => (
+            <option key={o.id} value={o.id}>
+              {o.name}
             </option>
           ))}
         </select>
@@ -288,7 +317,7 @@ export function KanbanBoard() {
         </DndContext>
       )}
       <p className="text-xs text-muted-foreground">
-        Перетащите карточку в другую колонку или нажмите «→». Отменённые заказы — в карточке заказа и в выгрузке.
+        {t("hint")}
       </p>
     </div>
   );

@@ -25,8 +25,10 @@ export const createOrderSchema = z
     type: z.enum(["individual", "company"]).default("individual"),
     items: z.array(orderItemSchema).min(1, "Добавьте хотя бы одну услугу").max(50),
     urgency: urgencySchema.default("standard"),
+    /** Язык оригинала (один из 14 исходных). Язык перевода всегда русский — задаёт сервер. */
     languageFrom: uuidSchema.nullable().optional(),
-    languageTo: uuidSchema.nullable().optional(),
+    /** Точка приёма, куда клиент приносит документы / где получает заказ. */
+    officeId: z.string({ required_error: "Выберите точку приёма" }).uuid("Выберите точку приёма"),
     deliveryType: deliveryTypeSchema.default("pickup"),
     deliveryAddress: z.string().trim().max(300).optional().nullable(),
     comment: z.string().trim().max(1000).optional().nullable(),

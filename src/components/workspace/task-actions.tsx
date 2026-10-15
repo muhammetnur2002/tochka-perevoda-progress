@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Loader2, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ interface TaskActionsProps {
 
 /** Действия исполнителя: взять в работу, загрузить перевод, сдать, отказаться. */
 export function TaskActions({ assignmentId, orderId, status, role }: TaskActionsProps) {
+  const t = useTranslations("workspace.taskActions");
   const router = useRouter();
   const [pending, start] = React.useTransition();
   const [uploading, setUploading] = React.useState(false);
@@ -38,7 +40,7 @@ export function TaskActions({ assignmentId, orderId, status, role }: TaskActions
     setUploading(true);
     try {
       for (const f of Array.from(files)) await uploadOrderFile(orderId, f, { kind: "translation" });
-      toast.success("Перевод загружен");
+      toast.success(t("uploaded"));
       if (status === "assigned" || status === "accepted") await setTaskStatusAction(assignmentId, "in_progress");
       router.refresh();
     } catch (err) {
@@ -52,7 +54,7 @@ export function TaskActions({ assignmentId, orderId, status, role }: TaskActions
   if (closed) {
     return (
       <p role="status" className="rounded-xl bg-emerald-50 p-3.5 text-sm font-semibold text-emerald-800">
-        {status === "done" ? "Задача сдана. Менеджер получил уведомление." : "Вы отказались от задачи."}
+        {status === "done" ? t("doneNotice") : t("rejectedNotice")}
       </p>
     );
   }
@@ -74,9 +76,9 @@ export function TaskActions({ assignmentId, orderId, status, role }: TaskActions
           className={`flex flex-col items-center gap-2 rounded-2xl border-2 border-dashed p-6 text-center ${dragOver ? "border-gold-400 bg-gold-50" : "border-slate-300 bg-slate-50"}`}
         >
           <UploadCloud className="h-8 w-8 text-brand-500" aria-hidden />
-          <p className="font-bold text-brand-800">Перетащите файл перевода (DOCX, PDF)</p>
+          <p className="font-bold text-brand-800">{t("dropHint")}</p>
           <Button variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading}>
-            {uploading ? <Loader2 className="animate-spin" /> : "Выбрать файл"}
+            {uploading ? <Loader2 className="animate-spin" /> : t("chooseFile")}
           </Button>
           <input
             ref={fileRef}
@@ -91,19 +93,19 @@ export function TaskActions({ assignmentId, orderId, status, role }: TaskActions
       <div className="flex flex-wrap gap-2.5 border-t pt-4">
         {status === "assigned" && (
           <Button onClick={() => setStatus("in_progress")} disabled={pending}>
-            Взять в работу
+            {t("start")}
           </Button>
         )}
         <Button variant="gold" onClick={() => setStatus("done")} disabled={pending}>
-          Готово — передать менеджеру
+          {t("handOver")}
         </Button>
         <Button
           variant="outline"
           className="text-red-700"
           disabled={pending}
-          onClick={() => window.confirm("Отказаться от задачи? Менеджер назначит другого исполнителя.") && setStatus("rejected")}
+          onClick={() => window.confirm(t("rejectConfirm")) && setStatus("rejected")}
         >
-          Отказаться
+          {t("reject")}
         </Button>
       </div>
     </div>

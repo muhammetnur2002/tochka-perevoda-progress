@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { PageHeader, StatTile } from "@/components/common/page-header";
 import { ExportButton } from "@/components/admin/export-button";
 import { PeriodSwitch, parseDays } from "@/components/admin/period-switch";
@@ -12,17 +13,19 @@ import { mskDateKey } from "@/lib/services/deadline";
 export const metadata: Metadata = { title: "Финансы" };
 export const dynamic = "force-dynamic";
 
-const METHOD: Record<string, string> = { card: "Карта", sbp: "СБП", qr: "QR", cash: "Наличные", invoice: "Счёт" };
-const STATUS: Record<string, [string, string]> = {
-  succeeded: ["Успешно", "bg-emerald-50 text-emerald-800"],
-  pending: ["Ожидает", "bg-gold-50 text-gold-900"],
-  waiting_for_capture: ["Обработка", "bg-gold-50 text-gold-900"],
-  canceled: ["Отменён", "bg-red-50 text-red-700"],
-  refunded: ["Возврат", "bg-slate-100 text-slate-700"],
+const METHODS = ["card", "sbp", "qr", "cash", "invoice"];
+const STATUS_CLASS: Record<string, string> = {
+  succeeded: "bg-emerald-50 text-emerald-800",
+  pending: "bg-gold-50 text-gold-900",
+  waiting_for_capture: "bg-gold-50 text-gold-900",
+  canceled: "bg-red-50 text-red-700",
+  refunded: "bg-slate-100 text-slate-700",
 };
 
 export default async function AdminFinancePage({ searchParams }: { searchParams: { days?: string } }) {
   const days = parseDays(searchParams.days);
+  const [t, tAdmin] = await Promise.all([getTranslations("admin.finance"), getTranslations("admin")]);
+  const method = (m: string) => (METHODS.includes(m) ? tAdmin(`paymentMethods.${m}`) : m);
   const supabase = createClient();
   const since = new Date(Date.now() - days * 86_400_000).toISOString();
   const [stats, { data: payments }, { data: debtors }] = await Promise.all([
@@ -48,8 +51,8 @@ export default async function AdminFinancePage({ searchParams }: { searchParams:
   return (
     <>
       <PageHeader
-        title="Финансы"
-        description="Выручка, оплаты и долги клиентов"
+        title={t("title")}
+        description={t("description")}
         actions={
           <>
             <PeriodSwitch path="/admin/finance" days={days} />
@@ -58,14 +61,18 @@ export default async function AdminFinancePage({ searchParams }: { searchParams:
         }
       />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <StatTile label="Выручка за период" value={formatMoney(stats.totals.revenue)} hint={`${stats.totals.orders} заказов`} />
+        <StatTile label={t("revenue")} value={formatMoney(stats.totals.revenue)} hint={t("ordersCount", { n: stats.totals.orders })} />
         <StatTile
-          label="Оплачено"
+          label={t("paid")}
           value={formatMoney(stats.totals.paid)}
-          hint={stats.paymentMethods.map((m) => `${METHOD[m.method] ?? m.method} ${Math.round((m.amount / methodTotal) * 100)}%`).join(" · ") || "—"}
+          hint={stats.paymentMethods.map((m) => `${method(m.method)} ${Math.round((m.amount / methodTotal) * 100)}%`).join(" · ") || "—"}
         />
-        <StatTile label="Долги клиентов" value={formatMoney(owing.reduce((s, o) => s + Number(o.total_price) - Number(o.paid_amount), 0))} hint={`${owing.length} заказов без полной оплаты`} />
-        <StatTile label="Средний чек" value={formatMoney(stats.totals.averageCheck)} />
+        <StatTile
+          label={t("debts")}
+          value={formatMoney(owing.reduce((s, o) => s + Number(o.total_price) - Number(o.paid_amount), 0))}
+          hint={t("unpaidOrders", { n: owing.length })}
+        />
+        <StatTile label={t("averageCheck")} value={formatMoney(stats.totals.averageCheck)} />
       </div>
 
       <div className="mt-5 grid gap-5 xl:grid-cols-[1fr_360px]">
@@ -73,17 +80,18 @@ export default async function AdminFinancePage({ searchParams }: { searchParams:
           <table className="w-full min-w-[720px] text-sm">
             <thead>
               <tr className="text-left text-xs text-muted-foreground">
-                <th className="px-4 py-3">Дата</th>
-                <th className="px-4 py-3">Заказ</th>
-                <th className="px-4 py-3">Способ</th>
-                <th className="px-4 py-3">Статус</th>
-                <th className="px-4 py-3 text-right">Сумма</th>
-                <th className="px-4 py-3">ID платежа</th>
+                <th className="px-4 py-3">{t("colDate")}</th>
+                <th className="px-4 py-3">{t("colOrder")}</th>
+                <th className="px-4 py-3">{t("colMethod")}</th>
+                <th className="px-4 py-3">{t("colStatus")}</th>
+                <th className="px-4 py-3 text-right">{t("colAmount")}</th>
+                <th className="px-4 py-3">{t("colPaymentId")}</th>
               </tr>
             </thead>
             <tbody>
               {(payments ?? []).map((p) => {
-                const [label, cls] = STATUS[p.status] ?? [p.status, ""];
+                const label = p.status in STATUS_CLASS ? tAdmin(`paymentStatus.${p.status}`) : p.status;
+                const cls = STATUS_CLASS[p.status] ?? "";
                 return (
                   <tr key={p.id} className="border-t">
                     <td className="whitespace-nowrap px-4 py-2.5">{formatDateTime(p.paid_at ?? p.created_at)}</td>
@@ -96,7 +104,7 @@ export default async function AdminFinancePage({ searchParams }: { searchParams:
                         "—"
                       )}
                     </td>
-                    <td className="px-4 py-2.5">{METHOD[p.method] ?? p.method}</td>
+                    <td className="px-4 py-2.5">{method(p.method)}</td>
                     <td className="px-4 py-2.5">
                       <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${cls}`}>{label}</span>
                     </td>
@@ -108,7 +116,7 @@ export default async function AdminFinancePage({ searchParams }: { searchParams:
               {(payments ?? []).length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
-                    Платежей за период нет
+                    {t("noPayments")}
                   </td>
                 </tr>
               )}
@@ -116,8 +124,8 @@ export default async function AdminFinancePage({ searchParams }: { searchParams:
           </table>
         </section>
         <section className="rounded-2xl border bg-card p-4">
-          <h2 className="mb-3 font-bold text-brand-800">Должники</h2>
-          {owing.length === 0 && <p className="text-sm text-muted-foreground">Все заказы оплачены.</p>}
+          <h2 className="mb-3 font-bold text-brand-800">{t("debtors")}</h2>
+          {owing.length === 0 && <p className="text-sm text-muted-foreground">{t("allPaid")}</p>}
           <ul className="space-y-2">
             {owing.slice(0, 30).map((o) => (
               <li key={o.id}>

@@ -1,51 +1,89 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { getTranslations } from "next-intl/server";
+import { z, ZodError } from "zod";
 import { requirePermission } from "@/lib/auth/session";
 import { assignExecutor, changeOrderStatus } from "@/lib/services/order-admin";
 import { recordManualPayment } from "@/lib/payments";
 import { serviceSchema } from "@/lib/validation/service";
 import { manualPaymentSchema } from "@/lib/validation/payment";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { ApiError, notFound } from "@/lib/errors";
 import type { Json, OrderStatus, UserRole } from "@/types/database.types";
 
 /**
  * Server Actions админки. Каждое действие проверяет право по матрице ролей
  * и выполняется под сессией менеджера (RLS). Возвращают {ok} | {error}
- * для показа тоста в интерфейсе.
+ * для показа тоста в интерфейсе. Тексты тостов — на языке интерфейса сотрудника.
  */
 
-export type ActionResult = { ok: true; message?: string } | { ok: false; error: string };
+export type ActionResult = { ok: true; message?: string } | { ok: false; error: string; code?: string };
 
-async function run(fn: () => Promise<string | void>): Promise<ActionResult> {
+type Translator = Awaited<ReturnType<typeof getTranslations>>;
+
+/** Ошибка с машинным кодом — интерфейс может отреагировать на неё (например, подтвердить перегрузку). */
+class CodedError extends Error {
+  constructor(
+    message: string,
+    public readonly code: string,
+  ) {
+    super(message);
+  }
+}
+
+/** Переводит типовые ошибки; ошибки базы (кроме «нет прав») показываются как есть. */
+function errorMessage(err: unknown, t: Translator): string {
+  if (err instanceof ZodError) {
+    const issue = err.issues[0];
+    return issue?.path.length ? t("errors.invalidField", { field: issue.path.join(".") }) : t("errors.invalid");
+  }
+  if (err instanceof ApiError) {
+    if (err.code === "FORBIDDEN") return t("errors.forbidden");
+    if (err.code === "UNAUTHORIZED") return t("errors.unauthorized");
+    if (err.code === "NOT_FOUND") return t("errors.notFound");
+    return err.message;
+  }
+  const e = err as { message?: string; code?: string };
+  if (e?.code === "42501") return t("errors.forbidden");
+  return e?.message ?? t("errors.generic");
+}
+
+async function run(fn: (t: Translator) => Promise<string | void>): Promise<ActionResult> {
+  const t = await getTranslations("admin.actions");
   try {
-    const message = await fn();
+    const message = await fn(t);
     return { ok: true, message: message ?? undefined };
   } catch (err) {
-    const e = err as { message?: string };
-    return { ok: false, error: e.message ?? "Ошибка" };
+    return { ok: false, error: errorMessage(err, t), code: err instanceof CodedError ? err.code : undefined };
   }
 }
 
 const statusSchema = z.enum(["new", "confirmed", "in_progress", "ready", "issued", "completed", "cancelled"]);
 
 export async function setOrderStatusAction(orderId: string, status: OrderStatus, comment?: string): Promise<ActionResult> {
-  return run(async () => {
+  return run(async (t) => {
     const actor = await requirePermission("order.change_status");
-    await changeOrderStatus(actor.supabase, z.string().uuid().parse(orderId), statusSchema.parse(status), comment);
+    try {
+      await changeOrderStatus(actor.supabase, z.string().uuid().parse(orderId), statusSchema.parse(status), comment);
+    } catch (err) {
+      // Недопустимый переход статуса
+      if (err instanceof ApiError && err.code === "CONFLICT") throw new CodedError(t("errors.transition"), "TRANSITION");
+      throw err;
+    }
     revalidatePath(`/admin/orders/${orderId}`);
-    return "Статус обновлён, клиент уведомлён";
+    return t("statusUpdated");
   });
 }
 
 export async function setOrderDeadlineAction(orderId: string, deadline: string): Promise<ActionResult> {
-  return run(async () => {
+  return run(async (t) => {
     const actor = await requirePermission("order.change_status");
     const iso = new Date(deadline).toISOString();
     const { error } = await actor.supabase.from("orders").update({ deadline: iso }).eq("id", orderId);
     if (error) throw error;
     revalidatePath(`/admin/orders/${orderId}`);
+    return t("deadlineSaved");
   });
 }
 
@@ -55,26 +93,34 @@ export async function assignExecutorAction(input: {
   role: "translator" | "notary" | "printer" | "manager";
   force?: boolean;
 }): Promise<ActionResult> {
-  return run(async () => {
+  return run(async (t) => {
     const actor = await requirePermission("order.assign");
-    const r = await assignExecutor(actor.supabase, { ...input, assignedBy: actor.id });
+    let overloaded = false;
+    try {
+      overloaded = (await assignExecutor(actor.supabase, { ...input, assignedBy: actor.id })).overloaded;
+    } catch (err) {
+      // assignExecutor бросает CONFLICT только при перегрузке переводчика (без force)
+      if (err instanceof ApiError && err.code === "CONFLICT") throw new CodedError(t("errors.overloaded"), "OVERLOADED");
+      if (err instanceof ApiError && err.code === "BAD_REQUEST") throw new CodedError(t("errors.roleMismatch"), "ROLE_MISMATCH");
+      throw err;
+    }
     revalidatePath(`/admin/orders/${input.orderId}`);
-    return r.overloaded ? "Назначено (исполнитель перегружен)" : "Исполнитель назначен";
+    return overloaded ? t("assignedOverloaded") : t("assigned");
   });
 }
 
 export async function recordPaymentAction(orderId: string, input: { amount: number; method: string }): Promise<ActionResult> {
-  return run(async () => {
+  return run(async (t) => {
     await requirePermission("order.view_payments");
     const parsed = manualPaymentSchema.parse(input);
     await recordManualPayment(orderId, parsed.amount, parsed.method);
     revalidatePath(`/admin/orders/${orderId}`);
-    return "Оплата отмечена";
+    return t("paymentRecorded");
   });
 }
 
 export async function saveServiceAction(id: string | null, input: unknown): Promise<ActionResult> {
-  return run(async () => {
+  return run(async (t) => {
     const actor = await requirePermission("service.edit");
     const data = serviceSchema.parse(input);
     const { error } = id
@@ -82,12 +128,69 @@ export async function saveServiceAction(id: string | null, input: unknown): Prom
       : await actor.supabase.from("services").insert(data);
     if (error) throw error;
     revalidatePath("/admin/services");
-    return id ? "Услуга сохранена" : "Услуга добавлена";
+    return id ? t("serviceSaved") : t("serviceAdded");
+  });
+}
+
+const optionalText = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max)
+    .nullable()
+    .transform((v) => (v ? v : null));
+
+const officeSchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  address: z.string().trim().min(5).max(200),
+  hours: optionalText(200),
+  phone: optionalText(40),
+  is_active: z.boolean(),
+  sort_order: z.number().int().min(0).max(1000),
+});
+
+const newOfficeSchema = officeSchema.extend({
+  slug: z
+    .string()
+    .trim()
+    .min(2)
+    .max(60)
+    .regex(/^[a-z0-9-]+$/),
+});
+
+/**
+ * Точка приёма: правка (менеджер и админ, право settings.edit) или
+ * создание (id = null; только админ — RLS разрешает insert лишь ему).
+ */
+export async function saveOfficeAction(id: string | null, input: unknown): Promise<ActionResult> {
+  return run(async (t) => {
+    if (id) {
+      const actor = await requirePermission("settings.edit");
+      const data = officeSchema.parse(input);
+      const { data: row, error } = await actor.supabase
+        .from("offices")
+        .update(data)
+        .eq("id", z.string().uuid().parse(id))
+        .select("id")
+        .maybeSingle();
+      if (error) throw error;
+      if (!row) throw notFound();
+    } else {
+      const actor = await requirePermission("user.change_role");
+      const data = newOfficeSchema.parse(input);
+      const { error } = await actor.supabase.from("offices").insert(data);
+      if (error) {
+        if (error.code === "23505") throw new CodedError(t("errors.officeSlugTaken"), "SLUG_TAKEN");
+        throw error;
+      }
+    }
+    revalidatePath("/admin/offices");
+    return id ? t("officeSaved") : t("officeAdded");
   });
 }
 
 export async function saveSettingAction(key: string, value: Json): Promise<ActionResult> {
-  return run(async () => {
+  return run(async (t) => {
     const actor = await requirePermission("settings.edit");
     const allowed = new Set([
       "urgency",
@@ -100,14 +203,14 @@ export async function saveSettingAction(key: string, value: Json): Promise<Actio
       "volume_discounts",
       "company",
     ]);
-    if (!allowed.has(key)) throw new Error("Неизвестная настройка");
+    if (!allowed.has(key)) throw new Error(t("errors.unknownSetting"));
     const { error } = await actor.supabase
       .from("settings")
       .update({ value, updated_by: actor.id })
       .eq("key", key);
     if (error) throw error;
     revalidatePath("/admin/settings");
-    return "Настройка сохранена";
+    return t("settingSaved");
   });
 }
 
@@ -115,18 +218,18 @@ export async function updateClientAction(
   clientId: string,
   input: { name: string; phone: string | null; email: string | null; inn: string | null; type: "individual" | "company" },
 ): Promise<ActionResult> {
-  return run(async () => {
+  return run(async (t) => {
     const actor = await requirePermission("order.view_all");
     const { error } = await actor.supabase.from("clients").update(input).eq("id", clientId);
     if (error) throw error;
     revalidatePath(`/admin/clients/${clientId}`);
-    return "Клиент сохранён";
+    return t("clientSaved");
   });
 }
 
 /** Админ: роль пользователя (выдача доступа переводчику/менеджеру). */
 export async function setUserRoleAction(userId: string, role: UserRole): Promise<ActionResult> {
-  return run(async () => {
+  return run(async (t) => {
     const actor = await requirePermission("user.change_role");
     const parsed = z.enum(["client", "manager", "translator", "notary", "printer", "admin"]).parse(role);
     const { error } = await actor.supabase.from("users").update({ role: parsed }).eq("id", userId);
@@ -137,24 +240,26 @@ export async function setUserRoleAction(userId: string, role: UserRole): Promise
       await actor.supabase.from("translators").upsert({ user_id: userId }, { onConflict: "user_id" });
     }
     revalidatePath("/admin/translators");
-    return "Роль изменена";
+    return t("roleChanged");
   });
 }
 
 /** Админ: выдать роль зарегистрированному пользователю по email. */
 export async function grantRoleByEmailAction(email: string, role: UserRole): Promise<ActionResult> {
-  return run(async () => {
+  return run(async (t) => {
     const actor = await requirePermission("user.change_role");
+    const parsedEmail = z.string().email().safeParse(email.trim().toLowerCase());
+    if (!parsedEmail.success) throw new Error(t("errors.invalidEmail"));
     const { data: user } = await actor.supabase
       .from("users")
       .select("id")
       // Supabase Auth хранит email в нижнем регистре; ilike не используем — «_» в нём шаблон
-      .eq("email", z.string().email("Некорректный email").parse(email.trim().toLowerCase()))
+      .eq("email", parsedEmail.data)
       .maybeSingle();
-    if (!user) throw new Error("Пользователь не найден — он должен сначала зарегистрироваться на сайте");
+    if (!user) throw new Error(t("errors.userNotFound"));
     const r = await setUserRoleAction(user.id, role);
     if (!r.ok) throw new Error(r.error);
-    return "Роль выдана";
+    return t("roleGranted");
   });
 }
 
@@ -162,7 +267,7 @@ export async function updateTranslatorAction(
   userId: string,
   input: { capacity_per_day: number; is_available: boolean; specialization: string | null; languages: string[] },
 ): Promise<ActionResult> {
-  return run(async () => {
+  return run(async (t) => {
     const actor = await requirePermission("order.assign");
     const data = z
       .object({
@@ -175,6 +280,6 @@ export async function updateTranslatorAction(
     const { error } = await actor.supabase.from("translators").update(data).eq("user_id", userId);
     if (error) throw error;
     revalidatePath("/admin/translators");
-    return "Профиль исполнителя сохранён";
+    return t("translatorSaved");
   });
 }

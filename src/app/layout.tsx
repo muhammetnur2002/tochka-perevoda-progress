@@ -1,11 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import { Providers } from "@/components/providers";
 import { COMPANY } from "@/lib/config/constants";
 import "./globals.css";
 
 const inter = Inter({
-  subsets: ["latin", "cyrillic"],
+  // latin-ext: туркменский, турецкий, азербайджанский, узбекский; cyrillic-ext: казахский, киргизский
+  subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext"],
   variable: "--font-inter",
   display: "swap",
 });
@@ -68,13 +71,17 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
   return (
-    <html lang="ru" className={inter.variable}>
+    <html lang={locale} className={inter.variable}>
       <body className="font-sans">
-        <Providers>{children}</Providers>
+        <NextIntlClientProvider locale={locale} messages={messages} timeZone="Europe/Moscow">
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

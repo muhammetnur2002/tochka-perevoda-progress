@@ -1,0 +1,638 @@
+{
+  "common": {
+    "language": "Dil",
+    "brandName": "Точка Перевода Прогресс",
+    "brandShort": "ТОЧКА ПЕРЕВОДА",
+    "brandSub": "ПРОГРЕСС",
+    "city": "Kazan",
+    "toHome": "baş sahypa",
+    "loading": "Ýüklenýär…",
+    "save": "Ýatda sakla",
+    "saved": "Ýatda saklandy",
+    "cancel": "Ýatyr",
+    "back": "Yza",
+    "close": "Ýap",
+    "download": "Ýükläp al",
+    "open": "Aç",
+    "remove": "Aýyr",
+    "phonePlaceholder": "+7 (___) ___-__-__",
+    "error": "Bir zat nädogry boldy",
+    "retry": "Gaýtadan synanyş",
+    "notFoundTitle": "Sahypa tapylmady",
+    "notFoundText": "Soralan sahypa ýok ýa-da başga ýere geçirildi.",
+    "toMain": "Baş sahypa",
+    "errorText": "Ýalňyşlyk ýüze çykdy. Gaýtadan synanyşyň.",
+    "rub": "₽"
+  },
+  "nav": {
+    "home": "Baş sahypa",
+    "services": "Hyzmatlar we bahalar",
+    "calculator": "Kalkulýator",
+    "status": "Sargydyň ýagdaýy",
+    "account": "Şahsy otag",
+    "login": "Giriş",
+    "logout": "Çykyş",
+    "cart": "Sebet",
+    "menu": "Menýu",
+    "crm": "CRM-admin paneli",
+    "workspace": "Iş ýeri",
+    "mainMenu": "Esasy menýu"
+  },
+  "categories": {
+    "translation": "Terjimeler",
+    "printing": "Poligrafiýa",
+    "insurance": "Ätiýaçlandyryş",
+    "additional": "Goşmaça"
+  },
+  "units": {
+    "page": "sahypa üçin",
+    "document": "resminama üçin",
+    "item": "sany üçin"
+  },
+  "orderStatus": {
+    "new": "Täze",
+    "confirmed": "Tassyklandy",
+    "in_progress": "Işlenýär",
+    "ready": "Taýýar",
+    "issued": "Berildi",
+    "completed": "Tamamlandy",
+    "cancelled": "Ýatyryldy"
+  },
+  "urgency": {
+    "legend": "Gyssaglylyk",
+    "standard": "Adaty, 1–2 iş güni",
+    "1d": "Gyssagly — 1 günde",
+    "same_day": "Ýüz tutan günüňiz"
+  },
+  "languages": {
+    "tk": "Türkmen dili",
+    "uz": "Özbek dili",
+    "tr": "Türk dili",
+    "az": "Azerbaýjan dili",
+    "kk": "Gazak dili",
+    "ky": "Gyrgyz dili",
+    "fa": "Pars dili (Eýran, farsy)",
+    "ar-IQ": "Arap dili (Yrak)",
+    "ar-SY": "Arap dili (Siriýa)",
+    "en": "Iňlis dili",
+    "de": "Nemes dili",
+    "fr": "Fransuz dili",
+    "es": "Ispan dili",
+    "it": "Italýan dili",
+    "ru": "Rus dili"
+  },
+  "services": {
+    "legal": {
+      "name": "Hukuk resminamalarynyň terjimesi",
+      "description": "Şertnamalar, esaslandyryş resminamalary, ynanç hatlary, kazyýet kararlary. Baha bir sahypa üçin."
+    },
+    "medical": {
+      "name": "Lukmançylyk resminamalarynyň terjimesi",
+      "description": "Güwänamalar, göçürmeler, netijenamalar, epikrizler. Baha bir sahypa üçin."
+    },
+    "technical": {
+      "name": "Tehniki resminamalaryň terjimesi",
+      "description": "Gollanmalar, enjamlaryň pasportlary, çyzgylar, tehniki şertler (ТУ). Baha bir sahypa üçin."
+    },
+    "military-id": {
+      "name": "Harby biletiň terjimesi (notarial)",
+      "description": "Notarial tassyklama bilen terjime. Bir resminama üçin kesgitlenen baha."
+    },
+    "work-book": {
+      "name": "Zähmet kitapçasynyň terjimesi (notarial)",
+      "description": "Notarial tassyklama bilen terjime. Bir resminama üçin kesgitlenen baha."
+    },
+    "diploma": {
+      "name": "Diplomyň terjimesi (notarial)",
+      "description": "Bilim baradaky resminamanyň notarial tassyklama bilen terjimesi."
+    },
+    "certificate": {
+      "name": "Güwänamanyň terjimesi (notarial)",
+      "description": "Güwänamanyň notarial tassyklama bilen terjimesi."
+    },
+    "passport-all": {
+      "name": "Pasportyň terjimesi (ähli sahypalary)",
+      "description": "Pasportyň ähli sahypalarynyň terjimesi."
+    },
+    "driver-license": {
+      "name": "Sürüjilik şahadatnamasynyň terjimesi",
+      "description": "Sürüjilik şahadatnamasynyň terjimesi."
+    },
+    "passport-notary": {
+      "name": "Pasportyň terjimesi (notarial tassyklanan)",
+      "description": "Pasportyň notarial tassyklama bilen terjimesi."
+    },
+    "power-of-attorney": {
+      "name": "Ynanç hatynyň terjimesi (notarial)",
+      "description": "Ynanç hatynyň notarial tassyklama bilen terjimesi."
+    },
+    "photocopy-a4": {
+      "name": "A4 kserokopiýa",
+      "description": "A4 formatly ak-gara kserokopiýa."
+    },
+    "scanning": {
+      "name": "Skanirlemek",
+      "description": "Bir sahypany skanirlemek."
+    },
+    "color-print": {
+      "name": "Reňkli çap",
+      "description": "Bir sahypany reňkli çap etmek."
+    },
+    "color-photocopy": {
+      "name": "Reňkli kserokopiýa",
+      "description": "Bir sahypanyň reňkli kserokopiýasy."
+    },
+    "bw-print": {
+      "name": "Ak-gara çap",
+      "description": "Bir sahypany ak-gara çap etmek."
+    },
+    "print-a3": {
+      "name": "A3 çap",
+      "description": "A3 formatda çap etmek."
+    },
+    "print-a2": {
+      "name": "A2 çap",
+      "description": "A2 formatda çap etmek."
+    },
+    "print-a1": {
+      "name": "A1 çap",
+      "description": "A1 formatda çap etmek."
+    },
+    "laminating": {
+      "name": "Laminirlemek",
+      "description": "Bir sahypany laminirlemek."
+    },
+    "binding": {
+      "name": "Broşýuralamak",
+      "description": "Bir resminamany broşýuralamak."
+    },
+    "diploma-stitching": {
+      "name": "Diplomlary tikmek",
+      "description": "Diplomy tikmek."
+    },
+    "photo": {
+      "name": "Resminamalar üçin surat",
+      "description": "Resminamalar üçin suratlar (toplum)."
+    },
+    "dms-student": {
+      "name": "Talyplar üçin ДМС polisi (daşary ýurt raýatlary üçin)",
+      "description": "Daşary ýurtly talyplar üçin meýletin lukmançylyk ätiýaçlandyryşynyň polisi."
+    }
+  },
+  "offices": {
+    "title": "Kazandaky kabul ediş nokatlary",
+    "choose": "Resminamalary nirede tabşyryp, nireden almak size amatly?",
+    "hint": "Iň ýakyn nokady saýlaň — resminamalary şol ýerde kabul edýäris we berýäris.",
+    "hours": "Iş wagty",
+    "hoursTbd": "iş wagtyny telefon arkaly anyklaň",
+    "phone": "Telefon",
+    "route": "Marşrut",
+    "selected": "saýlandy",
+    "pickupAt": "Özüňiz almak: {address}",
+    "officeLabel": "Kabul ediş nokady"
+  },
+  "languagePair": {
+    "title": "Terjime dili",
+    "from": "Haýsy dilden",
+    "to": "Haýsy dile",
+    "choose": "Resminamanyň dilini saýlaň",
+    "toRussianOnly": "Rus diline terjime edýäris",
+    "hint": "Terjime saýlanan dilden rus diline edilýär."
+  },
+  "home": {
+    "badge": "Terjime býurosy · Kazan",
+    "heroTitle": "Notarial tassyklama bilen resminamalaryň terjimesi",
+    "heroText": "Türkmen, özbek, türk, azerbaýjan, gazak, gyrgyz, pars, arap we Ýewropa dillerinden rus diline terjime. Poligrafiýa we ätiýaçlandyryş. Onlaýn sargyt we töleg birnäçe minutda.",
+    "ctaCalc": "Bahasyny hasapla",
+    "ctaCatalog": "Hyzmatlar katalogy",
+    "ctaStatus": "Sargydyň ýagdaýyny barla",
+    "factNotary": "Notarial",
+    "factDays": "1–2 gün",
+    "factServices": "Nyrhnamada 24 hyzmat",
+    "factOffices": "3 kabul ediş nokady",
+    "logoAlt": "«Точка Перевода Прогресс» logotipi",
+    "servicesTitle": "Hyzmatlar we bahalar",
+    "servicesSubtitle": "Häzirki nyrhnama. Gyssaglylygy we sahypa sanyny hasaba alyp, takyk bahany kalkulýator hasaplaýar.",
+    "allServices": "Ähli hyzmatlar we bahalar",
+    "whyTitle": "Näme üçin bizi saýlaýarlar",
+    "why": {
+      "days": {
+        "title": "Möhleti 1–2 gün",
+        "text": "Terjimeleriň köpüsini 1–2 iş gününde taýýarlaýarys. Gyssagly we ekspress tertip hem bar."
+      },
+      "notary": {
+        "title": "Notarial tassyklama",
+        "text": "Terjimeleri notariusda tassyklaýarys — hemmesi bir ýerde, artykmaç gatnawsyz."
+      },
+      "prices": {
+        "title": "Aç-açan bahalar",
+        "text": "Sargyt bermezden öň kalkulýatorda takyk hasaplama. Töleg kart, СБП ýa-da QR-kod arkaly."
+      },
+      "telegram": {
+        "title": "Telegram-hyzmat",
+        "text": "Sargyt we onuň ýagdaýy göni Telegramda. Taýýar bolandygy barada habarlar awtomatik gelýär."
+      }
+    },
+    "languagesTitle": "Haýsy dillerden terjime edýäris",
+    "languagesText": "14 dilden rus diline terjime edýäris:",
+    "stepsTitle": "Sargydy nädip bermeli",
+    "steps": {
+      "1": {
+        "title": "Hyzmatlary saýlaň",
+        "text": "Hyzmatlary sebede goşuň we resminamanyň dilini görkeziň."
+      },
+      "2": {
+        "title": "Nokady saýlaň",
+        "text": "Kazanda size iň ýakyn kabul ediş nokadyny görkeziň."
+      },
+      "3": {
+        "title": "Faýllary goşuň we töläň",
+        "text": "Telefondan surat ýa-da skan. Töleg СБП, QR ýa-da kart arkaly."
+      },
+      "4": {
+        "title": "Netijäni alyň",
+        "text": "Taýýar bolanda habar bereris. Saýlan nokadyňyzdan alyp gidiň."
+      }
+    },
+    "faqTitle": "Köp berilýän soraglar",
+    "faq": {
+      "price": {
+        "q": "Bir sahypanyň terjimesi näçe durýar?",
+        "a": "Hukuk we lukmançylyk resminamalary — sahypasy 550 ₽, tehniki resminamalar — 650 ₽. Pasport, diplom, güwänama — katalogdaky kesgitlenen baha boýunça."
+      },
+      "time": {
+        "q": "Terjime näçe wagtda taýýar bolar?",
+        "a": "Adaty möhlet — 1–2 iş güni. Gyssagly: 1 günde (×1,5) ýa-da ýüz tutan günüňiz (×2)."
+      },
+      "notary": {
+        "q": "Terjimeleri notariusda tassyklaýarsyňyzmy?",
+        "a": "Hawa. «Notarial» belgili hyzmatlara tassyklama eýýäm goşulan, beýleki terjimeler üçin ony sebetde goşup bolýar."
+      },
+      "languages": {
+        "q": "Haýsy dillerden terjime edýärsiňiz?",
+        "a": "Türkmen, özbek, türk, azerbaýjan, gazak, gyrgyz, pars (farsy), arap (Yrak, Siriýa), iňlis, nemes, fransuz, ispan we italýan dillerinden — rus diline."
+      },
+      "status": {
+        "q": "Sargydyň ýagdaýyny nädip yzarlamaly?",
+        "a": "«Sargydyň ýagdaýy» sahypasynda sargyt belgisi we telefon boýunça, şahsy otagda ýa-da Telegramda."
+      },
+      "where": {
+        "q": "Siz nirede ýerleşýärsiňiz?",
+        "a": "Kazanda üç kabul ediş nokadymyz bar: ул. Сибирский Тракт, 7/6; ул. Карла Маркса, 65; ул. Промысловая, 5, каб. 3."
+      }
+    },
+    "contactsTitle": "Aragatnaşyk",
+    "orderCta": "Sargyt et",
+    "metaTitle": "Kazanda terjimeler, poligrafiýa we ätiýaçlandyryş",
+    "metaDescription": "Kazandaky «Точка Перевода Прогресс» terjime býurosy: resminamalary türkmen, özbek, türk we beýleki dillerden rus diline terjime etmek, notarial tassyklama, poligrafiýa, ätiýaçlandyryş. Onlaýn sargyt, töleg we sargydyň ýagdaýy.",
+    "mapTitle": "Kabul ediş nokatlarynyň kartasy",
+    "officesText": "Iň ýakyn nokady saýlaň — resminamalary tabşyrmak we taýýar terjimäni almak şol ýerde bolýar."
+  },
+  "catalog": {
+    "title": "Hyzmatlar katalogy we bahalar",
+    "subtitle": "Kategoriýany saýlaň. «Notarial» belgili hyzmatlarda tassyklama baha goşulan, beýlekilerde aýratyn goşulýar.",
+    "all": "Ähli hyzmatlar",
+    "notarial": "notarial",
+    "add": "Goş",
+    "added": "Goşuldy: {name}",
+    "addAria": "Goş: {name}",
+    "empty": "Hyzmat tapylmady."
+  },
+  "calculator": {
+    "title": "Kalkulýator we sebet",
+    "subtitle": "Sahypalaryň ýa-da resminamalaryň sanyny görkeziň — jemi we taýýar bolmak möhleti derrew täzeden hasaplanýar.",
+    "categoriesAria": "Hyzmat kategoriýalary",
+    "yourOrder": "Siziň sargydyňyz",
+    "empty": "Sebet boş. Hyzmaty «+» düwmesi bilen goşuň.",
+    "withNotary": "tassyklama bilen",
+    "increase": "Köpelt: {name}",
+    "decrease": "Azalt: {name}",
+    "notaryLabel": "Tassyklamasyz terjimeler üçin notarial tassyklama",
+    "notaryPrice": "+{price} × {count} resminama",
+    "notaryTbd": "(bahasyny menejer anyklar)",
+    "services": "Hyzmatlar",
+    "discount": "Mukdar üçin arzanladyş",
+    "urgencySurcharge": "Gyssaglylyk üçin goşmaça töleg",
+    "notary": "Tassyklama",
+    "delivery": "Eltip bermek",
+    "total": "Jemi",
+    "ready": "Taýýar bolar",
+    "sameDay": "şu gün sagat 19:00-a çenli",
+    "checkout": "Sargyt et",
+    "disclaimer": "Deslapky hasaplama. Jemi baha sargyt berlende serwerde hereket edýän nyrhnama boýunça kesgitlenýär.",
+    "receiving": "Almak usuly",
+    "pickup": "Kabul ediş nokadyndan özüňiz almak",
+    "courier": "Kurýer arkaly eltip bermek",
+    "courierPrice": "Eltip bermek (+{price})"
+  },
+  "cartDrawer": {
+    "title": "Sebet",
+    "description": "Saýlanan hyzmatlar we deslapky hasaplama",
+    "empty": "Sebet boş",
+    "toCatalog": "Kataloga geç",
+    "sum": "Bahasy",
+    "urgency": "Gyssaglylyk (×{coef})",
+    "total": "Jemi",
+    "calculate": "Takyk hasapla",
+    "checkout": "Sargyt et"
+  },
+  "checkout": {
+    "title": "Sargyt bermek",
+    "backToCart": "← Sebede dolan",
+    "contacts": "Aragatnaşyk maglumatlary",
+    "name": "Adyňyz *",
+    "namePlaceholder": "Size nähili ýüzlenmeli",
+    "phone": "Telefon *",
+    "email": "Email",
+    "emailPlaceholder": "çek we habarlar üçin",
+    "telegram": "Telegram",
+    "individual": "Fiziki şahs",
+    "company": "Gurama (hasap-faktura, ИНН)",
+    "inn": "ИНН",
+    "innPlaceholder": "10 ýa-da 12 san",
+    "deliveryAddress": "Eltip bermek salgysy *",
+    "deliveryAddressPlaceholder": "Şäher, köçe, jaý, öý",
+    "comment": "Bellik",
+    "commentPlaceholder": "Mysal üçin: atlary daşary ýurt pasportyndaky ýaly latyn harplarynda",
+    "files": "Resminamalaryň faýllary",
+    "payMethod": "Töleg usuly",
+    "consentPrefix": "Men 152-ФЗ laýyklykda",
+    "consentLink": "şahsy maglumatlarymy işlemäge razylyk",
+    "consentMiddle": "berýärin,",
+    "privacyLink": "gizlinlik syýasaty",
+    "consentAnd": "bilen tanyşdym we kabul edýärin:",
+    "termsLink": "hyzmat etmegiň şertleri",
+    "submit": "Töleg etmäge geç",
+    "stageCreating": "Sargyt resmileşdirilýär…",
+    "stageUploading": "Faýllar ýüklenýär: {current} / {total}",
+    "fileFailed": "«{name}» faýly ýüklenmedi: {error}. Ony soňra iberip bolýar.",
+    "emptyCart": "Sebet boş — hyzmatlary saýlaň.",
+    "toCalculator": "Kalkulýatora geç",
+    "totalTitle": "Tölemeli jemi",
+    "receiving": "Almak usuly",
+    "pickup": "Özüňiz almak",
+    "delivery": "Eltip bermek",
+    "serverPriceNote": "Baha serwerde häzirki nyrhnama boýunça täzeden hasaplanýar. Sargyt belgisi SMS we Telegram arkaly iberiler.",
+    "changeItems": "Düzümini üýtget",
+    "errors": {
+      "name": "Adyňyzy ýazyň",
+      "phone": "Russiýanyň telefon belgisini giriziň",
+      "email": "Email nädogry",
+      "consent": "Maglumatlary işlemäge razylyk bermän sargyt edip bolmaýar",
+      "address": "Eltip bermek salgysyny görkeziň",
+      "office": "Kabul ediş nokadyny saýlaň",
+      "language": "Resminamanyň dilini görkeziň"
+    }
+  },
+  "dropzone": {
+    "dragHere": "Faýllary şu ýere süýräp getiriň",
+    "formats": "JPG, PNG, HEIC, PDF, DOC/DOCX, ZIP · {size} çenli",
+    "choose": "Faýllary saýla",
+    "camera": "Surata al",
+    "unsupported": "«{name}» faýlynyň formaty goldanmaýar",
+    "tooBig": "«{name}» faýly {size} möçberden uly",
+    "tooMany": "Bir sargytda iň köp {max} faýl bolup biler",
+    "removeAria": "Aýyr: {name}"
+  },
+  "payment": {
+    "title": "{number} belgili sargydyň tölegi",
+    "sbp": "СБП",
+    "sbpHint": "bank programmasy arkaly",
+    "qr": "QR-kod",
+    "qrHint": "kamera bilen skanirläň",
+    "card": "Bank karty",
+    "cardHint": "Mir, Visa, Mastercard",
+    "order": "Sargyt {number}",
+    "qrAria": "СБП arkaly tölemek üçin QR-kod",
+    "cardText": "ЮKassa-nyň goragly sahypasy açylar. Tölegden soň saýta dolanarsyňyz.",
+    "qrText": "QR-kody kamera bilen skanirläň ýa-da bank programmasyny açyň — mukdar awtomatik goýlar. Ýagdaý özi täzelener.",
+    "openBank": "Bank programmasyny aç",
+    "goPay": "Töleg etmäge geç",
+    "iPaid": "Men töledim",
+    "mockNote": "Synag tertibi: töleg mock-üpjün ediji arkaly imitirlenýär (ЮKassa açarlary görkezilmedik)",
+    "noAccessTitle": "Töleg sahypasyna rugsat ýok",
+    "noAccessText": "Salgyny sargyt beren enjamyňyzda açyň ýa-da şahsy otaga giriň."
+  },
+  "success": {
+    "paidTitle": "Sargyt {number} tölendi",
+    "createdTitle": "Sargyt {number} resmileşdirildi",
+    "paidText": "Sag boluň! Işe başladyk. Ýagdaý barada habarlar Telegram, SMS ýa-da email arkaly geler.",
+    "pendingText": "Töleg işlenýär — bank tölegi tassyklan badyna size habar ibereris.",
+    "keepNumber": "Sargyt belgisini ýatda saklaň — ony we telefon belgiňizi ulanyp ýagdaýy barlap bilersiňiz.",
+    "track": "Ýagdaýy yzarla",
+    "myOrders": "Meniň sargytlarym"
+  },
+  "mockSbp": {
+    "title": "Synag СБП QR-kody",
+    "text": "Platforma ЮKassa birikdirilmezden demo tertibinde işleýär, şonuň üçin bu QR synag sahypasyna alyp barýar. Töleg sahypasyna dolanyň we «Men töledim» düwmesine basyň."
+  },
+  "statusPage": {
+    "title": "Sargydyň ýagdaýy",
+    "number": "Sargyt belgisi",
+    "phone": "Telefon",
+    "check": "Barla",
+    "notFound": "Sargyt tapylmady. Belgini we sargyt berlende görkezilen telefony barlaň.",
+    "order": "Sargyt",
+    "services": "Hyzmatlar",
+    "readiness": "Taýýar bolar",
+    "tbd": "anyklanýar",
+    "sum": "Bahasy",
+    "paid": "tölendi",
+    "unpaid": "töleg garaşylýar",
+    "receiving": "Almak usuly",
+    "courier": "kurýer arkaly eltip bermek"
+  },
+  "timeline": {
+    "aria": "Sargydyň ýerine ýetirilişi",
+    "cancelled": "Sargyt ýatyryldy",
+    "now": "häzir"
+  },
+  "files": {
+    "none": "Faýl ýok.",
+    "download": "Ýükläp al",
+    "downloadAria": "Ýükläp al: {name}",
+    "kind": {
+      "source": "asyl nusga",
+      "translation": "terjime",
+      "receipt": "çek",
+      "photo": "surat",
+      "other": "faýl"
+    }
+  },
+  "chat": {
+    "empty": "Menejere ýazyň — iş wagtynda jogap bereris.",
+    "manager": "Menejer",
+    "placeholder": "Habar…",
+    "label": "Habar",
+    "send": "Iber"
+  },
+  "auth": {
+    "backToSite": "← Saýta dolan",
+    "email": "Email",
+    "password": "Parol",
+    "login": {
+      "title": "Giriş",
+      "description": "Şahsy otagyňyza giriň",
+      "submit": "Gir",
+      "success": "Siz girdiňiz",
+      "invalid": "Email ýa-da parol nädogry",
+      "forgot": "Paroly ýatdan çykardyňyzmy?",
+      "noAccount": "Hasabyňyz ýokmy? Hasaba duruň"
+    },
+    "register": {
+      "title": "Hasaba durmak",
+      "description": "Sargytlary yzarlamak üçin hasap dörediň",
+      "name": "Adyňyz",
+      "namePlaceholder": "Amanow Aman",
+      "phone": "Telefon",
+      "passwordPlaceholder": "Iň az 8 nyşan",
+      "submit": "Hasaba dur",
+      "created": "Hasap döredildi",
+      "confirmEmail": "Email-i tassyklaň — size salgy iberdik",
+      "phoneInvalid": "Russiýanyň dogry telefon belgisini giriziň",
+      "haveAccount": "Hasabyňyz barmy?",
+      "login": "Gir"
+    },
+    "reset": {
+      "title": "Paroly dikeltmek",
+      "description": "Paroly täzelemek üçin email-iňize salgy ibereris",
+      "submit": "Salgyny iber",
+      "sent": "Salgy iberildi. Poçtaňyzy barlaň.",
+      "backToLogin": "← Girişe dolan"
+    },
+    "update": {
+      "title": "Täze parol",
+      "description": "Iň az 8 nyşanly parol oýlap tapyň",
+      "submit": "Paroly ýatda sakla",
+      "tooShort": "Iň az 8 nyşan",
+      "done": "Parol täzelendi"
+    }
+  },
+  "account": {
+    "title": "Şahsy otag",
+    "tabsAria": "Otagyň bölümleri",
+    "tabs": {
+      "orders": "Sargytlar",
+      "profile": "Profil",
+      "data": "Meniň maglumatlarym"
+    },
+    "empty": "Häzirlikçe sargyt ýok. Telefon belgiňize girişsiz berlen sargytlar profilde telefony tassyklandan soň şu ýerde peýda bolar.",
+    "calculate": "Bahasyny hasapla",
+    "from": "{date} senesi",
+    "files": "{count, plural, one {# faýl} other {# faýl}}",
+    "pay": "Töle",
+    "payAmount": "{amount} töle",
+    "statusBtn": "Ýagdaýy",
+    "repeat": "Gaýtala",
+    "repeatUnavailable": "Bu hyzmatlar indi katalogda ýok",
+    "repeatPartial": "Käbir hyzmatlar satuwdan aýryldy — olar goşulmady",
+    "allOrders": "← Ähli sargytlar",
+    "readiness": "Taýýar bolar: {date}",
+    "deliveryTo": "Eltip bermek: {address}",
+    "addressTbd": "salgy anyklanýar",
+    "composition": "Düzümi we töleg",
+    "total": "Jemi",
+    "paid": "Tölendi",
+    "filesTitle": "Faýllar we çekler",
+    "chatTitle": "Menejer bilen çat",
+    "paymentStatus": {
+      "pending": "garaşylýar",
+      "waiting_for_capture": "işlenýär",
+      "succeeded": "tölendi",
+      "canceled": "ýatyryldy",
+      "refunded": "yzyna gaýtaryldy"
+    },
+    "metaOrders": "Meniň sargytlarym",
+    "metaOrder": "Sargyt",
+    "metaProfile": "Profil",
+    "translationPair": "Terjime: {from} → {to}",
+    "titleTemplate": "Şahsy otag"
+  },
+  "profile": {
+    "name": "Adyňyz",
+    "email": "Email",
+    "telegram": "Telegram",
+    "linked": "baglanan",
+    "notLinked": "baglanmadyk",
+    "openBot": "@{bot} botuny aç",
+    "newPassword": "Täze parol",
+    "newPasswordPlaceholder": "üýtgetmejek bolsaňyz, boş goýuň",
+    "save": "Ýatda sakla",
+    "saved": "Profil ýatda saklandy",
+    "nameRequired": "Adyňyzy ýazyň",
+    "sessionExpired": "Sessiýanyň möhleti gutardy — täzeden giriň",
+    "passwordShort": "Parol — iň az 8 nyşan",
+    "phoneTitle": "Telefon",
+    "phoneText": "Sargytlar barada habarlar telefona gelýär. Kod bilen tassyklandan soň, bu belgä girişsiz berlen sargytlar otagyňyza baglanar.",
+    "phoneNumber": "Belgi",
+    "phoneInvalid": "Russiýanyň telefon belgisini giriziň",
+    "verified": "tassyklandy",
+    "getCode": "Kod al",
+    "resendCode": "Kody täzeden iber",
+    "codeSent": "Kod SMS arkaly iberildi",
+    "code": "SMS-däki kod",
+    "confirm": "Tassykla",
+    "confirmed": "Telefon tassyklandy",
+    "confirmedWithOrders": "Telefon tassyklandy. Baglanan sargytlar: {count}",
+    "linkedAs": "baglanan: @{username}"
+  },
+  "dataPage": {
+    "title": "Meniň maglumatlarym",
+    "exportTitle": "Şahsy maglumatlary göçürip almak",
+    "exportText": "152-ФЗ laýyklykda siz şahsy maglumatlaryňyzyň nusgasyny maşyn tarapyndan okalýan formatda (JSON) alyp bilersiňiz.",
+    "exportButton": "Maglumatlary göçürip al",
+    "exportFailed": "Maglumatlary göçürip alyp bolmady",
+    "deleteTitle": "Maglumatlary pozmak",
+    "deleteText": "Pozmak profiliňizdäki, müşderi ýazgylaryňyzdaky we razylyklaryňyzdaky şahsy maglumatlary aýyrýar (depersonalizasiýa). Sargyt maglumatlary buhgalteriýa hasabynyň talaplaryna laýyklykda şahsyýetsiz görnüşde saklanýar.",
+    "deleteButton": "Maglumatlarymy poz",
+    "confirmTitle": "Şahsy maglumatlar pozulsynmy?",
+    "confirmText": "Bu hereketi yzyna gaýtaryp bolmaýar. Sargytlaryňyzyň taryhyny görüp bilmersiňiz.",
+    "deleting": "Pozulýar…",
+    "delete": "Poz",
+    "deleted": "Maglumatlar pozuldy",
+    "deleteFailed": "Maglumatlary pozup bolmady"
+  },
+  "footer": {
+    "services": "Hyzmatlar",
+    "translations": "Resminamalaryň terjimesi",
+    "printing": "Poligrafiýa",
+    "insurance": "Ätiýaçlandyryş",
+    "calculator": "Baha kalkulýatory",
+    "clients": "Müşderiler üçin",
+    "order": "Sargyt et",
+    "status": "Ýagdaýy barla",
+    "account": "Şahsy otag",
+    "login": "Giriş",
+    "info": "Maglumat",
+    "privacy": "Gizlinlik syýasaty",
+    "terms": "Hyzmat etmegiň şertleri",
+    "consent": "Şahsy maglumatlary işlemäge razylyk",
+    "rights": "Ähli hukuklar goralan.",
+    "legalName": "«Точка Перевода Прогресс» terjime býurosy"
+  },
+  "legal": {
+    "officialNotice": "Resminamanyň resmi teksti rus dilindedir. Interfeýsiň terjimesi amatlylyk üçin berilýär."
+  },
+  "roles": {
+    "guest": "Myhman",
+    "client": "Müşderi",
+    "manager": "Menejer",
+    "translator": "Terjimeçi",
+    "notary": "Notarius",
+    "printer": "Çap",
+    "admin": "Administrator"
+  },
+  "meta": {
+    "siteTitle": "Kazanda terjime býurosy",
+    "calculator": "Terjime bahasynyň kalkulýatory",
+    "calculatorDescription": "Terjimäniň, notarial tassyklamanyň we poligrafiýanyň bahasyny onlaýn hasaplaň: sahypa sany, gyssaglylyk, kabul ediş nokady we taýýar bolmak senesi.",
+    "checkout": "Sargyt bermek",
+    "mockSbp": "СБП synag tölegi",
+    "pay": "Sargydyň tölegi",
+    "success": "Sargyt resmileşdirildi",
+    "services": "Hyzmatlar we bahalar",
+    "servicesDescription": "«Точка Перевода Прогресс» terjime býurosynyň doly nyrhnamasy: resminamalaryň terjimesi, poligrafiýa, ätiýaçlandyryş. Sahypa we resminama üçin bahalar.",
+    "status": "Sargydyň ýagdaýy",
+    "statusDescription": "Sargydyň ýagdaýyny belgisi we telefon boýunça barlaň: kabul edildi, işlenýär, bermäge taýýar."
+  }
+}

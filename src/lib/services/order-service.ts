@@ -76,6 +76,36 @@ export async function quoteOrder(
   return { items, pricing: calculatePrice(items, options) };
 }
 
+/**
+ * Проверяет точку приёма и языковую пару. Перевод выполняется только с 14
+ * исходных языков на русский: язык перевода всегда «ru», задаётся сервером.
+ */
+async function resolveOfficeAndLanguages(
+  input: CreateOrderInput,
+  items: CartItem[],
+): Promise<{ officeId: string; languageFrom: string | null; languageTo: string | null }> {
+  const admin = createAdminClient();
+
+  const { data: office } = await admin
+    .from("offices")
+    .select("id")
+    .eq("id", input.officeId)
+    .eq("is_active", true)
+    .maybeSingle();
+  if (!office) throw badRequest("Выберите точку приёма документов");
+
+  const hasTranslation = items.some((i) => i.category === "translation");
+  if (!hasTranslation) return { officeId: office.id, languageFrom: null, languageTo: null };
+
+  if (!input.languageFrom) throw badRequest("Укажите язык оригинала документа");
+  const [{ data: from }, { data: ru }] = await Promise.all([
+    admin.from("languages").select("id").eq("id", input.languageFrom).eq("is_source", true).eq("is_active", true).maybeSingle(),
+    admin.from("languages").select("id").eq("code", "ru").maybeSingle(),
+  ]);
+  if (!from) throw badRequest("С этого языка мы пока не переводим");
+  return { officeId: office.id, languageFrom: from.id, languageTo: ru?.id ?? null };
+}
+
 /** Находит карточку клиента (по пользователю или телефону) или создаёт новую. */
 async function resolveClient(input: CreateOrderInput, actorId?: string): Promise<string> {
   const admin = createAdminClient();
@@ -129,6 +159,7 @@ export async function createOrder(
 ): Promise<CreateOrderResult> {
   const admin = createAdminClient();
   const { items, pricing } = await quoteOrder(input);
+  const placement = await resolveOfficeAndLanguages(input, items);
 
   const clientId = await resolveClient(input, ctx.actorId);
 
@@ -138,8 +169,9 @@ export async function createOrder(
       client_id: clientId,
       user_id: ctx.actorId ?? null,
       status: "new",
-      language_from: input.languageFrom ?? null,
-      language_to: input.languageTo ?? null,
+      office_id: placement.officeId,
+      language_from: placement.languageFrom,
+      language_to: placement.languageTo,
       subtotal: pricing.subtotal,
       urgency_coefficient: pricing.urgencyCoefficient,
       notary_fee: pricing.notaryFee,

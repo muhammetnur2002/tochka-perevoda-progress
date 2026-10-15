@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Loader2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,13 +16,15 @@ import {
   setOrderStatusAction,
   type ActionResult,
 } from "@/app/admin/actions";
-import { canTransition, ROLE_LABELS } from "@/lib/auth/roles";
-import { ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/config/constants";
+import { canTransition } from "@/lib/auth/roles";
+import type { OrderStatus } from "@/lib/config/constants";
 import { uploadOrderFile } from "@/lib/client/api";
 import type { UserRole } from "@/types/database.types";
 import { cn } from "@/lib/utils";
 
 const STATUSES: OrderStatus[] = ["new", "confirmed", "in_progress", "ready", "issued", "completed", "cancelled"];
+const ROLES = ["guest", "client", "manager", "translator", "notary", "printer", "admin"];
+const ASSIGNMENT_STATUSES = ["assigned", "accepted", "in_progress", "done", "rejected"];
 
 interface OrderControlsProps {
   orderId: string;
@@ -55,6 +58,12 @@ function toLocalInput(iso: string | null): string {
 
 /** Правая колонка карточки заказа: статус, срок, исполнитель, оплата, загрузка файлов. */
 export function OrderControls({ orderId, status, deadline, due, assignments, staff }: OrderControlsProps) {
+  const t = useTranslations("admin.controls");
+  const tAdmin = useTranslations("admin");
+  const tStatus = useTranslations("orderStatus");
+  const tRoles = useTranslations("roles");
+  const roleName = (r: string) => (ROLES.includes(r) ? tRoles(r) : r);
+  const assignmentStatus = (s: string) => (ASSIGNMENT_STATUSES.includes(s) ? tAdmin(`assignmentStatus.${s}`) : s);
   const router = useRouter();
   const { pending, exec } = useAction();
   const [comment, setComment] = React.useState("");
@@ -75,7 +84,7 @@ export function OrderControls({ orderId, status, deadline, due, assignments, sta
     setUploading(true);
     try {
       for (const f of Array.from(files)) await uploadOrderFile(orderId, f, { kind: uploadKind });
-      toast.success("Файл загружен");
+      toast.success(t("fileUploaded"));
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);
@@ -88,7 +97,7 @@ export function OrderControls({ orderId, status, deadline, due, assignments, sta
   return (
     <aside className="space-y-4 xl:sticky xl:top-6 xl:self-start">
       <section className="space-y-3 rounded-2xl border bg-card p-4">
-        <h2 className="font-bold text-brand-800">Статус</h2>
+        <h2 className="font-bold text-brand-800">{t("status")}</h2>
         <div className="flex flex-wrap gap-1.5">
           {STATUSES.map((s) => {
             const allowed = canTransition(status, s);
@@ -112,20 +121,20 @@ export function OrderControls({ orderId, status, deadline, due, assignments, sta
                       : "border-input bg-white text-brand-800 disabled:opacity-40",
                 )}
               >
-                {ORDER_STATUS_LABELS[s]}
+                {tStatus(s)}
               </button>
             );
           })}
         </div>
         <Label htmlFor="status-comment" className="text-xs">
-          Комментарий к смене статуса (попадёт в историю)
+          {t("statusComment")}
         </Label>
-        <Textarea id="status-comment" rows={2} value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Например: причина отмены" />
+        <Textarea id="status-comment" rows={2} value={comment} onChange={(e) => setComment(e.target.value)} placeholder={t("statusCommentPlaceholder")} />
       </section>
 
       <section className="space-y-2 rounded-2xl border bg-card p-4">
         <Label htmlFor="deadline" className="font-bold text-brand-800">
-          Срок (МСК)
+          {t("deadline")}
         </Label>
         <div className="flex gap-2">
           <Input id="deadline" type="datetime-local" value={deadlineValue} onChange={(e) => setDeadlineValue(e.target.value)} />
@@ -140,27 +149,27 @@ export function OrderControls({ orderId, status, deadline, due, assignments, sta
       </section>
 
       <section className="space-y-2 rounded-2xl border bg-card p-4">
-        <h2 className="font-bold text-brand-800">Исполнители</h2>
+        <h2 className="font-bold text-brand-800">{t("executors")}</h2>
         {assignments.filter((a) => a.status !== "rejected").length === 0 && (
-          <p className="text-sm text-muted-foreground">Никто не назначен.</p>
+          <p className="text-sm text-muted-foreground">{t("nobodyAssigned")}</p>
         )}
         <ul className="space-y-1 text-sm">
           {assignments
             .filter((a) => a.status !== "rejected")
             .map((a) => (
               <li key={a.id}>
-                {ROLE_LABELS[a.role as UserRole] ?? a.role}: <strong>{a.userName}</strong> · {a.status}
+                {roleName(a.role)}: <strong>{a.userName}</strong> · {assignmentStatus(a.status)}
               </li>
             ))}
         </ul>
         <label className="sr-only" htmlFor="executor">
-          Исполнитель
+          {t("executor")}
         </label>
         <select id="executor" value={executor} onChange={(e) => setExecutor(e.target.value)} className="h-10 w-full rounded-md border bg-white px-2 text-sm">
-          <option value="">Выберите исполнителя…</option>
+          <option value="">{t("chooseExecutor")}</option>
           {staff.map((s) => (
             <option key={s.id} value={s.id}>
-              {s.name} — {ROLE_LABELS[s.role].toLowerCase()}
+              {s.name} — {roleName(s.role).toLowerCase()}
               {s.load ? ` (${s.load})` : ""}
             </option>
           ))}
@@ -172,27 +181,27 @@ export function OrderControls({ orderId, status, deadline, due, assignments, sta
             const role = roleForAssignment(executorUser?.role);
             exec(async () => {
               const r = await assignExecutorAction({ orderId, userId: executor, role });
-              if (!r.ok && r.error.includes("перегружен") && window.confirm(`${r.error}\nНазначить всё равно?`)) {
+              if (!r.ok && r.code === "OVERLOADED" && window.confirm(`${r.error}\n${t("assignAnyway")}`)) {
                 return assignExecutorAction({ orderId, userId: executor, role, force: true });
               }
               return r;
             });
           }}
         >
-          Назначить
+          {t("assign")}
         </Button>
-        <p className="text-xs text-muted-foreground">В скобках — активные задачи / лимит в день.</p>
+        <p className="text-xs text-muted-foreground">{t("loadHint")}</p>
       </section>
 
       <section className="space-y-2 rounded-2xl border bg-card p-4">
-        <h2 className="font-bold text-brand-800">Отметить оплату</h2>
+        <h2 className="font-bold text-brand-800">{t("recordPayment")}</h2>
         <div className="flex gap-2">
-          <Input type="number" min="1" step="0.01" value={payAmount} onChange={(e) => setPayAmount(e.target.value)} aria-label="Сумма" />
-          <select value={payMethod} onChange={(e) => setPayMethod(e.target.value)} aria-label="Способ" className="h-10 rounded-md border bg-white px-2 text-sm">
-            <option value="cash">Наличные</option>
-            <option value="card">Карта (терминал)</option>
-            <option value="sbp">СБП (вручную)</option>
-            <option value="invoice">Счёт юрлицу</option>
+          <Input type="number" min="1" step="0.01" value={payAmount} onChange={(e) => setPayAmount(e.target.value)} aria-label={t("amount")} />
+          <select value={payMethod} onChange={(e) => setPayMethod(e.target.value)} aria-label={t("method")} className="h-10 rounded-md border bg-white px-2 text-sm">
+            <option value="cash">{t("methods.cash")}</option>
+            <option value="card">{t("methods.card")}</option>
+            <option value="sbp">{t("methods.sbp")}</option>
+            <option value="invoice">{t("methods.invoice")}</option>
           </select>
         </div>
         <Button
@@ -201,20 +210,20 @@ export function OrderControls({ orderId, status, deadline, due, assignments, sta
           disabled={!Number(payAmount) || pending}
           onClick={() => exec(() => recordPaymentAction(orderId, { amount: Number(payAmount), method: payMethod }))}
         >
-          {pending ? <Loader2 className="animate-spin" /> : "Записать платёж"}
+          {pending ? <Loader2 className="animate-spin" /> : t("savePayment")}
         </Button>
       </section>
 
       <section className="space-y-2 rounded-2xl border bg-card p-4">
-        <h2 className="font-bold text-brand-800">Загрузить файл</h2>
-        <select value={uploadKind} onChange={(e) => setUploadKind(e.target.value)} aria-label="Тип файла" className="h-10 w-full rounded-md border bg-white px-2 text-sm">
-          <option value="translation">Готовый перевод</option>
-          <option value="receipt">Чек / акт</option>
-          <option value="source">Исходник от клиента</option>
+        <h2 className="font-bold text-brand-800">{t("uploadFile")}</h2>
+        <select value={uploadKind} onChange={(e) => setUploadKind(e.target.value)} aria-label={t("fileType")} className="h-10 w-full rounded-md border bg-white px-2 text-sm">
+          <option value="translation">{t("fileKinds.translation")}</option>
+          <option value="receipt">{t("fileKinds.receipt")}</option>
+          <option value="source">{t("fileKinds.source")}</option>
         </select>
         <input ref={fileRef} type="file" multiple className="sr-only" onChange={(e) => upload(e.target.files)} />
         <Button variant="outline" className="w-full" disabled={uploading} onClick={() => fileRef.current?.click()}>
-          {uploading ? <Loader2 className="animate-spin" /> : <Upload />} Выбрать файл
+          {uploading ? <Loader2 className="animate-spin" /> : <Upload />} {t("chooseFile")}
         </Button>
       </section>
     </aside>

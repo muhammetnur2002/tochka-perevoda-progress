@@ -1,0 +1,638 @@
+{
+  "common": {
+    "language": "Dil",
+    "brandName": "Точка Перевода Прогресс",
+    "brandShort": "ТОЧКА ПЕРЕВОДА",
+    "brandSub": "ПРОГРЕСС",
+    "city": "Kazan",
+    "toHome": "ana səhifəyə",
+    "loading": "Yüklənir…",
+    "save": "Yadda saxla",
+    "saved": "Yadda saxlanıldı",
+    "cancel": "Ləğv et",
+    "back": "Geri",
+    "close": "Bağla",
+    "download": "Yüklə",
+    "open": "Aç",
+    "remove": "Sil",
+    "phonePlaceholder": "+7 (___) ___-__-__",
+    "error": "Nəsə səhv getdi",
+    "retry": "Təkrar et",
+    "notFoundTitle": "Səhifə tapılmadı",
+    "notFoundText": "Axtardığınız səhifə mövcud deyil və ya başqa yerə köçürülüb.",
+    "toMain": "Ana səhifəyə",
+    "errorText": "Xəta baş verdi. Yenidən cəhd edin.",
+    "rub": "₽"
+  },
+  "nav": {
+    "home": "Ana səhifə",
+    "services": "Xidmətlər və qiymətlər",
+    "calculator": "Kalkulyator",
+    "status": "Sifarişin statusu",
+    "account": "Şəxsi kabinet",
+    "login": "Daxil ol",
+    "logout": "Çıxış",
+    "cart": "Səbət",
+    "menu": "Menyu",
+    "crm": "CRM-admin paneli",
+    "workspace": "İş yeri",
+    "mainMenu": "Əsas menyu"
+  },
+  "categories": {
+    "translation": "Tərcümələr",
+    "printing": "Poliqrafiya",
+    "insurance": "Sığorta",
+    "additional": "Əlavə"
+  },
+  "units": {
+    "page": "bir səhifə üçün",
+    "document": "bir sənəd üçün",
+    "item": "bir ədəd üçün"
+  },
+  "orderStatus": {
+    "new": "Yeni",
+    "confirmed": "Təsdiqləndi",
+    "in_progress": "İcra olunur",
+    "ready": "Hazırdır",
+    "issued": "Təhvil verildi",
+    "completed": "Tamamlandı",
+    "cancelled": "Ləğv edildi"
+  },
+  "urgency": {
+    "legend": "Təcililik",
+    "standard": "Standart, 1–2 iş günü",
+    "1d": "Təcili — 1 gün ərzində",
+    "same_day": "Müraciət günü"
+  },
+  "languages": {
+    "tk": "Türkmən dili",
+    "uz": "Özbək dili",
+    "tr": "Türk dili",
+    "az": "Azərbaycan dili",
+    "kk": "Qazax dili",
+    "ky": "Qırğız dili",
+    "fa": "Fars dili (İran)",
+    "ar-IQ": "Ərəb dili (İraq)",
+    "ar-SY": "Ərəb dili (Suriya)",
+    "en": "İngilis dili",
+    "de": "Alman dili",
+    "fr": "Fransız dili",
+    "es": "İspan dili",
+    "it": "İtalyan dili",
+    "ru": "Rus dili"
+  },
+  "services": {
+    "legal": {
+      "name": "Hüquqi sənədlərin tərcüməsi",
+      "description": "Müqavilələr, təsis sənədləri, etibarnamələr, məhkəmə qərarları. Qiymət bir səhifə üçündür."
+    },
+    "medical": {
+      "name": "Tibbi sənədlərin tərcüməsi",
+      "description": "Arayışlar, çıxarışlar, rəylər, epikrizlər. Qiymət bir səhifə üçündür."
+    },
+    "technical": {
+      "name": "Texniki sənədlərin tərcüməsi",
+      "description": "Təlimatlar, avadanlıq pasportları, çertyojlar, texniki şərtlər. Qiymət bir səhifə üçündür."
+    },
+    "military-id": {
+      "name": "Hərbi biletin tərcüməsi (notarial)",
+      "description": "Notarial təsdiqlə tərcümə. Bir sənəd üçün sabit qiymət."
+    },
+    "work-book": {
+      "name": "Əmək kitabçasının tərcüməsi (notarial)",
+      "description": "Notarial təsdiqlə tərcümə. Bir sənəd üçün sabit qiymət."
+    },
+    "diploma": {
+      "name": "Diplomun tərcüməsi (notarial)",
+      "description": "Təhsil sənədinin notarial təsdiqlə tərcüməsi."
+    },
+    "certificate": {
+      "name": "Arayışın tərcüməsi (notarial)",
+      "description": "Arayışın notarial təsdiqlə tərcüməsi."
+    },
+    "passport-all": {
+      "name": "Pasportun tərcüməsi (bütün səhifələr)",
+      "description": "Pasportun bütün səhifələrinin tərcüməsi."
+    },
+    "driver-license": {
+      "name": "Sürücülük vəsiqəsinin tərcüməsi",
+      "description": "Sürücülük vəsiqəsinin tərcüməsi."
+    },
+    "passport-notary": {
+      "name": "Pasportun tərcüməsi (notarial təsdiqli)",
+      "description": "Pasportun notarial təsdiqlə tərcüməsi."
+    },
+    "power-of-attorney": {
+      "name": "Etibarnamənin tərcüməsi (notarial)",
+      "description": "Etibarnamənin notarial təsdiqlə tərcüməsi."
+    },
+    "photocopy-a4": {
+      "name": "A4 surəti (kseroks)",
+      "description": "A4 formatında ağ-qara surət."
+    },
+    "scanning": {
+      "name": "Skan etmə",
+      "description": "Bir vərəqin skan edilməsi."
+    },
+    "color-print": {
+      "name": "Rəngli çap",
+      "description": "Bir vərəqin rəngli çapı."
+    },
+    "color-photocopy": {
+      "name": "Rəngli surət (kseroks)",
+      "description": "Bir vərəqin rəngli surəti."
+    },
+    "bw-print": {
+      "name": "Ağ-qara çap",
+      "description": "Bir vərəqin ağ-qara çapı."
+    },
+    "print-a3": {
+      "name": "A3 çap",
+      "description": "A3 formatında çap."
+    },
+    "print-a2": {
+      "name": "A2 çap",
+      "description": "A2 formatında çap."
+    },
+    "print-a1": {
+      "name": "A1 çap",
+      "description": "A1 formatında çap."
+    },
+    "laminating": {
+      "name": "Laminasiya",
+      "description": "Bir vərəqin laminasiyası."
+    },
+    "binding": {
+      "name": "Cildləmə",
+      "description": "Bir sənədin cildlənməsi."
+    },
+    "diploma-stitching": {
+      "name": "Diplomların tikilməsi",
+      "description": "Diplomun tikilməsi."
+    },
+    "photo": {
+      "name": "Sənəd üçün foto",
+      "description": "Sənədlər üçün fotoşəkillər (dəst)."
+    },
+    "dms-student": {
+      "name": "Tələbələr üçün KTS polisi (xarici vətəndaşlar üçün)",
+      "description": "Xarici tələbələr üçün könüllü tibbi sığorta polisi."
+    }
+  },
+  "offices": {
+    "title": "Kazanda qəbul məntəqələri",
+    "choose": "Sənədləri harada təhvil vermək və götürmək sizə rahatdır?",
+    "hint": "Ən yaxın məntəqəni seçin — sənədləri orada qəbul edir və təhvil veririk.",
+    "hours": "İş saatları",
+    "hoursTbd": "iş saatlarını telefonla dəqiqləşdirin",
+    "phone": "Telefon",
+    "route": "Marşrut",
+    "selected": "seçildi",
+    "pickupAt": "Özünüz götürmə: {address}",
+    "officeLabel": "Qəbul məntəqəsi"
+  },
+  "languagePair": {
+    "title": "Tərcümə dili",
+    "from": "Hansı dildən",
+    "to": "Hansı dilə",
+    "choose": "Sənədin dilini seçin",
+    "toRussianOnly": "Rus dilinə tərcümə edirik",
+    "hint": "Tərcümə seçilmiş dildən rus dilinə edilir."
+  },
+  "home": {
+    "badge": "Tərcümə bürosu · Kazan",
+    "heroTitle": "Sənədlərin notarial təsdiqlə tərcüməsi",
+    "heroText": "Türkmən, özbək, türk, Azərbaycan, qazax, qırğız, fars, ərəb və Avropa dillərindən rus dilinə tərcümə. Poliqrafiya və sığorta. Onlayn sifariş və ödəniş bir neçə dəqiqəyə.",
+    "ctaCalc": "Qiyməti hesabla",
+    "ctaCatalog": "Xidmətlər kataloqu",
+    "ctaStatus": "Sifarişin statusunu yoxla",
+    "factNotary": "Notarial",
+    "factDays": "1–2 gün",
+    "factServices": "Qiymət siyahısında 24 xidmət",
+    "factOffices": "3 qəbul məntəqəsi",
+    "logoAlt": "«Точка Перевода Прогресс» loqosu",
+    "servicesTitle": "Xidmətlər və qiymətlər",
+    "servicesSubtitle": "Aktual qiymət siyahısı. Təcililik və səhifə sayı nəzərə alınmaqla dəqiq qiyməti kalkulyator hesablayır.",
+    "allServices": "Bütün xidmətlər və qiymətlər",
+    "whyTitle": "Niyə bizi seçirlər",
+    "why": {
+      "days": {
+        "title": "Müddət 1–2 gün",
+        "text": "Tərcümələrin çoxunu 1–2 iş günündə hazırlayırıq. Təcili və ekspress rejim də var."
+      },
+      "notary": {
+        "title": "Notarial təsdiq",
+        "text": "Tərcümələri notariusda təsdiq edirik — hər şey bir yerdə, artıq gediş-gəliş olmadan."
+      },
+      "prices": {
+        "title": "Şəffaf qiymətlər",
+        "text": "Sifarişdən əvvəl kalkulyatorda dəqiq hesablama. Kart, SBP və ya QR-kodla ödəniş."
+      },
+      "telegram": {
+        "title": "Telegram-xidmət",
+        "text": "Sifariş və status birbaşa Telegram-da. Hazır olma barədə bildirişlər avtomatik gəlir."
+      }
+    },
+    "languagesTitle": "Hansı dillərdən tərcümə edirik",
+    "languagesText": "14 dildən rus dilinə tərcümə edirik:",
+    "stepsTitle": "Sifarişi necə vermək olar",
+    "steps": {
+      "1": {
+        "title": "Xidmətləri seçin",
+        "text": "Xidmətləri səbətə əlavə edin və sənədin dilini göstərin."
+      },
+      "2": {
+        "title": "Məntəqəni seçin",
+        "text": "Kazanda ən yaxın qəbul məntəqəsini göstərin."
+      },
+      "3": {
+        "title": "Faylları əlavə edin və ödəyin",
+        "text": "Telefondan foto və ya skan. SBP, QR və ya kartla ödəniş."
+      },
+      "4": {
+        "title": "Nəticəni alın",
+        "text": "Hazır olanda xəbər verəcəyik. Seçdiyiniz məntəqədən götürün."
+      }
+    },
+    "faqTitle": "Tez-tez verilən suallar",
+    "faq": {
+      "price": {
+        "q": "Bir səhifənin tərcüməsi neçəyədir?",
+        "a": "Hüquqi və tibbi sənədlər — səhifəsi 550 ₽, texniki sənədlər — 650 ₽. Pasport, diplom, arayış — kataloqdakı sabit qiymətlə."
+      },
+      "time": {
+        "q": "Tərcümə nə qədər tez hazır olacaq?",
+        "a": "Standart müddət — 1–2 iş günü. Təcili: 1 gün ərzində (×1,5) və ya müraciət günü (×2)."
+      },
+      "notary": {
+        "q": "Tərcümələri notariusda təsdiq edirsiniz?",
+        "a": "Bəli. «Notarial» qeydi olan xidmətlərə təsdiq artıq daxildir, digər tərcümələr üçün onu səbətdə əlavə etmək olar."
+      },
+      "languages": {
+        "q": "Hansı dillərdən tərcümə edirsiniz?",
+        "a": "Türkmən, özbək, türk, Azərbaycan, qazax, qırğız, fars, ərəb (İraq, Suriya), ingilis, alman, fransız, ispan və italyan dillərindən — rus dilinə."
+      },
+      "status": {
+        "q": "Sifarişin statusunu necə izləmək olar?",
+        "a": "Sifariş nömrəsi və telefonla «Sifarişin statusu» səhifəsində, şəxsi kabinetdə və ya Telegram-da."
+      },
+      "where": {
+        "q": "Siz harada yerləşirsiniz?",
+        "a": "Kazanda üç qəbul məntəqəmiz var: Sibirski Trakt küç., 7/6; Karl Marks küç., 65; Promıslovaya küç., 5, otaq 3."
+      }
+    },
+    "contactsTitle": "Əlaqə",
+    "orderCta": "Sifariş ver",
+    "metaTitle": "Kazanda tərcümə, poliqrafiya və sığorta",
+    "metaDescription": "Kazanda «Точка Перевода Прогресс» tərcümə bürosu: türkmən, özbək, türk və digər dillərdən rus dilinə sənəd tərcüməsi, notarial təsdiq, poliqrafiya, sığorta. Onlayn sifariş, ödəniş və status.",
+    "mapTitle": "Qəbul məntəqələrinin xəritəsi",
+    "officesText": "Ən yaxın məntəqəni seçin — sənədləri təhvil vermək və hazır tərcüməni götürmək orada mümkündür."
+  },
+  "catalog": {
+    "title": "Xidmətlər kataloqu və qiymətlər",
+    "subtitle": "Kateqoriya seçin. «Notarial» qeydi olan xidmətlərdə təsdiq qiymətə daxildir, digərlərində ayrıca əlavə olunur.",
+    "all": "Bütün xidmətlər",
+    "notarial": "notarial",
+    "add": "Əlavə et",
+    "added": "Əlavə edildi: {name}",
+    "addAria": "Əlavə et: {name}",
+    "empty": "Xidmət tapılmadı."
+  },
+  "calculator": {
+    "title": "Kalkulyator və səbət",
+    "subtitle": "Səhifə və ya sənəd sayını göstərin — yekun məbləğ və hazır olma müddəti dərhal yenidən hesablanır.",
+    "categoriesAria": "Xidmət kateqoriyaları",
+    "yourOrder": "Sifarişiniz",
+    "empty": "Səbət boşdur. «+» düyməsi ilə xidmət əlavə edin.",
+    "withNotary": "təsdiqlə",
+    "increase": "Artır: {name}",
+    "decrease": "Azalt: {name}",
+    "notaryLabel": "Təsdiqsiz tərcümələr üçün notarial təsdiq",
+    "notaryPrice": "+{price} × {count} sənəd",
+    "notaryTbd": "(qiyməti menecer dəqiqləşdirəcək)",
+    "services": "Xidmətlər",
+    "discount": "Həcmə görə endirim",
+    "urgencySurcharge": "Təcililik üçün əlavə",
+    "notary": "Təsdiq",
+    "delivery": "Çatdırılma",
+    "total": "Cəmi",
+    "ready": "Hazır olma",
+    "sameDay": "bu gün saat 19:00-a qədər",
+    "checkout": "Sifariş ver",
+    "disclaimer": "İlkin hesablama. Yekun qiymət sifariş zamanı serverdə qüvvədə olan qiymət siyahısına görə müəyyən edilir.",
+    "receiving": "Alma üsulu",
+    "pickup": "Qəbul məntəqəsindən özünüz götürün",
+    "courier": "Kuryerlə çatdırılma",
+    "courierPrice": "Çatdırılma (+{price})"
+  },
+  "cartDrawer": {
+    "title": "Səbət",
+    "description": "Seçilmiş xidmətlər və ilkin hesablama",
+    "empty": "Səbət boşdur",
+    "toCatalog": "Kataloqa keç",
+    "sum": "Məbləğ",
+    "urgency": "Təcililik (×{coef})",
+    "total": "Cəmi",
+    "calculate": "Dəqiq hesabla",
+    "checkout": "Sifariş ver"
+  },
+  "checkout": {
+    "title": "Sifarişin rəsmiləşdirilməsi",
+    "backToCart": "← Səbətə qayıt",
+    "contacts": "Əlaqə məlumatları",
+    "name": "Ad *",
+    "namePlaceholder": "Sizə necə müraciət edək",
+    "phone": "Telefon *",
+    "email": "Email",
+    "emailPlaceholder": "çek və bildirişlər üçün",
+    "telegram": "Telegram",
+    "individual": "Fiziki şəxs",
+    "company": "Təşkilat (hesab, VÖEN/ИНН)",
+    "inn": "ИНН",
+    "innPlaceholder": "10 və ya 12 rəqəm",
+    "deliveryAddress": "Çatdırılma ünvanı *",
+    "deliveryAddressPlaceholder": "Şəhər, küçə, ev, mənzil",
+    "comment": "Şərh",
+    "commentPlaceholder": "Məsələn: adlar xarici pasportdakı kimi latın hərfləri ilə",
+    "files": "Sənəd faylları",
+    "payMethod": "Ödəniş üsulu",
+    "consentPrefix": "Mən",
+    "consentLink": "şəxsi məlumatların emalına razılıq",
+    "consentMiddle": "verirəm (152-ФЗ qanununa uyğun olaraq), tanış oldum:",
+    "privacyLink": "məxfilik siyasəti",
+    "consentAnd": "və qəbul edirəm:",
+    "termsLink": "xidmət göstərilməsi şərtləri",
+    "submit": "Ödənişə keç",
+    "stageCreating": "Sifariş rəsmiləşdirilir…",
+    "stageUploading": "Fayllar yüklənir: {current} / {total}",
+    "fileFailed": "«{name}» faylı yüklənmədi: {error}. Onu sonra göndərə bilərsiniz.",
+    "emptyCart": "Səbət boşdur — xidmətləri seçin.",
+    "toCalculator": "Kalkulyatora keç",
+    "totalTitle": "Ödəniləcək məbləğ",
+    "receiving": "Alma üsulu",
+    "pickup": "Özünüz götürmə",
+    "delivery": "Çatdırılma",
+    "serverPriceNote": "Qiymət serverdə aktual qiymət siyahısına görə yenidən hesablanır. Sifariş nömrəsi SMS və Telegram ilə göndəriləcək.",
+    "changeItems": "Tərkibi dəyiş",
+    "errors": {
+      "name": "Adınızı göstərin",
+      "phone": "RF telefon nömrəsini daxil edin",
+      "email": "Email düzgün deyil",
+      "consent": "Məlumatların emalına razılıq olmadan sifariş vermək olmaz",
+      "address": "Çatdırılma ünvanını göstərin",
+      "office": "Qəbul məntəqəsini seçin",
+      "language": "Sənədin dilini göstərin"
+    }
+  },
+  "dropzone": {
+    "dragHere": "Faylları bura sürüşdürün",
+    "formats": "JPG, PNG, HEIC, PDF, DOC/DOCX, ZIP · {size}-a qədər",
+    "choose": "Fayl seç",
+    "camera": "Şəkil çək",
+    "unsupported": "«{name}» faylının formatı dəstəklənmir",
+    "tooBig": "«{name}» faylı {size}-dan böyükdür",
+    "tooMany": "Bir sifarişdə {max} fayldan çox olmamalıdır",
+    "removeAria": "Sil: {name}"
+  },
+  "payment": {
+    "title": "{number} sifarişinin ödənişi",
+    "sbp": "SBP",
+    "sbpHint": "bank tətbiqi vasitəsilə",
+    "qr": "QR-kod",
+    "qrHint": "kamera ilə skan edin",
+    "card": "Bank kartı",
+    "cardHint": "Mir, Visa, Mastercard",
+    "order": "Sifariş {number}",
+    "qrAria": "SBP ilə ödəniş üçün QR-kod",
+    "cardText": "ЮKassa-nın qorunan səhifəsi açılacaq. Ödənişdən sonra sayta qayıdacaqsınız.",
+    "qrText": "QR-kodu kamera ilə skan edin və ya bank tətbiqini açın — məbləğ avtomatik daxil olacaq. Status özü yenilənəcək.",
+    "openBank": "Bank tətbiqini aç",
+    "goPay": "Ödənişə keç",
+    "iPaid": "Ödədim",
+    "mockNote": "Test rejimi: ödəniş mock-provayder tərəfindən imitasiya edilir (ЮKassa açarları təyin edilməyib)",
+    "noAccessTitle": "Ödənişə giriş yoxdur",
+    "noAccessText": "Linki sifariş verdiyiniz cihazda açın və ya şəxsi kabinetə daxil olun."
+  },
+  "success": {
+    "paidTitle": "{number} sifarişi ödənildi",
+    "createdTitle": "{number} sifarişi rəsmiləşdirildi",
+    "paidText": "Təşəkkür edirik! İşə başladıq. Status barədə bildirişlər Telegram, SMS və ya email ilə gələcək.",
+    "pendingText": "Ödəniş emal olunur — bank ödənişi təsdiq edən kimi bildiriş göndərəcəyik.",
+    "keepNumber": "Sifariş nömrəsini yadda saxlayın — onunla və telefonla statusu yoxlamaq olar.",
+    "track": "Statusu izlə",
+    "myOrders": "Sifarişlərim"
+  },
+  "mockSbp": {
+    "title": "Test SBP QR-kodu",
+    "text": "Platforma ЮKassa qoşulmadan demo rejimində işləyir, ona görə bu QR test səhifəsinə aparır. Ödəniş səhifəsinə qayıdın və «Ödədim» düyməsini basın."
+  },
+  "statusPage": {
+    "title": "Sifarişin statusu",
+    "number": "Sifariş nömrəsi",
+    "phone": "Telefon",
+    "check": "Yoxla",
+    "notFound": "Sifariş tapılmadı. Nömrəni və sifariş zamanı göstərdiyiniz telefonu yoxlayın.",
+    "order": "Sifariş",
+    "services": "Xidmətlər",
+    "readiness": "Hazır olma",
+    "tbd": "dəqiqləşdirilir",
+    "sum": "Məbləğ",
+    "paid": "ödənilib",
+    "unpaid": "ödəniş gözlənilir",
+    "receiving": "Alma üsulu",
+    "courier": "kuryerlə çatdırılma"
+  },
+  "timeline": {
+    "aria": "Sifarişin icra gedişi",
+    "cancelled": "Sifariş ləğv edildi",
+    "now": "indi"
+  },
+  "files": {
+    "none": "Fayl yoxdur.",
+    "download": "Yüklə",
+    "downloadAria": "Yüklə: {name}",
+    "kind": {
+      "source": "orijinal",
+      "translation": "tərcümə",
+      "receipt": "çek",
+      "photo": "foto",
+      "other": "fayl"
+    }
+  },
+  "chat": {
+    "empty": "Menecerə yazın — iş saatlarında cavab verəcəyik.",
+    "manager": "Menecer",
+    "placeholder": "Mesaj…",
+    "label": "Mesaj",
+    "send": "Göndər"
+  },
+  "auth": {
+    "backToSite": "← Sayta qayıt",
+    "email": "Email",
+    "password": "Şifrə",
+    "login": {
+      "title": "Giriş",
+      "description": "Şəxsi kabinetə daxil olun",
+      "submit": "Daxil ol",
+      "success": "Daxil oldunuz",
+      "invalid": "Email və ya şifrə yanlışdır",
+      "forgot": "Şifrəni unutmusunuz?",
+      "noAccount": "Hesabınız yoxdur? Qeydiyyatdan keçin"
+    },
+    "register": {
+      "title": "Qeydiyyat",
+      "description": "Sifarişləri izləmək üçün hesab yaradın",
+      "name": "Ad",
+      "namePlaceholder": "Məmmədov Əli",
+      "phone": "Telefon",
+      "passwordPlaceholder": "Ən azı 8 simvol",
+      "submit": "Qeydiyyatdan keç",
+      "created": "Hesab yaradıldı",
+      "confirmEmail": "Email-i təsdiqləyin — link göndərdik",
+      "phoneInvalid": "Düzgün RF telefon nömrəsini daxil edin",
+      "haveAccount": "Artıq hesabınız var?",
+      "login": "Daxil ol"
+    },
+    "reset": {
+      "title": "Şifrənin bərpası",
+      "description": "Sıfırlama linkini email ünvanınıza göndərəcəyik",
+      "submit": "Linki göndər",
+      "sent": "Link göndərildi. Poçtunuzu yoxlayın.",
+      "backToLogin": "← Girişə qayıt"
+    },
+    "update": {
+      "title": "Yeni şifrə",
+      "description": "Ən azı 8 simvoldan ibarət şifrə yaradın",
+      "submit": "Şifrəni yadda saxla",
+      "tooShort": "Ən azı 8 simvol",
+      "done": "Şifrə yeniləndi"
+    }
+  },
+  "account": {
+    "title": "Şəxsi kabinet",
+    "tabsAria": "Kabinet bölmələri",
+    "tabs": {
+      "orders": "Sifarişlər",
+      "profile": "Profil",
+      "data": "Məlumatlarım"
+    },
+    "empty": "Hələ sifariş yoxdur. Sizin telefon nömrənizə girişsiz verilmiş sifarişlər profildə telefonu təsdiqlədikdən sonra burada görünəcək.",
+    "calculate": "Qiyməti hesabla",
+    "from": "{date} tarixli",
+    "files": "{count, plural, one {# fayl} other {# fayl}}",
+    "pay": "Ödə",
+    "payAmount": "{amount} ödə",
+    "statusBtn": "Status",
+    "repeat": "Təkrarla",
+    "repeatUnavailable": "Bu xidmətlər artıq kataloqda mövcud deyil",
+    "repeatPartial": "Xidmətlərin bir hissəsi satışdan çıxarılıb — onlar əlavə edilmədi",
+    "allOrders": "← Bütün sifarişlər",
+    "readiness": "Hazır olma: {date}",
+    "deliveryTo": "Çatdırılma: {address}",
+    "addressTbd": "ünvan dəqiqləşdirilir",
+    "composition": "Tərkib və ödəniş",
+    "total": "Cəmi",
+    "paid": "Ödənilib",
+    "filesTitle": "Fayllar və çeklər",
+    "chatTitle": "Menecerlə çat",
+    "paymentStatus": {
+      "pending": "gözlənilir",
+      "waiting_for_capture": "emal olunur",
+      "succeeded": "ödənilib",
+      "canceled": "ləğv edilib",
+      "refunded": "geri qaytarılıb"
+    },
+    "metaOrders": "Sifarişlərim",
+    "metaOrder": "Sifariş",
+    "metaProfile": "Profil",
+    "translationPair": "Tərcümə: {from} → {to}",
+    "titleTemplate": "Şəxsi kabinet"
+  },
+  "profile": {
+    "name": "Ad",
+    "email": "Email",
+    "telegram": "Telegram",
+    "linked": "qoşulub",
+    "notLinked": "qoşulmayıb",
+    "openBot": "@{bot} botunu aç",
+    "newPassword": "Yeni şifrə",
+    "newPasswordPlaceholder": "dəyişməmək üçün boş saxlayın",
+    "save": "Yadda saxla",
+    "saved": "Profil yadda saxlanıldı",
+    "nameRequired": "Adınızı göstərin",
+    "sessionExpired": "Sessiyanın vaxtı bitib — yenidən daxil olun",
+    "passwordShort": "Şifrə — ən azı 8 simvol",
+    "phoneTitle": "Telefon",
+    "phoneText": "Sifarişlər barədə bildirişlər telefona gəlir. Kodla təsdiqdən sonra bu nömrəyə girişsiz verilmiş sifarişlər kabinetə bağlanacaq.",
+    "phoneNumber": "Nömrə",
+    "phoneInvalid": "RF telefon nömrəsini daxil edin",
+    "verified": "təsdiqlənib",
+    "getCode": "Kod al",
+    "resendCode": "Kodu yenidən göndər",
+    "codeSent": "Kod SMS ilə göndərildi",
+    "code": "SMS-dəki kod",
+    "confirm": "Təsdiqlə",
+    "confirmed": "Telefon təsdiqləndi",
+    "confirmedWithOrders": "Telefon təsdiqləndi. Bağlanan sifarişlər: {count}",
+    "linkedAs": "qoşulub: @{username}"
+  },
+  "dataPage": {
+    "title": "Məlumatlarım",
+    "exportTitle": "Şəxsi məlumatların ixracı",
+    "exportText": "152-ФЗ qanununa əsasən şəxsi məlumatlarınızın surətini maşınla oxunan formatda (JSON) ala bilərsiniz.",
+    "exportButton": "Məlumatları ixrac et",
+    "exportFailed": "Məlumatları ixrac etmək alınmadı",
+    "deleteTitle": "Məlumatların silinməsi",
+    "deleteText": "Silmə profilinizi, müştəri qeydlərinizi və razılıqlarınızı anonimləşdirir. Sifariş məlumatları mühasibat uçotu tələblərinə uyğun olaraq anonim şəkildə saxlanılır.",
+    "deleteButton": "Məlumatlarımı sil",
+    "confirmTitle": "Şəxsi məlumatlar silinsin?",
+    "confirmText": "Bu əməliyyat geri qaytarılmır. Sifariş tarixçəsinə girişi itirəcəksiniz.",
+    "deleting": "Silinir…",
+    "delete": "Sil",
+    "deleted": "Məlumatlar silindi",
+    "deleteFailed": "Məlumatları silmək alınmadı"
+  },
+  "footer": {
+    "services": "Xidmətlər",
+    "translations": "Sənəd tərcüməsi",
+    "printing": "Poliqrafiya",
+    "insurance": "Sığorta",
+    "calculator": "Qiymət kalkulyatoru",
+    "clients": "Müştərilərə",
+    "order": "Sifariş ver",
+    "status": "Statusu yoxla",
+    "account": "Şəxsi kabinet",
+    "login": "Daxil ol",
+    "info": "Məlumat",
+    "privacy": "Məxfilik siyasəti",
+    "terms": "Xidmət göstərilməsi şərtləri",
+    "consent": "Şəxsi məlumatların emalına razılıq",
+    "rights": "Bütün hüquqlar qorunur.",
+    "legalName": "«Точка Перевода Прогресс» tərcümə bürosu"
+  },
+  "legal": {
+    "officialNotice": "Sənədin rəsmi mətni rus dilindədir. İnterfeysin tərcüməsi rahatlıq üçün verilib."
+  },
+  "roles": {
+    "guest": "Qonaq",
+    "client": "Müştəri",
+    "manager": "Menecer",
+    "translator": "Tərcüməçi",
+    "notary": "Notarius",
+    "printer": "Çap",
+    "admin": "Administrator"
+  },
+  "meta": {
+    "siteTitle": "Kazanda tərcümə bürosu",
+    "calculator": "Tərcümə qiymətinin kalkulyatoru",
+    "calculatorDescription": "Tərcümə, notarial təsdiq və poliqrafiyanın qiymətini onlayn hesablayın: səhifə sayı, təcililik, qəbul məntəqəsi və hazır olma tarixi.",
+    "checkout": "Sifarişin rəsmiləşdirilməsi",
+    "mockSbp": "Test SBP ödənişi",
+    "pay": "Sifarişin ödənişi",
+    "success": "Sifariş rəsmiləşdirildi",
+    "services": "Xidmətlər və qiymətlər",
+    "servicesDescription": "«Точка Перевода Прогресс» tərcümə bürosunun tam qiymət siyahısı: sənəd tərcüməsi, poliqrafiya, sığorta. Səhifə və sənəd üzrə qiymətlər.",
+    "status": "Sifarişin statusu",
+    "statusDescription": "Sifarişin statusunu nömrə və telefonla yoxlayın: qəbul edilib, icra olunur, təhvilə hazırdır."
+  }
+}

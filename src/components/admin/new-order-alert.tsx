@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { formatMoney } from "@/lib/format/money";
@@ -33,6 +34,7 @@ function beep() {
  * Подписка на INSERT в orders (RLS: событие получают только менеджеры).
  */
 export function NewOrderAlert() {
+  const t = useTranslations("admin.newOrder");
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -43,9 +45,9 @@ export function NewOrderAlert() {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "orders" }, (payload) => {
         const row = payload.new as { id: string; public_number?: string; total_price?: number };
         beep();
-        toast(`Новый заказ ${row.public_number ?? ""}`, {
+        toast(t("title", { number: row.public_number ?? "" }), {
           description: row.total_price ? formatMoney(Number(row.total_price)) : undefined,
-          action: { label: "Открыть", onClick: () => router.push(`/admin/orders/${row.id}`) },
+          action: { label: t("open"), onClick: () => router.push(`/admin/orders/${row.id}`) },
           duration: 15_000,
         });
         void queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
@@ -54,7 +56,7 @@ export function NewOrderAlert() {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [router, queryClient]);
+  }, [router, queryClient, t]);
 
   return null;
 }

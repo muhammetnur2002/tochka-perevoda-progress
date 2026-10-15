@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +14,7 @@ import { createClient } from "@/lib/supabase/client";
 import { isValidRuPhone, phoneMask } from "@/lib/format/phone";
 
 export default function RegisterPage() {
+  const t = useTranslations("auth");
   const router = useRouter();
 
   const [name, setName] = React.useState("");
@@ -25,7 +27,7 @@ export default function RegisterPage() {
     e.preventDefault();
     const supabase = createClient();
     if (!isValidRuPhone(phone)) {
-      toast.error("Введите корректный номер телефона РФ");
+      toast.error(t("register.phoneInvalid"));
       return;
     }
     setLoading(true);
@@ -41,11 +43,11 @@ export default function RegisterPage() {
       if (error) throw error;
 
       if (data.session) {
-        toast.success("Аккаунт создан");
+        toast.success(t("register.created"));
         router.push("/account");
         router.refresh();
       } else {
-        toast.success("Подтвердите email — мы отправили ссылку");
+        toast.success(t("register.confirmEmail"));
         router.push("/login");
       }
     } catch (err) {
@@ -58,35 +60,35 @@ export default function RegisterPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Регистрация</CardTitle>
-        <CardDescription>Создайте аккаунт для отслеживания заказов</CardDescription>
+        <CardTitle>{t("register.title")}</CardTitle>
+        <CardDescription>{t("register.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Имя</Label>
-            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Иванов Иван" required />
+            <Label htmlFor="name">{t("register.name")}</Label>
+            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder={t("register.namePlaceholder")} required />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="phone">Телефон</Label>
+            <Label htmlFor="phone">{t("register.phone")}</Label>
             <Input id="phone" inputMode="tel" value={phone} onChange={(e) => setPhone(phoneMask(e.target.value))} placeholder="+7 (900) 123-45-67" required />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Пароль</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Минимум 8 символов" required />
+            <Label htmlFor="password">{t("password")}</Label>
+            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("register.passwordPlaceholder")} required />
           </div>
           <Button type="submit" className="w-full" size="lg" disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Зарегистрироваться"}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("register.submit")}
           </Button>
         </form>
         <p className="mt-4 text-center text-sm text-muted-foreground">
-          Уже есть аккаунт?{" "}
+          {t("register.haveAccount")}{" "}
           <Link href="/login" className="text-brand-700 hover:underline">
-            Войти
+            {t("register.login")}
           </Link>
         </p>
       </CardContent>

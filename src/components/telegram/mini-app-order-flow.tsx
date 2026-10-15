@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/components/cart/cart-provider";
 import { NotaryCheckbox, PriceLines, UrgencySwitch } from "@/components/cart/order-summary";
 import { PaymentPanel } from "@/components/payments/payment-panel";
+import { LanguagePairPicker, OfficePicker } from "@/components/order/placement-pickers";
 import { TgBackButton, TgMainButton } from "@/components/telegram/tg-buttons";
 import { useCatalog, toPricingSettings } from "@/hooks/use-catalog";
 import { useTelegram } from "@/hooks/use-telegram";
@@ -54,6 +55,8 @@ export function MiniAppOrderFlow() {
     settings,
   });
   const count = cart.itemsCount;
+  const hasTranslation = cart.items.some((i) => i.category === "translation");
+  const placementReady = Boolean(cart.options.officeId) && (!hasTranslation || Boolean(cart.options.languageFrom));
   const services = (data?.services ?? []).filter((s) => s.category === category);
   const back: Partial<Record<Step, Step>> = { cart: "catalog", docs: "cart" };
 
@@ -80,6 +83,8 @@ export function MiniAppOrderFlow() {
           items: cart.items.map((i) => ({ serviceId: i.serviceId, quantity: i.quantity })),
           urgency: cart.options.urgency,
           deliveryType: "pickup",
+          officeId: cart.options.officeId,
+          languageFrom: hasTranslation ? cart.options.languageFrom : null,
           notaryRequested: cart.options.notaryRequested,
           consent: true,
           source: "mini_app",
@@ -187,13 +192,20 @@ export function MiniAppOrderFlow() {
                 </div>
               ))}
             </section>
+            {hasTranslation && (
+              <section className="rounded-2xl bg-white p-3.5">
+                <LanguagePairPicker />
+              </section>
+            )}
+            <section className="rounded-2xl bg-white p-3.5">
+              <OfficePicker compact />
+            </section>
             <section className="space-y-3 rounded-2xl bg-white p-3.5">
               <UrgencySwitch settings={settings} />
               <NotaryCheckbox settings={settings} />
             </section>
             <section className="rounded-2xl bg-white p-3.5">
               <PriceLines pricing={pricing} />
-              <p className="mt-2 text-xs text-muted-foreground">Получение: самовывоз, ул. Сибирский Тракт, 7/6</p>
             </section>
           </>
         )}
@@ -293,7 +305,13 @@ export function MiniAppOrderFlow() {
           onClick={() => setStep("cart")}
         />
       )}
-      {step === "cart" && <TgMainButton text="Далее: документы" disabled={count === 0} onClick={() => setStep("docs")} />}
+      {step === "cart" && (
+        <TgMainButton
+          text={placementReady ? "Далее: документы" : hasTranslation ? "Выберите язык и точку" : "Выберите точку приёма"}
+          disabled={count === 0 || !placementReady}
+          onClick={() => setStep("docs")}
+        />
+      )}
       {step === "docs" && (
         <TgMainButton
           text={`Оформить и оплатить ${formatMoney(pricing.total)}`}

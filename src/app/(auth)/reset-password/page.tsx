@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ResetPasswordPage() {
+  const t = useTranslations("auth");
   const [email, setEmail] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [sent, setSent] = React.useState(false);
@@ -35,28 +37,28 @@ export default function ResetPasswordPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Восстановление пароля</CardTitle>
-        <CardDescription>Мы отправим ссылку для сброса на ваш email</CardDescription>
+        <CardTitle>{t("reset.title")}</CardTitle>
+        <CardDescription>{t("reset.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {sent ? (
           <p className="text-sm text-emerald-700">
-            Ссылка отправлена. Проверьте почту.
+            {t("reset.sent")}
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("email")}</Label>
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
             </div>
             <Button type="submit" className="w-full" size="lg" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Отправить ссылку"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("reset.submit")}
             </Button>
           </form>
         )}
         <p className="mt-4 text-center text-sm text-muted-foreground">
           <Link href="/login" className="text-brand-700 hover:underline">
-            ← Назад ко входу
+            {t("reset.backToLogin")}
           </Link>
         </p>
       </CardContent>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { PageHeader, StatTile } from "@/components/common/page-header";
 import { OrderStatusBadge } from "@/components/order/order-status-badge";
@@ -24,30 +25,31 @@ export default async function AdminDashboardPage() {
       .order("created_at")
       .limit(8),
   ]);
-  const t = stats.totals;
+  const totals = stats.totals;
+  const t = await getTranslations("admin.dashboard");
 
   return (
     <>
       <PageHeader
-        title="Дашборд"
-        description="За последние 30 дней"
+        title={t("title")}
+        description={t("description")}
         actions={
           <Button asChild variant="gold">
-            <Link href="/admin/orders">Открыть канбан</Link>
+            <Link href="/admin/orders">{t("openKanban")}</Link>
           </Button>
         }
       />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <StatTile label="Выручка" value={formatMoney(t.revenue)} hint={`${t.orders} заказов`} />
-        <StatTile label="Оплачено" value={formatMoney(t.paid)} hint={`долг ${formatMoney(t.outstanding)}`} />
-        <StatTile label="В работе" value={String(t.activeOrders)} hint={`просрочено: ${t.overdue}`} />
-        <StatTile label="Средний чек" value={formatMoney(t.averageCheck)} hint={`клиентов в базе: ${t.clients}`} />
+        <StatTile label={t("revenue")} value={formatMoney(totals.revenue)} hint={t("ordersCount", { n: totals.orders })} />
+        <StatTile label={t("paid")} value={formatMoney(totals.paid)} hint={t("debt", { amount: formatMoney(totals.outstanding) })} />
+        <StatTile label={t("active")} value={String(totals.activeOrders)} hint={t("overdue", { n: totals.overdue })} />
+        <StatTile label={t("averageCheck")} value={formatMoney(totals.averageCheck)} hint={t("clientsInBase", { n: totals.clients })} />
       </div>
 
       <div className="mt-5 grid gap-4 xl:grid-cols-3">
         <section className="rounded-2xl border bg-card p-4">
-          <h2 className="mb-3 font-bold text-brand-800">Новые заказы</h2>
-          {(fresh.data ?? []).length === 0 && <p className="text-sm text-muted-foreground">Нет необработанных заказов.</p>}
+          <h2 className="mb-3 font-bold text-brand-800">{t("newOrders")}</h2>
+          {(fresh.data ?? []).length === 0 && <p className="text-sm text-muted-foreground">{t("noNewOrders")}</p>}
           <ul className="space-y-2">
             {(fresh.data ?? []).map((o) => (
               <li key={o.id}>
@@ -62,8 +64,8 @@ export default async function AdminDashboardPage() {
           </ul>
         </section>
         <section className="rounded-2xl border bg-card p-4">
-          <h2 className="mb-3 font-bold text-brand-800">Срок &lt; 24 часов</h2>
-          {(deadlines.data ?? []).length === 0 && <p className="text-sm text-muted-foreground">Горящих сроков нет.</p>}
+          <h2 className="mb-3 font-bold text-brand-800">{t("deadlineSoon")}</h2>
+          {(deadlines.data ?? []).length === 0 && <p className="text-sm text-muted-foreground">{t("noDeadlines")}</p>}
           <ul className="space-y-2">
             {(deadlines.data ?? []).map((o) => (
               <li key={o.id}>
@@ -78,8 +80,8 @@ export default async function AdminDashboardPage() {
           </ul>
         </section>
         <section className="rounded-2xl border bg-card p-4">
-          <h2 className="mb-3 font-bold text-brand-800">Не забрали &gt; 3 дней</h2>
-          {(unclaimed.data ?? []).length === 0 && <p className="text-sm text-muted-foreground">Всё выдано.</p>}
+          <h2 className="mb-3 font-bold text-brand-800">{t("unclaimed")}</h2>
+          {(unclaimed.data ?? []).length === 0 && <p className="text-sm text-muted-foreground">{t("allIssued")}</p>}
           <ul className="space-y-2">
             {(unclaimed.data ?? []).map((o) => (
               <li key={o.id}>

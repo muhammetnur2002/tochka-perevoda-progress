@@ -1,12 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { getTranslations } from "next-intl/server";
+import { z, ZodError } from "zod";
 import { requirePermission } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendTelegram } from "@/lib/notifications/telegram";
 import { managerChatIds } from "@/lib/notifications";
 import { logger } from "@/lib/logger";
+import { ApiError } from "@/lib/errors";
 
 export type TaskActionResult = { ok: true; message: string } | { ok: false; error: string };
 
@@ -19,6 +21,7 @@ export async function setTaskStatusAction(
   assignmentId: string,
   status: "accepted" | "in_progress" | "done" | "rejected",
 ): Promise<TaskActionResult> {
+  const t = await getTranslations("workspace.actions");
   try {
     const actor = await requirePermission("task.update_own");
     const parsed = z.enum(["accepted", "in_progress", "done", "rejected"]).parse(status);
@@ -29,14 +32,14 @@ export async function setTaskStatusAction(
         .select("order_id, role")
         .eq("id", assignmentId)
         .maybeSingle();
-      if (!a) throw new Error("Задача не найдена");
+      if (!a) throw new Error(t("errors.taskNotFound"));
       if (a.role === "translator") {
         const { count } = await actor.supabase
           .from("files")
           .select("id", { count: "exact", head: true })
           .eq("order_id", a.order_id)
           .eq("kind", "translation");
-        if (!count) throw new Error("Сначала загрузите файл перевода");
+        if (!count) throw new Error(t("errors.uploadFirst"));
       }
     }
 
@@ -48,8 +51,9 @@ export async function setTaskStatusAction(
       .select("order_id, order:orders(public_number)")
       .maybeSingle();
     if (error) throw error;
-    if (!data) throw new Error("Задача не найдена");
+    if (!data) throw new Error(t("errors.taskNotFound"));
 
+    // Уведомление менеджерам (Telegram и колокольчик CRM) — на русском, как и весь бот
     if (parsed === "done" || parsed === "rejected") {
       const number = data.order?.public_number ?? "";
       const text =
@@ -66,8 +70,12 @@ export async function setTaskStatusAction(
     }
 
     revalidatePath("/workspace");
-    return { ok: true, message: parsed === "done" ? "Задача сдана менеджеру" : "Статус обновлён" };
+    return { ok: true, message: parsed === "done" ? t("handedOver") : t("statusUpdated") };
   } catch (err) {
-    return { ok: false, error: (err as Error).message };
+    if (err instanceof ZodError) return { ok: false, error: t("errors.invalid") };
+    if (err instanceof ApiError && (err.code === "FORBIDDEN" || err.code === "UNAUTHORIZED")) {
+      return { ok: false, error: t("errors.forbidden") };
+    }
+    return { ok: false, error: (err as Error).message ?? t("errors.generic") };
   }
 }

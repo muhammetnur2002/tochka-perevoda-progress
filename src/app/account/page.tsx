@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { OrderStatusBadge } from "@/components/order/order-status-badge";
 import { RepeatOrderButton } from "@/components/order/repeat-order-button";
@@ -8,19 +9,15 @@ import { requireUser } from "@/lib/auth/guards";
 import { formatMoney } from "@/lib/format/money";
 import { formatDateShort } from "@/lib/format/date";
 
-export const metadata: Metadata = { title: "Мои заказы" };
-export const dynamic = "force-dynamic";
-
-function plural(n: number, forms: [string, string, string]): string {
-  const m10 = n % 10;
-  const m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return forms[0];
-  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return forms[1];
-  return forms[2];
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("account");
+  return { title: t("metaOrders") };
 }
+export const dynamic = "force-dynamic";
 
 export default async function AccountOrdersPage() {
   const profile = await requireUser("/account");
+  const t = await getTranslations("account");
   const supabase = createClient();
   const { data: orders } = await supabase
     .from("orders")
@@ -33,10 +30,10 @@ export default async function AccountOrdersPage() {
     return (
       <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed p-12 text-center">
         <p className="text-muted-foreground">
-          Заказов пока нет. Заказы, оформленные без входа на ваш телефон, появятся здесь автоматически.
+          {t("empty")}
         </p>
         <Button asChild variant="gold">
-          <Link href="/calculator">Рассчитать стоимость</Link>
+          <Link href="/calculator">{t("calculate")}</Link>
         </Button>
       </div>
     );
@@ -55,7 +52,7 @@ export default async function AccountOrdersPage() {
               </Link>
               <div className="text-sm text-slate-700">{(o.items ?? []).map((i) => i.name_snapshot).join(", ")}</div>
               <div className="text-xs text-muted-foreground">
-                от {formatDateShort(o.created_at)} · {filesCount} {plural(filesCount, ["файл", "файла", "файлов"])}
+                {t("from", { date: formatDateShort(o.created_at) })} · {t("files", { count: filesCount })}
               </div>
             </div>
             <OrderStatusBadge status={o.status} />
@@ -63,11 +60,11 @@ export default async function AccountOrdersPage() {
             <div className="flex gap-2">
               {unpaid ? (
                 <Button asChild variant="outline">
-                  <Link href={`/checkout/pay/${o.id}`}>Оплатить</Link>
+                  <Link href={`/checkout/pay/${o.id}`}>{t("pay")}</Link>
                 </Button>
               ) : (
                 <Button asChild variant="outline">
-                  <Link href={`/account/orders/${o.id}`}>Статус</Link>
+                  <Link href={`/account/orders/${o.id}`}>{t("statusBtn")}</Link>
                 </Button>
               )}
               <RepeatOrderButton items={o.items ?? []} />

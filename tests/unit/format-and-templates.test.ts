@@ -7,10 +7,11 @@ import {
   isClientNotifiableStatus,
   newOrderMessage,
   plain,
+  pickupReminder,
   readyMessage,
   statusChangedMessage,
 } from "@/lib/notifications/templates";
-import { SEED_SERVICES } from "@/lib/seed/services";
+import { SEED_LANGUAGES, SEED_OFFICES, SEED_SERVICES } from "@/lib/seed/services";
 
 describe("телефоны", () => {
   it("нормализация к 7XXXXXXXXXX", () => {
@@ -42,9 +43,12 @@ describe("шаблоны уведомлений", () => {
     expect(isClientNotifiableStatus("ready")).toBe(true);
   });
 
-  it("готовность: адрес выдачи или доставка", () => {
-    expect(readyMessage("ТП-1", "pickup").text).toContain("Сибирский Тракт, 7/6");
-    expect(readyMessage("ТП-1", "delivery").text).toContain("Курьер");
+  it("готовность: адрес выбранной точки или доставка", () => {
+    const office = { address: "ул. Карла Маркса, 65", hours: "Пн–Пт 9:00–18:00" };
+    expect(readyMessage("ТП-1", "pickup", office).text).toContain("Карла Маркса, 65 (Пн–Пт 9:00–18:00)");
+    expect(readyMessage("ТП-1", "pickup").text).toContain("Казань");
+    expect(readyMessage("ТП-1", "delivery", office).text).toContain("Курьер");
+    expect(pickupReminder("ТП-1", { address: "ул. Промысловая, 5, каб. 3", hours: null }).text).toContain("Промысловая, 5, каб. 3.");
   });
 
   it("HTML для Telegram вычищается для SMS/email", () => {
@@ -78,5 +82,31 @@ describe("прайс: TS-каталог совпадает с SQL-сидом (24
         unit: s!.unit,
       });
     }
+  });
+});
+
+describe("точки приёма и языки (миграция 0010)", () => {
+  const sql = readFileSync(path.join(process.cwd(), "supabase/migrations/0010_offices_languages.sql"), "utf8");
+
+  it("три точки в Казани, в SQL и TS одинаковые", () => {
+    expect(SEED_OFFICES.map((o) => o.address)).toEqual([
+      "ул. Сибирский Тракт, 7/6",
+      "ул. Карла Маркса, 65",
+      "ул. Промысловая, 5, каб. 3",
+    ]);
+    for (const o of SEED_OFFICES) {
+      expect(sql).toContain(`'${o.slug}'`);
+      expect(sql).toContain(`'${o.address}'`);
+    }
+  });
+
+  it("переводим с 14 языков только на русский", () => {
+    const sources = SEED_LANGUAGES.filter((l) => l.isSource).map((l) => l.code);
+    expect(sources).toHaveLength(14);
+    expect(sources).toEqual(
+      expect.arrayContaining(["tk", "uz", "tr", "az", "kk", "ky", "fa", "ar-IQ", "ar-SY", "en", "de", "fr", "es", "it"]),
+    );
+    expect(sources).not.toContain("ru");
+    expect(SEED_LANGUAGES.find((l) => l.code === "ru")?.isSource).toBe(false);
   });
 });

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { CreditCard, Loader2, QrCode, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -25,10 +26,10 @@ interface PaymentStatusResponse {
   payment: { status: string };
 }
 
-const METHODS: { id: PayMethod; label: string; hint: string; icon: typeof QrCode }[] = [
-  { id: "sbp", label: "СБП", hint: "через приложение банка", icon: Smartphone },
-  { id: "qr", label: "QR-код", hint: "сканируйте камерой", icon: QrCode },
-  { id: "card", label: "Банковская карта", hint: "Мир, Visa, Mastercard", icon: CreditCard },
+const METHODS: { id: PayMethod; icon: typeof QrCode }[] = [
+  { id: "sbp", icon: Smartphone },
+  { id: "qr", icon: QrCode },
+  { id: "card", icon: CreditCard },
 ];
 
 interface PaymentPanelProps {
@@ -47,6 +48,7 @@ interface PaymentPanelProps {
  * кнопка «Я оплатил(а)» имитирует успешную оплату.
  */
 export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sbp", onPaid, compact }: PaymentPanelProps) {
+  const t = useTranslations("payment");
   const [method, setMethod] = React.useState<PayMethod>(initialMethod);
   const [payment, setPayment] = React.useState<PaymentResponse | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -127,9 +129,9 @@ export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sb
             )}
           >
             <span className="flex items-center gap-2 font-semibold text-brand-800">
-              <m.icon className="h-4 w-4" /> {m.label}
+              <m.icon className="h-4 w-4" /> {t(m.id)}
             </span>
-            {!compact && <span className="text-xs text-muted-foreground">{m.hint}</span>}
+            {!compact && <span className="text-xs text-muted-foreground">{t(`${m.id}Hint`)}</span>}
           </button>
         ))}
       </div>
@@ -144,39 +146,37 @@ export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sb
             {payment.qrSvg && method !== "card" && (
               <div
                 role="img"
-                aria-label="QR-код для оплаты по СБП"
+                aria-label={t("qrAria")}
                 className="h-48 w-48 shrink-0 rounded-xl border bg-white p-2 [&_svg]:h-full [&_svg]:w-full"
                 dangerouslySetInnerHTML={{ __html: payment.qrSvg }}
               />
             )}
             <div className="flex min-w-0 flex-1 flex-col gap-3">
-              <span className="text-sm text-muted-foreground">Заказ {publicNumber}</span>
+              <span className="text-sm text-muted-foreground">{t("order", { number: publicNumber })}</span>
               <span className="text-3xl font-extrabold text-brand-800">{formatMoney(payment.amount)}</span>
               <p className="text-sm text-muted-foreground">
-                {method === "card"
-                  ? "Откроется защищённая страница ЮKassa. После оплаты вы вернётесь на сайт."
-                  : "Отсканируйте QR камерой или откройте приложение банка — сумма подставится автоматически. Статус обновится сам."}
+                {method === "card" ? t("cardText") : t("qrText")}
               </p>
               <div className="flex flex-wrap gap-2">
                 {method !== "card" && payment.qrPayload && payment.provider === "yookassa" && (
                   <Button asChild variant="gold" size="lg">
-                    <a href={payment.qrPayload}>Открыть приложение банка</a>
+                    <a href={payment.qrPayload}>{t("openBank")}</a>
                   </Button>
                 )}
                 {method === "card" && payment.confirmationUrl && payment.provider === "yookassa" && (
                   <Button asChild variant="gold" size="lg">
-                    <a href={payment.confirmationUrl}>Перейти к оплате</a>
+                    <a href={payment.confirmationUrl}>{t("goPay")}</a>
                   </Button>
                 )}
                 {payment.mock && (
                   <Button variant="gold" size="lg" onClick={confirmMock} disabled={confirming}>
-                    {confirming ? <Loader2 className="animate-spin" /> : "Я оплатил(а)"}
+                    {confirming ? <Loader2 className="animate-spin" /> : t("iPaid")}
                   </Button>
                 )}
               </div>
               {payment.mock && (
                 <span className="text-xs font-semibold text-gold-800">
-                  Тестовый режим: оплата имитируется mock-провайдером (ключи ЮKassa не заданы)
+                  {t("mockNote")}
                 </span>
               )}
             </div>
