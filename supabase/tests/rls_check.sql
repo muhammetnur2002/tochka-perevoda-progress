@@ -123,6 +123,42 @@ do $$ begin
     'Итог ушёл в минус из-за промокода';
 end $$;
 
+-- -----------------------------------------------------------------------------
+\echo '3b. Оплата: доплата, возвраты и paid_amount = платежи − успешные возвраты'
+insert into public.orders (id, client_id) values ('00000000-0000-0000-0000-0000000000a5', :gu);
+insert into public.order_items (order_id, name_snapshot, quantity, unit_price, price)
+values ('00000000-0000-0000-0000-0000000000a5', 'Перевод', 1, 1000, 1000);
+insert into public.payments (id, order_id, amount, status, provider)
+values ('00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000a5', 1000, 'succeeded', 'manual');
+do $$ begin
+  assert (select paid_amount from public.orders where id = '00000000-0000-0000-0000-0000000000a5') = 1000, 'paid_amount после платежа';
+end $$;
+insert into public.refunds (id, payment_id, order_id, amount, status)
+values ('00000000-0000-0000-0000-0000000000e1', '00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000a5', 300, 'succeeded');
+insert into public.refunds (id, payment_id, order_id, amount, status)
+values ('00000000-0000-0000-0000-0000000000e2', '00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000a5', 100, 'pending');
+do $$ begin
+  assert (select paid_amount from public.orders where id = '00000000-0000-0000-0000-0000000000a5') = 700,
+    'Возврат не вычтен из paid_amount (ожидающий возврат не должен вычитаться)';
+end $$;
+update public.refunds set status = 'succeeded' where id = '00000000-0000-0000-0000-0000000000e2';
+do $$ begin
+  assert (select paid_amount from public.orders where id = '00000000-0000-0000-0000-0000000000a5') = 600, 'Подтверждённый возврат не учтён';
+end $$;
+-- платёж возвращён целиком → статус refunded, paid_amount не уходит в минус
+update public.refunds set amount = 700 where id = '00000000-0000-0000-0000-0000000000e2';
+update public.payments set status = 'refunded' where id = '00000000-0000-0000-0000-0000000000d1';
+do $$ begin
+  assert (select paid_amount from public.orders where id = '00000000-0000-0000-0000-0000000000a5') = 0, 'Полный возврат: paid_amount должен стать 0';
+end $$;
+-- доплата сразу меняет итог
+update public.orders set extra_charge = 500 where id = '00000000-0000-0000-0000-0000000000a5';
+do $$ begin
+  assert (select total_price from public.orders where id = '00000000-0000-0000-0000-0000000000a5') = 1500, 'Доплата не вошла в итог заказа';
+end $$;
+insert into public.payment_requests (order_id, amount, reason, is_extra)
+values ('00000000-0000-0000-0000-0000000000a5', 500, 'доп. страницы', true);
+
 insert into public.offices (slug, name, address, is_active) values ('rls-hidden', 'Скрытая', 'ул. Тестовая, 1', false);
 
 \echo '4. Клиент видит только своё'
@@ -141,6 +177,8 @@ do $$ begin
   assert (select count(*) from public.proofs) = 1, 'Клиент видит чужие версии перевода';
   assert (select count(*) from public.proof_comments) = 1, 'Клиент видит чужие замечания';
   assert (select count(*) from public.proof_events) = 0, 'Клиенту доступен журнал сверки (IP, устройства)';
+  assert (select count(*) from public.refunds) = 0, 'Клиент видит возвраты';
+  assert (select count(*) from public.payment_requests) = 0, 'Клиент видит запросы на оплату';
   assert (select count(*) from public.v_promo_usage) = 0, 'Клиент видит использование промокодов';
   assert (select count(*) from public.status_history) >= 1, 'Клиент не видит историю своего заказа';
   assert (select count(*) from public.v_revenue_daily) <= 1, 'Отчёт обходит RLS';
@@ -167,6 +205,15 @@ do $$ begin
   -- точки приёма: клиент видит только активные и не может их менять
   assert (select count(*) from public.offices) = (select count(*) from public.offices where is_active),
     'Клиент видит скрытые точки приёма';
+  begin
+    insert into public.refunds (payment_id, order_id, amount) values ('00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000a5', 1);
+    raise exception 'FAIL: клиент оформил возврат';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    update public.orders set extra_charge = 1 where id = '00000000-0000-0000-0000-0000000000a1';
+    assert not found, 'Клиент изменил доплату заказа';
+  end;
   begin
     update public.proofs set status = 'approved' where order_id = '00000000-0000-0000-0000-0000000000a1';
     assert not found, 'Клиент сам подтвердил перевод в обход сервера';

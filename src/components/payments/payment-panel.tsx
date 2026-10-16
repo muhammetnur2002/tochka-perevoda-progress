@@ -37,6 +37,8 @@ interface PaymentPanelProps {
   publicNumber: string;
   token?: string | null;
   initialMethod?: PayMethod;
+  /** Ссылка на оплату из CRM: платим запрошенную сумму (остаток или доплату). */
+  requestId?: string | null;
   /** Вызывается после подтверждённой оплаты. */
   onPaid: () => void;
   compact?: boolean;
@@ -47,7 +49,7 @@ interface PaymentPanelProps {
  * страницу ЮKassa для карты, поллинг статуса каждые 3 с. В mock-режиме —
  * кнопка «Я оплатил(а)» имитирует успешную оплату.
  */
-export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sbp", onPaid, compact }: PaymentPanelProps) {
+export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sbp", requestId, onPaid, compact }: PaymentPanelProps) {
   const t = useTranslations("payment");
   const [method, setMethod] = React.useState<PayMethod>(initialMethod);
   const [payment, setPayment] = React.useState<PaymentResponse | null>(null);
@@ -60,7 +62,7 @@ export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sb
       try {
         const data = await apiFetch<PaymentResponse>("/api/payments", {
           method: "POST",
-          body: JSON.stringify({ orderId, method: m }),
+          body: JSON.stringify({ orderId, method: m, requestId: requestId ?? undefined }),
           orderToken: token,
         });
         setPayment(data);
@@ -73,7 +75,7 @@ export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sb
         setLoading(false);
       }
     },
-    [orderId, token],
+    [orderId, token, requestId],
   );
 
   // Платёж создаётся один раз на способ оплаты (защита от двойного эффекта StrictMode)

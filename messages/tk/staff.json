@@ -48,6 +48,78 @@
       "cash": "Nagt",
       "invoice": "Hasap-faktura"
     },
+    "payments": {
+      "title": "Töleg",
+      "officeBadge": "Nokatda töleg",
+      "officeHint": "Müşderi nokatda tölemegi saýlady: onlaýn hiç zat tölenmeýär. Nagt ýa-da terminaldaky kart tölegini «Tölegi bellemek» görnüşinde ýazyň.",
+      "summary": {
+        "total": "Sargydyň bahasy",
+        "extra": "Goşmaça töleg",
+        "promo": "Promokod arzanladyşy",
+        "paid": "Tölenen",
+        "remaining": "Tölemeli galdy",
+        "settled": "Doly tölenen"
+      },
+      "paymentsTitle": "Tölegler",
+      "noPayments": "Heniz töleg ýok",
+      "refund": "Yzyna gaýtarmak",
+      "refundDialog": {
+        "title": "Tölegi yzyna gaýtarmak",
+        "description": "Töleg {amount} · {method}",
+        "amount": "Gaýtarylýan mukdar, ₽",
+        "available": "Gaýtaryp bolýar: {amount}",
+        "reason": "Gaýtarmagyň sebäbi",
+        "reasonPlaceholder": "Meselem: müşderi sargytdan ýüz öwürdi",
+        "confirm": "Yzyna gaýtarmagy resmilemek",
+        "invalid": "Nuldan uly we {max} geçmeýän mukdary giriziň",
+        "onlineHint": "Pul müşderiniň kartyna gaýdyp gelýär; bank gaýtarmagy birnäçe günde işläp biler.",
+        "manualHint": "Töleg nokatda kabul edildi: puly müşderä ýerinde gaýtaryp beriň — bu ýerde diňe gaýtarma bellenýär."
+      },
+      "refundsTitle": "Gaýtarmalar",
+      "refundStatus": {
+        "pending": "Işlenýär",
+        "succeeded": "Ýerine ýetirildi",
+        "canceled": "Ýatyryldy"
+      },
+      "requestsTitle": "Töleg salgylary",
+      "openCount": "{n, plural, other {# açyk}}",
+      "kind": {
+        "extra": "goşmaça töleg",
+        "remainder": "galan bölegi"
+      },
+      "requestStatus": {
+        "open": "Töleg garaşylýar",
+        "paid": "Tölendi",
+        "cancelled": "Yzyna alyndy"
+      },
+      "cancel": "Yzyna almak",
+      "cancelConfirm": "{amount} üçin salgyny yzyna alalymy?",
+      "cancelConfirmExtra": "{amount} üçin salgyny yzyna alalymy? Tölenmedik goşmaça töleg sargydyň bahasyndan aýrylar.",
+      "newRequest": "Töleg salgysyny bermek",
+      "requestDialog": {
+        "title": "Töleg salgysy",
+        "description": "Müşderi salgy bilen habarnama alar we kart ýa-da SBP arkaly töler.",
+        "type": "Salgynyň görnüşi",
+        "remainder": "Tölemeli galan bölegi",
+        "extra": "Goşmaça töleg — sargydyň bahasyny artdyrýar",
+        "noRemaining": "Tölemeli galan ýok — diňe goşmaça töleg bermek bolýar.",
+        "amount": "Mukdar, ₽",
+        "amountHintRemainder": "Galan mukdardan köp däl: {max}",
+        "amountHintExtra": "Mukdar sargydyň bahasyna goşular.",
+        "reason": "Sebäbi",
+        "reasonPlaceholder": "Meselem: gyssagly, goşmaça sahypalar",
+        "create": "Salgy döretmek",
+        "errorAmount": "Mukdar azyndan 1 ₽ bolmaly",
+        "errorOver": "Mukdar tölemeli galan bölekden köp ({max})",
+        "linkReady": "Töleg salgysy",
+        "copy": "Göçürmek",
+        "copied": "Salgy göçürildi",
+        "copyFailed": "Göçürip bolmady — salgyny el bilen saýlaň",
+        "delivered": "Müşderä salgy bilen habarnama ugradyldy.",
+        "notDelivered": "Müşderä ýetirip bolmady — salgyny el bilen ugradyň.",
+        "done": "Taýýar"
+      }
+    },
     "assignmentStatus": {
       "assigned": "bellendi",
       "accepted": "kabul edildi",
@@ -105,7 +177,8 @@
       "allExecutors": "Ähli ýerine ýetirijiler",
       "office": "Nokat",
       "allOffices": "Ähli nokatlar",
-      "hint": "Kartoçkany başga sütüne süýşüriň ýa-da «→» basyň. Ýatyrylan sargytlar sargyt kartoçkasynda we eksportda bar."
+      "hint": "Kartoçkany başga sütüne süýşüriň ýa-da «→» basyň. Ýatyrylan sargytlar sargyt kartoçkasynda we eksportda bar.",
+      "payInOffice": "nokatda töleg"
     },
     "order": {
       "backToKanban": "Kanbana dolanmak",
@@ -169,7 +242,8 @@
         "receipt": "Çek / akt",
         "source": "Müşderiden asyl nusga"
       },
-      "chooseFile": "Faýl saýlamak"
+      "chooseFile": "Faýl saýlamak",
+      "officeHint": "Müşderi nokatda tölemegi saýlady — alnan nagty ýa-da terminaldaky kart tölegini ýazyň."
     },
     "clients": {
       "title": "Müşderiler",
@@ -308,7 +382,7 @@
       "delivery": "Eltip bermek, ₽",
       "deliveryHint": "0 — mugt",
       "prepayment": "Öňünden töleg, %",
-      "prepaymentHint": "Müşderiniň sargyt edende onlaýn tölemeli paýy",
+      "prepaymentHint": "Çäkden başlap sargytlar we notarial sargytlar üçin; galanlary — 100% onlaýn",
       "invalidValues": "Bahalary barlaň: sanlar ≥ 0, koeffisiýentler ≥ 1",
       "saveTariffs": "Tarifleri ýatda saklamak",
       "calendar": "Önümçilik senenamasy",
@@ -320,7 +394,11 @@
       "notifyStatus": "Ýagdaý üýtgände müşderä habar bermek",
       "notifyReady": "Taýýar bolanda müşderä habar bermek",
       "retention": "Berlenden soň faýllary saklamak, gün",
-      "retentionHint": "Soňra faýllar ammardan pozulýar (152-FZ). Iň az 7."
+      "retentionHint": "Soňra faýllar ammardan pozulýar (152-FZ). Iň az 7.",
+      "prepaymentThreshold": "Öňünden töleg sargydyň şu mukdaryndan başlap geçerli, ₽",
+      "prepaymentThresholdHint": "Çäkden arzan sargytlary müşderi doly onlaýn töleýär. 0 — ähli sargytlar üçin öňünden töleg.",
+      "payInOffice": "Nokatda tölemäge rugsat bermek",
+      "payInOfficeHint": "Müşderi onlaýn tölegiň ýerine kabul ediş nokadynda nagt ýa-da kart bilen tölemegi saýlap biler."
     },
     "audit": {
       "title": "Audit žurnaly",
@@ -584,7 +662,12 @@
         "unknownSetting": "Näbelli sazlama",
         "invalidEmail": "Nädogry email",
         "userNotFound": "Ulanyjy tapylmady — ilki bilen saýtda hasaba durmaly"
-      }
+      },
+      "paymentRequestSent": "Salgy müşderä ugradyldy",
+      "paymentRequestCreated": "Salgy döredildi, ýöne müşderä ýetirip bolmady — ony el bilen ugradyň",
+      "paymentRequestCancelled": "Töleg salgysy yzyna alyndy",
+      "refundDone": "Yzyna gaýtarma resmileşdirildi",
+      "refundPending": "Yzyna gaýtarma bank tarapyndan işlemäge kabul edildi"
     }
   },
   "workspace": {

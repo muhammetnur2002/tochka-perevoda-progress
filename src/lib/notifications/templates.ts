@@ -109,6 +109,22 @@ export function proofDecisionToManager(number: string, kind: "approved" | "chang
       };
 }
 
+export function paymentRequestMessage(number: string, amountLabel: string, reason: string | null, url: string): Message {
+  return {
+    subject: `Оплата по заказу ${number}`,
+    text:
+      `По заказу ${number} нужно оплатить ${amountLabel}${reason ? ` — ${reason}` : ""}. ` +
+      `Оплатить можно по ссылке (СБП, QR или карта): ${url}`,
+  };
+}
+
+export function refundMessage(number: string, amountLabel: string): Message {
+  return {
+    subject: `Возврат по заказу ${number}`,
+    text: `Возврат ${amountLabel} по заказу ${number} оформлен. Деньги вернутся тем же способом, обычно в течение 1–5 рабочих дней.`,
+  };
+}
+
 /** Удаляет HTML-разметку (для SMS/email). */
 export function plain(text: string): string {
   return text.replace(/<[^>]+>/g, "");

@@ -8,6 +8,7 @@ import { FileList } from "@/components/order/file-list";
 import { ChatPanel } from "@/components/chat/chat-panel";
 import { OrderControls } from "@/components/admin/order-controls";
 import { ProofPanel } from "@/components/admin/proof-panel";
+import { PaymentsPanel } from "@/components/admin/payments-panel";
 import { isManagerRole } from "@/lib/auth/roles";
 import { loadProofPanelData } from "@/lib/proof/panel-data";
 import { createClient } from "@/lib/supabase/server";
@@ -19,7 +20,6 @@ export const metadata: Metadata = { title: "Заказ" };
 export const dynamic = "force-dynamic";
 
 const SOURCES = ["web", "mini_app", "bot", "admin", "walkin"];
-const PAY_STATUSES = ["pending", "waiting_for_capture", "succeeded", "canceled", "refunded"];
 const ASSIGNMENT_STATUSES = ["assigned", "accepted", "in_progress", "done", "rejected"];
 const ROLES = ["guest", "client", "manager", "translator", "notary", "printer", "admin"];
 
@@ -39,10 +39,12 @@ export default async function AdminOrderPage({ params }: { params: { id: string 
     .maybeSingle();
   if (!order) notFound();
 
-  const [items, files, payments, history, assignments, staff, translators, languages, me, officeRes] = await Promise.all([
+  const [items, files, payments, refunds, paymentRequests, history, assignments, staff, translators, languages, me, officeRes] = await Promise.all([
     supabase.from("order_items").select("*").eq("order_id", order.id).order("created_at"),
     supabase.from("files").select("id, original_name, kind, size_bytes, created_at").eq("order_id", order.id).order("created_at"),
     supabase.from("payments").select("*").eq("order_id", order.id).order("created_at", { ascending: false }),
+    supabase.from("refunds").select("*").eq("order_id", order.id).order("created_at", { ascending: false }),
+    supabase.from("payment_requests").select("*").eq("order_id", order.id).order("created_at", { ascending: false }),
     supabase.from("status_history").select("*, user:users(name)").eq("order_id", order.id).order("created_at"),
     supabase.from("order_assignments").select("*, user:users!order_assignments_user_id_fkey(name)").eq("order_id", order.id).order("assigned_at"),
     supabase.from("users").select("id, name, role").in("role", ["translator", "notary", "printer", "manager", "admin"]).eq("is_active", true).order("name"),
@@ -192,17 +194,19 @@ export default async function AdminOrderPage({ params }: { params: { id: string 
                 {due > 0 ? t("due", { amount: formatMoney(due) }) : t("paidInFull")}
               </span>
             </div>
-            {(payments.data ?? []).length > 0 && (
-              <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
-                {(payments.data ?? []).map((p) => (
-                  <li key={p.id}>
-                    {formatDateTime(p.paid_at ?? p.created_at)} · {p.method.toUpperCase()} · {p.provider} · {formatMoney(Number(p.amount))} ·{" "}
-                    {PAY_STATUSES.includes(p.status) ? tAdmin(`paymentStatus.${p.status}`) : p.status}
-                  </li>
-                ))}
-              </ul>
-            )}
           </section>
+
+          <PaymentsPanel
+            orderId={order.id}
+            paymentMode={order.payment_mode}
+            totalPrice={Number(order.total_price)}
+            extraCharge={Number(order.extra_charge ?? 0)}
+            promoDiscount={promoDiscount}
+            paidAmount={Number(order.paid_amount)}
+            payments={payments.data ?? []}
+            refunds={refunds.data ?? []}
+            requests={paymentRequests.data ?? []}
+          />
 
           <section className="rounded-2xl border bg-card p-4">
             <h2 className="mb-3 font-bold text-brand-800">{t("files")}</h2>
@@ -267,6 +271,7 @@ export default async function AdminOrderPage({ params }: { params: { id: string 
           proofStatus={order.proof_status}
           deadline={order.deadline}
           due={due}
+          paymentMode={order.payment_mode}
           assignments={(assignments.data ?? []).map((a) => ({ id: a.id, role: a.role, status: a.status, userName: a.user?.name ?? "—" }))}
           staff={(staff.data ?? []).map((u) => {
             const tr = load.get(u.id);

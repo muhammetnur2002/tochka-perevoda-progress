@@ -414,7 +414,23 @@
     "iPaid": "J'ai payé",
     "mockNote": "Mode test : le paiement est simulé par un fournisseur fictif (clés ЮKassa non configurées)",
     "noAccessTitle": "Pas d'accès au paiement",
-    "noAccessText": "Ouvrez le lien sur l'appareil utilisé pour la commande ou connectez-vous à votre espace personnel."
+    "noAccessText": "Ouvrez le lien sur l'appareil utilisé pour la commande ou connectez-vous à votre espace personnel.",
+    "modeTitle": "Comment souhaitez-vous payer ?",
+    "modeOnline": "Payer en ligne",
+    "modeOnlinePrepay": "Maintenant : {amount} (acompte de {percent} %), solde de {rest} à la remise de la commande. SBP, QR code ou carte.",
+    "modeOnlineFull": "Totalité : {amount} — SBP, QR code ou carte bancaire.",
+    "modeOffice": "Payer au bureau",
+    "modeOfficeHint": "En espèces ou par carte lors de la remise des documents. Convient si vous n'avez pas de carte russe. Nous commencerons le travail après le paiement.",
+    "dueNow": "À payer maintenant",
+    "restLater": "Solde à la remise",
+    "officeTotal": "Paiement au bureau",
+    "submitOffice": "Valider la commande",
+    "officeCardTitle": "Payez {amount} au bureau",
+    "officeCardText": "En espèces ou par carte lors de la remise des documents — indiquez le numéro de commande à notre collaborateur. Nous commencerons le travail après le paiement.",
+    "requestExtra": "Supplément pour la commande",
+    "requestBalance": "Solde à payer",
+    "requestPaid": "Ce lien a déjà été payé. Merci !",
+    "requestCancelled": "Ce lien de paiement a été annulé. Veuillez contacter le gestionnaire."
   },
   "success": {
     "paidTitle": "Commande {number} payée",
@@ -423,7 +439,8 @@
     "pendingText": "Le paiement est en cours de traitement — dès que la banque le confirmera, nous vous enverrons une notification.",
     "keepNumber": "Conservez le numéro de commande — avec votre téléphone, il permet de suivre son statut.",
     "track": "Suivre le statut",
-    "myOrders": "Mes commandes"
+    "myOrders": "Mes commandes",
+    "officeText": "Commande acceptée. Payez-la au bureau lors de la remise des documents — nous commencerons le travail après le paiement."
   },
   "mockSbp": {
     "title": "QR code SBP de test",
@@ -555,7 +572,8 @@
     "proofChanges": "Remarques envoyées. Nous attendons la version corrigée.",
     "proofApproved": "Traduction approuvée, le document sera imprimé.",
     "proofOpen": "Vérifier la traduction",
-    "proofView": "Ouvrir"
+    "proofView": "Ouvrir",
+    "payInOffice": "Paiement au bureau lors de la remise des documents"
   },
   "profile": {
     "name": "Nom",

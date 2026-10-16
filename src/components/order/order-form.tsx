@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FileDropzone } from "./file-dropzone";
 import { LanguagePairPicker, OfficePicker } from "./placement-pickers";
+import { PaymentModePicker } from "./payment-mode-picker";
 import { useCart } from "@/components/cart/cart-provider";
 import { isValidRuPhone, phoneMask } from "@/lib/format/phone";
 import { apiFetch, saveOrderToken, uploadOrderFile } from "@/lib/client/api";
@@ -119,6 +120,7 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
           languageFrom: needsLanguage ? options.languageFrom : null,
           officeId: options.officeId,
           promoCode: options.promoCode,
+          paymentMode: options.paymentMode,
           deliveryType: options.deliveryType,
           deliveryAddress: options.deliveryType === "delivery" ? values.deliveryAddress : null,
           comment: values.comment || null,
@@ -141,7 +143,10 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
 
       clear();
       if (onCreated) onCreated({ ...order, payMethod: values.payMethod });
-      else router.push(`/checkout/pay/${order.orderId}?method=${values.payMethod}`);
+      else if (options.paymentMode === "office") {
+        // оплата в точке: онлайн ничего не платим, показываем, куда и сколько принести
+        router.push(`/checkout/success/${encodeURIComponent(order.publicNumber)}?order=${order.orderId}&office=1`);
+      } else router.push(`/checkout/pay/${order.orderId}?method=${values.payMethod}`);
     } catch (err) {
       toast.error((err as Error).message);
       setStage(null);
@@ -311,6 +316,12 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
         </section>
 
         <section className="space-y-3 rounded-2xl border bg-card p-5">
+          <h2 className="text-lg font-bold text-brand-800">{tp("modeTitle")}</h2>
+          <PaymentModePicker />
+        </section>
+
+        {options.paymentMode === "online" && (
+        <section className="space-y-3 rounded-2xl border bg-card p-5">
           <h2 className="text-lg font-bold text-brand-800">{t("payMethod")}</h2>
           <FormField
             control={form.control}
@@ -336,6 +347,7 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
             )}
           />
         </section>
+        )}
 
         <FormField
           control={form.control}
@@ -377,6 +389,8 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
             <>
               <Loader2 className="animate-spin" /> {stage}
             </>
+          ) : options.paymentMode === "office" ? (
+            tp("submitOffice")
           ) : (
             t("submit")
           )}
@@ -389,9 +403,11 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
 /** Кнопка отправки для боковой колонки (связана с формой через form="order-form"). */
 export function OrderSubmitButton() {
   const t = useTranslations("checkout");
+  const tp = useTranslations("payment");
+  const { options } = useCart();
   return (
     <Button type="submit" form="order-form" variant="gold" size="xl" className="hidden w-full lg:inline-flex">
-      {t("submit")}
+      {options.paymentMode === "office" ? tp("submitOffice") : t("submit")}
     </Button>
   );
 }

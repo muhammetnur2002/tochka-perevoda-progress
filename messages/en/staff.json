@@ -48,6 +48,78 @@
       "cash": "Cash",
       "invoice": "Invoice"
     },
+    "payments": {
+      "title": "Payment",
+      "officeBadge": "Pay at office",
+      "officeHint": "The client chose to pay at the office: nothing is paid online. Record the cash or terminal payment with the “Record payment” form.",
+      "summary": {
+        "total": "Order total",
+        "extra": "Extra charge",
+        "promo": "Promo discount",
+        "paid": "Paid",
+        "remaining": "Left to pay",
+        "settled": "Paid in full"
+      },
+      "paymentsTitle": "Payments",
+      "noPayments": "No payments yet",
+      "refund": "Refund",
+      "refundDialog": {
+        "title": "Refund a payment",
+        "description": "Payment {amount} · {method}",
+        "amount": "Refund amount, ₽",
+        "available": "Refundable: {amount}",
+        "reason": "Refund reason",
+        "reasonPlaceholder": "E.g. the client cancelled the order",
+        "confirm": "Issue refund",
+        "invalid": "Enter an amount above zero, up to {max}",
+        "onlineHint": "The money goes back to the client's card; the bank may take a few days to process it.",
+        "manualHint": "The payment was taken at the office: give the money back to the client on the spot — the refund is only recorded here."
+      },
+      "refundsTitle": "Refunds",
+      "refundStatus": {
+        "pending": "Processing",
+        "succeeded": "Completed",
+        "canceled": "Cancelled"
+      },
+      "requestsTitle": "Payment links",
+      "openCount": "{n, plural, one {# open} other {# open}}",
+      "kind": {
+        "extra": "extra charge",
+        "remainder": "balance"
+      },
+      "requestStatus": {
+        "open": "Awaiting payment",
+        "paid": "Paid",
+        "cancelled": "Withdrawn"
+      },
+      "cancel": "Withdraw",
+      "cancelConfirm": "Withdraw the link for {amount}?",
+      "cancelConfirmExtra": "Withdraw the link for {amount}? The unpaid extra charge will be removed from the order total.",
+      "newRequest": "Create payment link",
+      "requestDialog": {
+        "title": "Payment link",
+        "description": "The client gets a notification with the link and pays by card or SBP.",
+        "type": "Link type",
+        "remainder": "Balance due",
+        "extra": "Extra charge — increases the order total",
+        "noRemaining": "Nothing left to pay — only an extra charge can be issued.",
+        "amount": "Amount, ₽",
+        "amountHintRemainder": "No more than the balance: {max}",
+        "amountHintExtra": "The amount is added to the order total.",
+        "reason": "Reason",
+        "reasonPlaceholder": "E.g. rush order, additional pages",
+        "create": "Create link",
+        "errorAmount": "The amount must be at least ₽1",
+        "errorOver": "The amount exceeds the balance due ({max})",
+        "linkReady": "Payment link",
+        "copy": "Copy",
+        "copied": "Link copied",
+        "copyFailed": "Could not copy — select the link manually",
+        "delivered": "The client has been notified with the link.",
+        "notDelivered": "Could not reach the client — send the link manually.",
+        "done": "Done"
+      }
+    },
     "assignmentStatus": {
       "assigned": "assigned",
       "accepted": "accepted",
@@ -105,7 +177,8 @@
       "allExecutors": "All assignees",
       "office": "Office",
       "allOffices": "All offices",
-      "hint": "Drag a card to another column or press “→”. Cancelled orders are available in the order card and in the export."
+      "hint": "Drag a card to another column or press “→”. Cancelled orders are available in the order card and in the export.",
+      "payInOffice": "pay at office"
     },
     "order": {
       "backToKanban": "Back to kanban",
@@ -169,7 +242,8 @@
         "receipt": "Receipt / certificate of completion",
         "source": "Source from client"
       },
-      "chooseFile": "Choose file"
+      "chooseFile": "Choose file",
+      "officeHint": "The client chose to pay at the office — record the cash received or the card payment on the terminal."
     },
     "clients": {
       "title": "Clients",
@@ -308,7 +382,7 @@
       "delivery": "Delivery, ₽",
       "deliveryHint": "0 means free",
       "prepayment": "Prepayment, %",
-      "prepaymentHint": "Share of the total the client pays online when ordering",
+      "prepaymentHint": "For orders at or above the threshold and notarized ones; all others are paid 100% online",
       "invalidValues": "Check the values: numbers ≥ 0, multipliers ≥ 1",
       "saveTariffs": "Save rates",
       "calendar": "Working calendar",
@@ -320,7 +394,11 @@
       "notifyStatus": "Notify the client about status changes",
       "notifyReady": "Notify the client when the order is ready",
       "retention": "Keep files after handover, days",
-      "retentionHint": "After that, files are deleted from storage (Federal Law 152-FZ). Minimum 7."
+      "retentionHint": "After that, files are deleted from storage (Federal Law 152-FZ). Minimum 7.",
+      "prepaymentThreshold": "Prepayment applies from order amount, ₽",
+      "prepaymentThresholdHint": "Orders below the threshold are paid in full online. 0 means prepayment for every order.",
+      "payInOffice": "Allow paying at the office",
+      "payInOfficeHint": "The client can choose to pay by cash or card at the office instead of paying online."
     },
     "audit": {
       "title": "Audit log",
@@ -584,7 +662,12 @@
         "unknownSetting": "Unknown setting",
         "invalidEmail": "Invalid email",
         "userNotFound": "User not found — they must register on the website first"
-      }
+      },
+      "paymentRequestSent": "Link sent to the client",
+      "paymentRequestCreated": "Link created, but it could not be delivered to the client — send it manually",
+      "paymentRequestCancelled": "Payment link withdrawn",
+      "refundDone": "Refund issued",
+      "refundPending": "Refund accepted by the bank for processing"
     }
   },
   "workspace": {

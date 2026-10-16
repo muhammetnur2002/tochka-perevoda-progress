@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { saveSettingAction } from "@/app/admin/actions";
 import type { Json } from "@/types/database.types";
@@ -39,6 +40,8 @@ export function SettingsForm({ initial }: { initial: Settings }) {
   const [notary, setNotary] = React.useState(String(num(initial.notary_fee, 0)));
   const [delivery, setDelivery] = React.useState(String(num(initial.delivery_price, 0)));
   const [prepay, setPrepay] = React.useState(String(num(initial.prepayment_percent, 100)));
+  const [prepayThreshold, setPrepayThreshold] = React.useState(String(num(initial.prepayment_threshold, 3000)));
+  const [payInOffice, setPayInOffice] = React.useState(initial.pay_in_office_enabled !== false && initial.pay_in_office_enabled !== "false");
   const [retention, setRetention] = React.useState(String(num(initial.file_retention_days, 90)));
   const [holidays, setHolidays] = React.useState(((initial.holidays as string[] | undefined) ?? []).join("\n"));
   const [notifyStatus, setNotifyStatus] = React.useState(notif.client_status_change !== false);
@@ -78,11 +81,21 @@ export function SettingsForm({ initial }: { initial: Settings }) {
         <Field id="prepay" label={t("prepayment")} hint={t("prepaymentHint")}>
           <Input id="prepay" type="number" min="1" max="100" value={prepay} onChange={(e) => setPrepay(e.target.value)} />
         </Field>
+        <Field id="prepay-threshold" label={t("prepaymentThreshold")} hint={t("prepaymentThresholdHint")}>
+          <Input id="prepay-threshold" type="number" min="0" value={prepayThreshold} onChange={(e) => setPrepayThreshold(e.target.value)} />
+        </Field>
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-3">
+            <Switch id="pay-in-office" checked={payInOffice} onCheckedChange={setPayInOffice} />
+            <Label htmlFor="pay-in-office">{t("payInOffice")}</Label>
+          </div>
+          <p className="text-xs text-muted-foreground">{t("payInOfficeHint")}</p>
+        </div>
         <div className="flex items-end">
           <Button
             disabled={pending}
             onClick={() => {
-              if (![u1d, uSame, notary, delivery, prepay].every(positive) || Number(u1d) < 1 || Number(uSame) < 1) {
+              if (![u1d, uSame, notary, delivery, prepay, prepayThreshold].every(positive) || Number(u1d) < 1 || Number(uSame) < 1) {
                 toast.error(t("invalidValues"));
                 return;
               }
@@ -91,6 +104,8 @@ export function SettingsForm({ initial }: { initial: Settings }) {
                 ["notary_fee", Number(notary)],
                 ["delivery_price", Number(delivery)],
                 ["prepayment_percent", Math.min(100, Math.max(1, Number(prepay)))],
+                ["prepayment_threshold", Number(prepayThreshold)],
+                ["pay_in_office_enabled", payInOffice],
               ]);
             }}
           >

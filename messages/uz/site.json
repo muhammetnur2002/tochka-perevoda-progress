@@ -414,7 +414,23 @@
     "iPaid": "Men toʻladim",
     "mockNote": "Test rejimi: toʻlov mock-provayder orqali taqlid qilinadi (ЮKassa kalitlari berilmagan)",
     "noAccessTitle": "Toʻlovga ruxsat yoʻq",
-    "noAccessText": "Havolani buyurtma bergan qurilmangizda oching yoki shaxsiy kabinetga kiring."
+    "noAccessText": "Havolani buyurtma bergan qurilmangizda oching yoki shaxsiy kabinetga kiring.",
+    "modeTitle": "Qanday toʻlamoqchisiz?",
+    "modeOnline": "Onlayn toʻlash",
+    "modeOnlinePrepay": "Hozir {amount} (oldindan toʻlov {percent}%), qolgan {rest} — buyurtmani olishda. SBP, QR-kod yoki karta orqali.",
+    "modeOnlineFull": "Toʻliq {amount} — SBP, QR-kod yoki bank kartasi orqali.",
+    "modeOffice": "Punktda toʻlash",
+    "modeOfficeHint": "Hujjatlarni topshirishda naqd pul yoki karta bilan. Rossiya kartangiz boʻlmasa, shu usul qulay. Ishni toʻlovdan soʻng boshlaymiz.",
+    "dueNow": "Hozir toʻlanadi",
+    "restLater": "Qolgan qismi olishda toʻlanadi",
+    "officeTotal": "Punktda toʻlov",
+    "submitOffice": "Buyurtma berish",
+    "officeCardTitle": "{amount} ni punktda toʻlang",
+    "officeCardText": "Hujjatlarni topshirishda naqd pul yoki karta bilan — xodimga buyurtma raqamini ayting. Ishni toʻlovdan soʻng boshlaymiz.",
+    "requestExtra": "Buyurtma boʻyicha qoʻshimcha toʻlov",
+    "requestBalance": "Qolgan toʻlov summasi",
+    "requestPaid": "Bu havola boʻyicha allaqachon toʻlangan. Rahmat!",
+    "requestCancelled": "Bu toʻlov havolasi bekor qilingan. Menejerdan soʻrang."
   },
   "success": {
     "paidTitle": "{number} buyurtma toʻlandi",
@@ -423,7 +439,8 @@
     "pendingText": "Toʻlov qayta ishlanmoqda — bank toʻlovni tasdiqlashi bilan sizga xabar yuboramiz.",
     "keepNumber": "Buyurtma raqamini saqlab qoʻying — u va telefon raqami orqali holatni tekshirish mumkin.",
     "track": "Holatni kuzatish",
-    "myOrders": "Mening buyurtmalarim"
+    "myOrders": "Mening buyurtmalarim",
+    "officeText": "Buyurtma qabul qilindi. Uni hujjatlarni topshirishda punktda toʻlang — ishni toʻlovdan soʻng boshlaymiz."
   },
   "mockSbp": {
     "title": "SBP test QR-kodi",
@@ -555,7 +572,8 @@
     "proofChanges": "Izohlar yuborildi. Tuzatilgan versiyani kutamiz.",
     "proofApproved": "Tarjima tasdiqlandi, hujjat chop etiladi.",
     "proofOpen": "Tarjimani tekshirish",
-    "proofView": "Ochish"
+    "proofView": "Ochish",
+    "payInOffice": "Hujjatlarni topshirishda punktda toʻlov"
   },
   "profile": {
     "name": "Ism",

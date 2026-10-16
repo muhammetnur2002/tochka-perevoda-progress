@@ -6,6 +6,7 @@ import { useCart } from "@/components/cart/cart-provider";
 import { toPricingSettings, useCatalog } from "@/hooks/use-catalog";
 import { apiFetch } from "@/lib/client/api";
 import { calculatePrice, type PromoRejection, type PromoRule } from "@/lib/services/pricing";
+import { dueNow, policyFromSettings, type DueNow, type PaymentPolicy } from "@/lib/payments/policy";
 import type { DeliveryType } from "@/types/database.types";
 import type { PriceBreakdown } from "@/types/domain";
 
@@ -77,4 +78,18 @@ export function usePricing(opts: { deliveryType?: DeliveryType } = {}): PriceBre
     settings: toPricingSettings(data?.settings),
     promo: rule,
   });
+}
+
+/** Политика оплаты из публичных настроек и сколько клиент платит сейчас (для показа в корзине и оформлении). */
+export function usePaymentInfo(opts: { deliveryType?: DeliveryType } = {}): {
+  policy: PaymentPolicy;
+  due: DueNow;
+  total: number;
+} {
+  const { items } = useCart();
+  const { data } = useCatalog();
+  const pricing = usePricing(opts);
+  const policy = policyFromSettings(data?.settings);
+  const hasNotarial = pricing.notaryFee > 0 || items.some((i) => i.isNotarial);
+  return { policy, due: dueNow(policy, { total: pricing.total, paid: 0, hasNotarial }), total: pricing.total };
 }

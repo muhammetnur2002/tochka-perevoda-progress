@@ -46,6 +46,16 @@ test.describe("публичная часть", () => {
     await expect(page.getByRole("button", { name: /Карла Маркса, 65/ }).first()).toHaveAttribute("aria-pressed", "true");
   });
 
+  test("оформление: выбор «оплата в точке» скрывает онлайн-способы", async ({ page }) => {
+    await page.goto("/calculator");
+    await page.getByRole("button", { name: /Увеличить: Перевод паспорта \(все страницы\)/ }).click();
+    await page.goto("/checkout");
+    await expect(page.getByRole("radio", { name: /Оплатить онлайн/ })).toBeVisible();
+    await page.getByRole("radio", { name: /Оплатить в точке/ }).click();
+    await expect(page.getByRole("heading", { name: "Способ оплаты" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Оформить заказ" }).first()).toBeVisible();
+  });
+
   test("статус: требует номер и телефон", async ({ page }) => {
     await page.goto("/status");
     await expect(page.getByLabel("Номер заказа")).toBeVisible();

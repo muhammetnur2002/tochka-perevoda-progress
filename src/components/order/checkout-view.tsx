@@ -8,13 +8,14 @@ import { OrderForm, OrderSubmitButton } from "@/components/order/order-form";
 import { useCatalog } from "@/hooks/use-catalog";
 import { useAuth } from "@/hooks/use-auth";
 import { useServiceName } from "@/i18n/names";
-import { usePricing } from "@/hooks/use-pricing";
+import { usePaymentInfo, usePricing } from "@/hooks/use-pricing";
 import { PromoField } from "@/components/cart/promo-field";
 import { formatMoney } from "@/lib/format/money";
 
 /** Оформление: форма слева, итог к оплате справа. */
 export function CheckoutView() {
   const t = useTranslations("checkout");
+  const tp = useTranslations("payment");
   const tu = useTranslations("urgency");
   const to = useTranslations("offices");
   const serviceName = useServiceName();
@@ -22,6 +23,7 @@ export function CheckoutView() {
   const { data } = useCatalog();
   const { profile, user } = useAuth();
   const pricing = usePricing();
+  const { due } = usePaymentInfo();
   const office = data?.offices?.find((o) => o.id === options.officeId);
 
   if (!hydrated) return <div className="h-96 animate-pulse rounded-2xl bg-muted" />;
@@ -67,6 +69,27 @@ export function CheckoutView() {
           </div>
           <PromoField />
           <PriceLines pricing={pricing} />
+          <div className="space-y-1 rounded-xl bg-muted/50 p-3 text-sm">
+            {options.paymentMode === "office" ? (
+              <div className="flex justify-between gap-3">
+                <span>{tp("officeTotal")}</span>
+                <strong>{formatMoney(pricing.total)}</strong>
+              </div>
+            ) : (
+              <>
+                <div className="flex justify-between gap-3 text-base text-brand-800">
+                  <strong>{tp("dueNow")}</strong>
+                  <strong>{formatMoney(due.amount)}</strong>
+                </div>
+                {due.rest > 0 && (
+                  <div className="flex justify-between gap-3 text-muted-foreground">
+                    <span>{tp("restLater")}</span>
+                    <span>{formatMoney(due.rest)}</span>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
           <OrderSubmitButton />
           <p className="text-xs leading-relaxed text-muted-foreground">
             {t("serverPriceNote")}{" "}

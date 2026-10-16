@@ -3,6 +3,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
 import { issueOrderToken } from "@/lib/auth/order-access";
 import { PROOF_LINK_TTL_DAYS, PROOF_REMIND_HOURS } from "@/lib/proof/constants";
+
+/** Срок жизни ссылки на оплату из CRM (для гостя без аккаунта). */
+const PAYMENT_LINK_TTL_DAYS = 7;
 import { formatMoney } from "@/lib/format/money";
 import { formatDateTime } from "@/lib/format/date";
 import type { NotificationChannel, OrderStatus } from "@/types/database.types";
@@ -17,8 +20,10 @@ import {
   paymentReceivedMessage,
   pickupReminder,
   plain,
+  paymentRequestMessage,
   proofDecisionToManager,
   proofRequestMessage,
+  refundMessage,
   readyMessage,
   statusChangedMessage,
   unclaimedManagerWarning,
@@ -217,11 +222,13 @@ export async function notifyNewOrderToManagers(orderId: string): Promise<void> {
   const admin = createAdminClient();
   const { data: order } = await admin
     .from("orders")
-    .select("id, public_number, total_price, source, items:order_items(name_snapshot, quantity)")
+    .select("id, public_number, total_price, source, payment_mode, items:order_items(name_snapshot, quantity)")
     .eq("id", orderId)
     .maybeSingle();
   if (!order) return;
-  const summary = (order.items ?? []).map((i) => `• ${i.name_snapshot} × ${i.quantity}`).join("\n");
+  const summary =
+    (order.items ?? []).map((i) => `• ${i.name_snapshot} × ${i.quantity}`).join("\n") +
+    (order.payment_mode === "office" ? "\n💵 Оплата в точке при сдаче документов" : "");
   await broadcastToManagers(
     order.id,
     newOrderMessage(order.public_number, formatMoney(Number(order.total_price)), SOURCE_LABELS[order.source] ?? order.source, summary),
@@ -234,6 +241,35 @@ export async function notifyChatMessage(orderId: string, body: string): Promise<
   const { data: order } = await admin.from("orders").select("public_number").eq("id", orderId).maybeSingle();
   if (!order) return;
   await broadcastToManagers(orderId, chatMessageToManager(order.public_number, body));
+}
+
+/** Клиенту: ссылка на оплату остатка или доплаты. Возвращает ссылку и факт доставки. */
+export async function notifyPaymentRequest(
+  orderId: string,
+  requestId: string,
+): Promise<{ url: string; delivered: boolean }> {
+  const admin = createAdminClient();
+  const [found, { data: request }] = await Promise.all([
+    orderRecipient(orderId),
+    admin.from("payment_requests").select("amount, reason").eq("id", requestId).maybeSingle(),
+  ]);
+  const site = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  const token = issueOrderToken(orderId, Date.now(), PAYMENT_LINK_TTL_DAYS * 24 * 60 * 60 * 1000);
+  const url = `${site}/checkout/pay/${orderId}?request=${requestId}&token=${token}`;
+  if (!found || !request) return { url, delivered: false };
+  const channel = await deliverWithFallback(
+    orderId,
+    found.recipient,
+    paymentRequestMessage(found.order.public_number, formatMoney(Number(request.amount)), request.reason, url),
+  );
+  return { url, delivered: channel !== null };
+}
+
+/** Клиенту: возврат оформлен. */
+export async function notifyRefund(orderId: string, amount: number): Promise<void> {
+  const found = await orderRecipient(orderId);
+  if (!found) return;
+  await deliverWithFallback(orderId, found.recipient, refundMessage(found.order.public_number, formatMoney(amount)));
 }
 
 /** Клиенту: перевод готов к проверке (ссылка с токеном — работает и без входа в кабинет). */

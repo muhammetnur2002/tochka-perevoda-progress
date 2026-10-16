@@ -35,6 +35,7 @@ export interface KanbanOrder {
   proof_status?: OrderProofStatus;
   total_price: number;
   paid_amount: number;
+  payment_mode?: "online" | "office";
   deadline: string | null;
   source: string;
   language_from: string | null;
@@ -107,6 +108,11 @@ function OrderCard({ order, onNext }: { order: KanbanOrder; onNext?: () => void 
             <span className={cn("inline-block rounded-full px-2 py-0.5 text-[11px] font-bold", PROOF_BADGE[order.proof_status])}>
               {tProof(`badge.${order.proof_status as "awaiting_client" | "changes_requested" | "approved"}`)}
             </span>
+          </div>
+        )}
+        {order.payment_mode === "office" && !paid && (
+          <div>
+            <span className="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">{t("payInOffice")}</span>
           </div>
         )}
         <div className="leading-snug">{order.items.map((i) => `${i.name_snapshot}${i.quantity > 1 ? ` × ${i.quantity}` : ""}`).join(", ")}</div>

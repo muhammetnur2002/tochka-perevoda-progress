@@ -90,6 +90,7 @@ export default async function AccountOrderPage({ params }: { params: { id: strin
           {order.delivery_type === "delivery"
             ? t("deliveryTo", { address: order.delivery_address ?? t("addressTbd") })
             : to("pickupAt", { address: order.office?.address ?? "—" })}
+          {order.payment_mode === "office" && Number(order.paid_amount) === 0 && ` · ${t("payInOffice")}`}
           {order.from && ` · ${t("translationPair", { from: langName(order.from), to: langName(order.to) })}`}
         </p>
       </section>

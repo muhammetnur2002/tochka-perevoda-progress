@@ -6,8 +6,10 @@ import { z, ZodError } from "zod";
 import { requirePermission } from "@/lib/auth/session";
 import { assignExecutor, changeOrderStatus } from "@/lib/services/order-admin";
 import { recordManualPayment } from "@/lib/payments";
+import { refundPayment } from "@/lib/payments/refunds";
+import { cancelPaymentRequest, createPaymentRequest } from "@/lib/payments/requests";
 import { serviceSchema } from "@/lib/validation/service";
-import { manualPaymentSchema } from "@/lib/validation/payment";
+import { manualPaymentSchema, paymentRequestSchema, refundSchema } from "@/lib/validation/payment";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ApiError, notFound } from "@/lib/errors";
 import type { Json, OrderStatus, UserRole } from "@/types/database.types";
@@ -18,7 +20,9 @@ import type { Json, OrderStatus, UserRole } from "@/types/database.types";
  * для показа тоста в интерфейсе. Тексты тостов — на языке интерфейса сотрудника.
  */
 
-export type ActionResult = { ok: true; message?: string } | { ok: false; error: string; code?: string };
+export type ActionResult =
+  | { ok: true; message?: string; data?: Record<string, string | number | boolean | null> }
+  | { ok: false; error: string; code?: string };
 
 type Translator = Awaited<ReturnType<typeof getTranslations>>;
 
@@ -49,11 +53,14 @@ function errorMessage(err: unknown, t: Translator): string {
   return e?.message ?? t("errors.generic");
 }
 
-async function run(fn: (t: Translator) => Promise<string | void>): Promise<ActionResult> {
+type RunOutput = string | void | { message: string; data: Record<string, string | number | boolean | null> };
+
+async function run(fn: (t: Translator) => Promise<RunOutput>): Promise<ActionResult> {
   const t = await getTranslations("admin.actions");
   try {
-    const message = await fn(t);
-    return { ok: true, message: message ?? undefined };
+    const out = await fn(t);
+    if (out && typeof out === "object") return { ok: true, message: out.message, data: out.data };
+    return { ok: true, message: out ?? undefined };
   } catch (err) {
     return { ok: false, error: errorMessage(err, t), code: err instanceof CodedError ? err.code : undefined };
   }
@@ -111,11 +118,50 @@ export async function assignExecutorAction(input: {
 
 export async function recordPaymentAction(orderId: string, input: { amount: number; method: string }): Promise<ActionResult> {
   return run(async (t) => {
-    await requirePermission("order.view_payments");
+    await requirePermission("payment.manage");
     const parsed = manualPaymentSchema.parse(input);
     await recordManualPayment(orderId, parsed.amount, parsed.method);
     revalidatePath(`/admin/orders/${orderId}`);
     return t("paymentRecorded");
+  });
+}
+
+/**
+ * Ссылка на оплату: остаток (isExtra=false) или доплата (isExtra=true — увеличивает стоимость заказа).
+ * Клиенту уходит уведомление; ссылка возвращается для копирования (data.url, data.delivered).
+ */
+export async function createPaymentRequestAction(orderId: string, input: unknown): Promise<ActionResult> {
+  return run(async (t) => {
+    const actor = await requirePermission("payment.manage");
+    const parsed = paymentRequestSchema.parse(input);
+    const created = await createPaymentRequest(z.string().uuid().parse(orderId), parsed, actor.id);
+    revalidatePath(`/admin/orders/${orderId}`);
+    return {
+      message: created.delivered ? t("paymentRequestSent") : t("paymentRequestCreated"),
+      data: { url: created.url, delivered: created.delivered },
+    };
+  });
+}
+
+/** Отозвать открытую ссылку на оплату (неоплаченная доплата снимается со стоимости заказа). */
+export async function cancelPaymentRequestAction(orderId: string, requestId: string): Promise<ActionResult> {
+  return run(async (t) => {
+    await requirePermission("payment.manage");
+    await cancelPaymentRequest(z.string().uuid().parse(requestId));
+    revalidatePath(`/admin/orders/${orderId}`);
+    return t("paymentRequestCancelled");
+  });
+}
+
+/** Возврат по платежу (полный или частичный). */
+export async function refundPaymentAction(orderId: string, paymentId: string, input: unknown): Promise<ActionResult> {
+  return run(async (t) => {
+    const actor = await requirePermission("payment.manage");
+    const parsed = refundSchema.parse(input);
+    const res = await refundPayment(z.string().uuid().parse(paymentId), parsed, actor.id);
+    revalidatePath(`/admin/orders/${orderId}`);
+    revalidatePath("/admin/finance");
+    return res.status === "succeeded" ? t("refundDone") : t("refundPending");
   });
 }
 
@@ -297,6 +343,8 @@ export async function saveSettingAction(key: string, value: Json): Promise<Actio
       "notary_fee",
       "delivery_price",
       "prepayment_percent",
+      "prepayment_threshold",
+      "pay_in_office_enabled",
       "holidays",
       "notifications",
       "file_retention_days",

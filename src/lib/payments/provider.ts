@@ -35,9 +35,28 @@ export interface ProviderPaymentStatus {
   raw: Json;
 }
 
+export type RefundStatus = "pending" | "succeeded" | "canceled";
+
+export interface CreateRefundParams {
+  providerPaymentId: string;
+  amount: number; // рубли
+  currency: string;
+  idempotenceKey: string;
+  description: string;
+}
+
+export interface ProviderRefund {
+  providerRefundId: string;
+  status: RefundStatus;
+  amount: number | null;
+  raw: Json;
+}
+
 /** Единый интерфейс платёжного провайдера (ЮKassa / mock). */
 export interface PaymentProvider {
   readonly name: "yookassa" | "mock";
   createPayment(params: CreatePaymentParams): Promise<CreatePaymentResult>;
   getPayment(providerPaymentId: string): Promise<ProviderPaymentStatus>;
+  createRefund(params: CreateRefundParams): Promise<ProviderRefund>;
+  getRefund(providerRefundId: string): Promise<ProviderRefund>;
 }

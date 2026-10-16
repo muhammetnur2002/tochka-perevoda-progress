@@ -90,3 +90,13 @@ export function parseNotification(body: unknown): { paymentId: string; event: st
   if (typeof id !== "string" || !/^[\w-]{10,64}$/.test(id)) return null;
   return { paymentId: id, event: n.event };
 }
+
+/** Достаёт id возврата из уведомления (refund.* события). */
+export function parseRefundNotification(body: unknown): { refundId: string; event: string } | null {
+  if (!body || typeof body !== "object") return null;
+  const n = body as YookassaNotification;
+  if (typeof n.event !== "string" || !n.event.startsWith("refund.")) return null;
+  const id = n.object?.id;
+  if (typeof id !== "string" || !/^[\w-]{10,64}$/.test(id)) return null;
+  return { refundId: id, event: n.event };
+}

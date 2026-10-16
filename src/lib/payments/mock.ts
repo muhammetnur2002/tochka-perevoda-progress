@@ -4,8 +4,10 @@ import type { Json } from "@/types/database.types";
 import type {
   CreatePaymentParams,
   CreatePaymentResult,
+  CreateRefundParams,
   PaymentProvider,
   ProviderPaymentStatus,
+  ProviderRefund,
 } from "./provider";
 
 /**
@@ -27,6 +29,20 @@ export class MockPaymentProvider implements PaymentProvider {
       confirmationData: params.method === "card" ? null : `${site}/checkout/mock-sbp?payment=${id}`,
       raw: { mock: true, amount: params.amount, method: params.method } as Json,
     };
+  }
+
+  /** Тестовый возврат проходит сразу. */
+  async createRefund(params: CreateRefundParams): Promise<ProviderRefund> {
+    return {
+      providerRefundId: `mock-refund-${randomUUID()}`,
+      status: "succeeded",
+      amount: params.amount,
+      raw: { mock: true, payment: params.providerPaymentId } as Json,
+    };
+  }
+
+  async getRefund(providerRefundId: string): Promise<ProviderRefund> {
+    return { providerRefundId, status: "succeeded", amount: null, raw: { mock: true } as Json };
   }
 
   async getPayment(providerPaymentId: string): Promise<ProviderPaymentStatus> {

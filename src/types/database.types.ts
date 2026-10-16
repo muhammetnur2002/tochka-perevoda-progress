@@ -251,6 +251,10 @@ export type OrderRow = {
   promo_code_id: string | null;
   /** Сумма скидки по промокоду (вычитается из итога). */
   promo_discount: number;
+  /** Как клиент платит: онлайн сейчас или в точке при сдаче документов. */
+  payment_mode: PaymentMode;
+  /** Доплата, добавленная менеджером (срочность, доп. страницы). */
+  extra_charge: number;
   /** Состояние сверки перевода клиентом перед печатью. */
   proof_status: OrderProofStatus;
   issued_at: string | null;
@@ -298,8 +302,39 @@ export type PaymentRow = {
   provider_payment_id: string | null;
   idempotence_key: string | null;
   confirmation_url: string | null;
+  /** Запрос на оплату из CRM, по которому создан платёж. */
+  request_id: string | null;
   paid_at: string | null;
   raw: Json;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PaymentMode = "online" | "office";
+
+export type PaymentRequestRow = {
+  id: string;
+  order_id: string;
+  amount: number;
+  reason: string | null;
+  /** true — сумма добавлена к стоимости заказа (orders.extra_charge). */
+  is_extra: boolean;
+  status: "open" | "paid" | "cancelled";
+  created_by: string | null;
+  created_at: string;
+  paid_at: string | null;
+};
+
+export type RefundRow = {
+  id: string;
+  payment_id: string;
+  order_id: string;
+  amount: number;
+  reason: string | null;
+  status: "pending" | "succeeded" | "canceled";
+  provider: string;
+  provider_refund_id: string | null;
+  created_by: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -471,6 +506,23 @@ export type Database = {
       >;
       languages: Table<LanguageRow, Ins<LanguageRow, "code" | "name">>;
       offices: Table<OfficeRow, Ins<OfficeRow, "slug" | "name" | "address">>;
+      payment_requests: Table<
+        PaymentRequestRow,
+        Ins<PaymentRequestRow, "order_id" | "amount">,
+        [
+          Fk<"payment_requests_order_id_fkey", "order_id", "orders">,
+          Fk<"payment_requests_created_by_fkey", "created_by", "users">,
+        ]
+      >;
+      refunds: Table<
+        RefundRow,
+        Ins<RefundRow, "payment_id" | "order_id" | "amount">,
+        [
+          Fk<"refunds_payment_id_fkey", "payment_id", "payments">,
+          Fk<"refunds_order_id_fkey", "order_id", "orders">,
+          Fk<"refunds_created_by_fkey", "created_by", "users">,
+        ]
+      >;
       proofs: Table<
         ProofRow,
         Ins<ProofRow, "order_id" | "version" | "page_count" | "content_hash">,
@@ -525,7 +577,10 @@ export type Database = {
       payments: Table<
         PaymentRow,
         Ins<PaymentRow, "order_id" | "amount">,
-        [Fk<"payments_order_id_fkey", "order_id", "orders">]
+        [
+          Fk<"payments_order_id_fkey", "order_id", "orders">,
+          Fk<"payments_request_id_fkey", "request_id", "payment_requests">,
+        ]
       >;
       status_history: Table<
         StatusHistoryRow,

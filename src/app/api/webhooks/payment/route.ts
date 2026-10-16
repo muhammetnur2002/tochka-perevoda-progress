@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { handlePaymentWebhook } from "@/lib/payments";
-import { isYookassaIp, parseNotification } from "@/lib/payments/webhook";
+import { handleRefundWebhook } from "@/lib/payments/refunds";
+import { isYookassaIp, parseNotification, parseRefundNotification } from "@/lib/payments/webhook";
 import { clientIp } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { ApiError } from "@/lib/errors";
@@ -23,10 +24,11 @@ export async function POST(req: NextRequest) {
 
   const body: unknown = await req.json().catch(() => null);
   const parsed = parseNotification(body);
-  if (!parsed) return NextResponse.json({ ok: true, ignored: true });
+  const refund = parsed ? null : parseRefundNotification(body);
+  if (!parsed && !refund) return NextResponse.json({ ok: true, ignored: true });
 
   try {
-    const result = await handlePaymentWebhook(parsed.paymentId);
+    const result = parsed ? await handlePaymentWebhook(parsed.paymentId) : await handleRefundWebhook(refund!.refundId);
     return NextResponse.json({ ok: true, ...result });
   } catch (err) {
     if (err instanceof ApiError && err.status === 404) {

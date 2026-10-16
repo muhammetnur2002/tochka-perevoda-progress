@@ -19,7 +19,7 @@ import {
 import { canTransition } from "@/lib/auth/roles";
 import type { OrderStatus } from "@/lib/config/constants";
 import { uploadOrderFile } from "@/lib/client/api";
-import type { OrderProofStatus, UserRole } from "@/types/database.types";
+import type { OrderProofStatus, PaymentMode, UserRole } from "@/types/database.types";
 import { cn } from "@/lib/utils";
 
 const STATUSES: OrderStatus[] = ["new", "confirmed", "in_progress", "ready", "issued", "completed", "cancelled"];
@@ -35,6 +35,8 @@ interface OrderControlsProps {
   proofStatus?: OrderProofStatus;
   deadline: string | null;
   due: number;
+  /** «office» — клиент оплачивает в точке: сотрудник отмечает наличные/терминал. */
+  paymentMode?: PaymentMode;
   assignments: { id: string; role: string; status: string; userName: string }[];
   staff: { id: string; name: string; role: UserRole; load: string | null }[];
 }
@@ -61,7 +63,7 @@ function toLocalInput(iso: string | null): string {
 }
 
 /** Правая колонка карточки заказа: статус, срок, исполнитель, оплата, загрузка файлов. */
-export function OrderControls({ orderId, status, proofStatus = "none", deadline, due, assignments, staff }: OrderControlsProps) {
+export function OrderControls({ orderId, status, proofStatus = "none", deadline, due, paymentMode = "online", assignments, staff }: OrderControlsProps) {
   const t = useTranslations("admin.controls");
   const tProof = useTranslations("admin.proof");
   const tAdmin = useTranslations("admin");
@@ -75,6 +77,10 @@ export function OrderControls({ orderId, status, proofStatus = "none", deadline,
   const [deadlineValue, setDeadlineValue] = React.useState(toLocalInput(deadline));
   const [executor, setExecutor] = React.useState("");
   const [payAmount, setPayAmount] = React.useState(due > 0 ? String(due) : "");
+  // После обновления страницы подставляем актуальный остаток
+  React.useEffect(() => {
+    setPayAmount(due > 0 ? String(due) : "");
+  }, [due]);
   const [payMethod, setPayMethod] = React.useState("cash");
   const [uploadKind, setUploadKind] = React.useState("translation");
   const [uploading, setUploading] = React.useState(false);
@@ -203,6 +209,7 @@ export function OrderControls({ orderId, status, proofStatus = "none", deadline,
 
       <section className="space-y-2 rounded-2xl border bg-card p-4">
         <h2 className="font-bold text-brand-800">{t("recordPayment")}</h2>
+        {paymentMode === "office" && <p className="rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-900">{t("officeHint")}</p>}
         <div className="flex gap-2">
           <Input type="number" min="1" step="0.01" value={payAmount} onChange={(e) => setPayAmount(e.target.value)} aria-label={t("amount")} />
           <select value={payMethod} onChange={(e) => setPayMethod(e.target.value)} aria-label={t("method")} className="h-10 rounded-md border bg-white px-2 text-sm">
@@ -216,7 +223,7 @@ export function OrderControls({ orderId, status, proofStatus = "none", deadline,
           variant="outline"
           className="w-full"
           disabled={!Number(payAmount) || pending}
-          onClick={() => exec(() => recordPaymentAction(orderId, { amount: Number(payAmount), method: payMethod }))}
+          onClick={() => exec(() => recordPaymentAction(orderId, { amount: Number(payAmount.replace(",", ".")), method: payMethod }))}
         >
           {pending ? <Loader2 className="animate-spin" /> : t("savePayment")}
         </Button>

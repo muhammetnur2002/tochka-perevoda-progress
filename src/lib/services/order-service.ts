@@ -12,6 +12,7 @@ import { issueOrderToken } from "@/lib/auth/order-access";
 import { notifyNewOrderToManagers } from "@/lib/notifications";
 import { logger } from "@/lib/logger";
 import { PROMO_REJECTION_MESSAGES, resolvePromo } from "@/lib/services/promo-service";
+import { loadPaymentPolicy } from "@/lib/payments";
 
 export interface CreateOrderResult {
   orderId: string;
@@ -162,6 +163,9 @@ export async function createOrder(
   const quote = await quoteOrder(input);
   const { items } = quote;
   const placement = await resolveOfficeAndLanguages(input, items);
+  if (input.paymentMode === "office" && !(await loadPaymentPolicy()).payInOffice) {
+    throw badRequest("Оплата в точке сейчас недоступна — оплатите онлайн");
+  }
 
   const clientId = await resolveClient(input, ctx.actorId);
 
@@ -182,6 +186,7 @@ export async function createOrder(
       user_id: ctx.actorId ?? null,
       status: "new",
       office_id: placement.officeId,
+      payment_mode: input.paymentMode,
       language_from: placement.languageFrom,
       language_to: placement.languageTo,
       subtotal: pricing.subtotal,

@@ -414,7 +414,23 @@
     "iPaid": "Ödedim",
     "mockNote": "Test modu: ödeme mock sağlayıcı ile simüle ediliyor (ЮKassa anahtarları tanımlı değil)",
     "noAccessTitle": "Ödemeye erişim yok",
-    "noAccessText": "Bağlantıyı siparişi verdiğiniz cihazda açın veya hesabınıza giriş yapın."
+    "noAccessText": "Bağlantıyı siparişi verdiğiniz cihazda açın veya hesabınıza giriş yapın.",
+    "modeTitle": "Nasıl ödemek istersiniz?",
+    "modeOnline": "Online öde",
+    "modeOnlinePrepay": "Şimdi {amount} (%{percent} ön ödeme), kalan {rest} — siparişi teslim alırken. SBP, QR kod veya banka kartı.",
+    "modeOnlineFull": "Tamamı {amount} — SBP, QR kod veya banka kartı.",
+    "modeOffice": "Ofiste öde",
+    "modeOfficeHint": "Belgeleri teslim ederken nakit veya kartla. Rusya'da verilmiş kartınız yoksa uygundur. Çalışmaya ödemeden sonra başlarız.",
+    "dueNow": "Şimdi ödenecek tutar",
+    "restLater": "Kalan tutar teslimde",
+    "officeTotal": "Ofiste ödeme",
+    "submitOffice": "Siparişi oluştur",
+    "officeCardTitle": "{amount} tutarını ofiste ödeyin",
+    "officeCardText": "Belgeleri teslim ederken nakit veya kartla — çalışana sipariş numarasını söyleyin. Çalışmaya ödemeden sonra başlarız.",
+    "requestExtra": "Sipariş için ek ödeme",
+    "requestBalance": "Kalan ödeme tutarı",
+    "requestPaid": "Bu bağlantı üzerinden ödeme zaten yapıldı. Teşekkürler!",
+    "requestCancelled": "Bu ödeme bağlantısı iptal edildi. Lütfen yöneticiyle iletişime geçin."
   },
   "success": {
     "paidTitle": "{number} siparişi ödendi",
@@ -423,7 +439,8 @@
     "pendingText": "Ödeme işleniyor — banka ödemeyi onaylar onaylamaz size bildirim göndereceğiz.",
     "keepNumber": "Sipariş numarasını saklayın — numara ve telefonla durumu sorgulayabilirsiniz.",
     "track": "Durumu takip et",
-    "myOrders": "Siparişlerim"
+    "myOrders": "Siparişlerim",
+    "officeText": "Siparişiniz alındı. Belgeleri teslim ederken ofiste ödeyin — çalışmaya ödemeden sonra başlarız."
   },
   "mockSbp": {
     "title": "Test SBP QR kodu",
@@ -555,7 +572,8 @@
     "proofChanges": "Düzeltme notları gönderildi. Düzeltilmiş sürümü bekliyoruz.",
     "proofApproved": "Çeviri onaylandı, belge yazdırılacak.",
     "proofOpen": "Çeviriyi kontrol et",
-    "proofView": "Aç"
+    "proofView": "Aç",
+    "payInOffice": "Belgeleri teslim ederken ofiste ödeme"
   },
   "profile": {
     "name": "Ad",

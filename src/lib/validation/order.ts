@@ -29,6 +29,8 @@ export const createOrderSchema = z
     languageFrom: uuidSchema.nullable().optional(),
     /** Точка приёма, куда клиент приносит документы / где получает заказ. */
     officeId: z.string({ required_error: "Выберите точку приёма" }).uuid("Выберите точку приёма"),
+    /** Как платит клиент: онлайн сейчас (предоплата/полностью по политике) или в точке при сдаче документов. */
+    paymentMode: z.enum(["online", "office"]).default("online"),
     /** Промокод; автоскидки применяются и без него. */
     promoCode: z.string().trim().max(40).optional().nullable(),
     deliveryType: deliveryTypeSchema.default("pickup"),

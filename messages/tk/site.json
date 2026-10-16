@@ -414,7 +414,23 @@
     "iPaid": "Men töledim",
     "mockNote": "Synag tertibi: töleg mock-üpjün ediji arkaly imitirlenýär (ЮKassa açarlary görkezilmedik)",
     "noAccessTitle": "Töleg sahypasyna rugsat ýok",
-    "noAccessText": "Salgyny sargyt beren enjamyňyzda açyň ýa-da şahsy otaga giriň."
+    "noAccessText": "Salgyny sargyt beren enjamyňyzda açyň ýa-da şahsy otaga giriň.",
+    "modeTitle": "Nädip tölemek isleýärsiňiz?",
+    "modeOnline": "Onlaýn töle",
+    "modeOnlinePrepay": "Ilki bilen {amount} (öňünden töleg {percent}%), galan {rest} — sargydy alanyňyzda. СБП, QR-kod ýa-da kart arkaly.",
+    "modeOnlineFull": "Doly {amount} — СБП, QR-kod ýa-da bank karty arkaly.",
+    "modeOffice": "Nokatda töle",
+    "modeOfficeHint": "Resminamalary tabşyranyňyzda nagt ýa-da kart bilen. Rus kartyňyz bolmasa, amatly. Işe tölegden soň başlarys.",
+    "dueNow": "Ilki bilen tölenmeli",
+    "restLater": "Galany sargydy alanyňyzda",
+    "officeTotal": "Nokatda töleg",
+    "submitOffice": "Sargyt ber",
+    "officeCardTitle": "{amount} nokatda töläň",
+    "officeCardText": "Resminamalary tabşyranyňyzda nagt ýa-da kart bilen — işgäre sargyt belgisini aýdyň. Işe tölegden soň başlarys.",
+    "requestExtra": "Sargyt boýunça goşmaça töleg",
+    "requestBalance": "Tölemeli galan mukdar",
+    "requestPaid": "Bu salgy boýunça töleg eýýäm edildi. Sag boluň!",
+    "requestCancelled": "Bu töleg salgysy ýatyryldy. Menejerden soraň."
   },
   "success": {
     "paidTitle": "Sargyt {number} tölendi",
@@ -423,7 +439,8 @@
     "pendingText": "Töleg işlenýär — bank tölegi tassyklan badyna size habar ibereris.",
     "keepNumber": "Sargyt belgisini ýatda saklaň — ony we telefon belgiňizi ulanyp ýagdaýy barlap bilersiňiz.",
     "track": "Ýagdaýy yzarla",
-    "myOrders": "Meniň sargytlarym"
+    "myOrders": "Meniň sargytlarym",
+    "officeText": "Sargyt kabul edildi. Resminamalary tabşyranyňyzda nokatda töläň — işe tölegden soň başlarys."
   },
   "mockSbp": {
     "title": "Synag СБП QR-kody",
@@ -555,7 +572,8 @@
     "proofChanges": "Bellikler iberildi. Düzedilen wersiýany garaşýarys.",
     "proofApproved": "Terjime tassyklandy, resminama çap ediler.",
     "proofOpen": "Terjimäni barla",
-    "proofView": "Aç"
+    "proofView": "Aç",
+    "payInOffice": "Resminamalary tabşyranyňyzda nokatda töleg"
   },
   "profile": {
     "name": "Adyňyz",

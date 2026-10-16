@@ -7,6 +7,7 @@ import type { Json, PaymentStatus } from "@/types/database.types";
 import { badRequest, conflict, notFound } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 import { notifyPaymentSucceeded } from "@/lib/notifications";
+import { dueNow, policyFromSettings, type PaymentPolicy } from "./policy";
 import type { PaymentProvider } from "./provider";
 import { YookassaProvider } from "./yookassa";
 import { MockPaymentProvider } from "./mock";
@@ -38,20 +39,23 @@ export interface PaymentCreateResult {
   provider: "yookassa" | "mock";
 }
 
-async function prepaymentPercent(): Promise<number> {
+/** Политика оплаты из настроек (предоплата, порог, оплата в точке). */
+export async function loadPaymentPolicy(): Promise<PaymentPolicy> {
   const admin = createAdminClient();
-  const { data } = await admin.from("settings").select("value").eq("key", "prepayment_percent").maybeSingle();
-  const v = Number(data?.value);
-  return Number.isFinite(v) && v > 0 && v <= 100 ? v : 100;
+  const { data } = await admin
+    .from("settings")
+    .select("key, value")
+    .in("key", ["prepayment_percent", "prepayment_threshold", "pay_in_office_enabled"]);
+  return policyFromSettings(Object.fromEntries((data ?? []).map((r) => [r.key, r.value])));
 }
 
-/** Создаёт платёж по заказу (сумма — остаток × процент предоплаты). */
+/** Создаёт платёж по заказу: сумма по политике оплаты либо по запросу из CRM (requestId). */
 export async function createOrderPayment(input: CreatePaymentInput): Promise<PaymentCreateResult> {
   const admin = createAdminClient();
 
   const { data: order } = await admin
     .from("orders")
-    .select("id, public_number, status, total_price, paid_amount, client:clients(phone, email), items:order_items(name_snapshot, quantity, price)")
+    .select("id, public_number, status, total_price, paid_amount, notary_fee, client:clients(phone, email), items:order_items(name_snapshot, quantity, price, service:services(is_notarial))")
     .eq("id", input.orderId)
     .maybeSingle();
   if (!order) throw notFound("Заказ не найден");
@@ -61,9 +65,23 @@ export async function createOrderPayment(input: CreatePaymentInput): Promise<Pay
   const remaining = Math.max(0, Math.round((total - Number(order.paid_amount)) * 100) / 100);
   if (remaining <= 0) throw conflict("Заказ уже оплачен");
 
-  const percent = await prepaymentPercent();
-  const isFirstPayment = Number(order.paid_amount) === 0;
-  const amount = isFirstPayment ? Math.round(remaining * percent) / 100 : remaining;
+  let amount: number;
+  if (input.requestId) {
+    // Ссылка из CRM: платим ровно запрошенную сумму (но не больше остатка)
+    const { data: request } = await admin
+      .from("payment_requests")
+      .select("id, amount, status")
+      .eq("id", input.requestId)
+      .eq("order_id", order.id)
+      .maybeSingle();
+    if (!request) throw notFound("Запрос на оплату не найден");
+    if (request.status !== "open") throw conflict("Эта ссылка на оплату уже недействительна");
+    amount = Math.min(Number(request.amount), remaining);
+  } else {
+    const hasNotarial = Number(order.notary_fee) > 0 || (order.items ?? []).some((i) => i.service?.is_notarial);
+    const policy = await loadPaymentPolicy();
+    amount = dueNow(policy, { total, paid: Number(order.paid_amount), hasNotarial }).amount;
+  }
   if (amount < 1) throw badRequest("Сумма платежа слишком мала");
 
   const provider = getPaymentProvider();
@@ -105,6 +123,7 @@ export async function createOrderPayment(input: CreatePaymentInput): Promise<Pay
       provider_payment_id: result.providerPaymentId,
       idempotence_key: idempotenceKey,
       confirmation_url: result.confirmationUrl,
+      request_id: input.requestId ?? null,
       raw: result.raw,
     })
     .select("id")
@@ -138,7 +157,7 @@ async function applyPaymentStatus(
   const admin = createAdminClient();
   const { data: current } = await admin
     .from("payments")
-    .select("id, order_id, amount, status")
+    .select("id, order_id, amount, status, request_id")
     .eq("provider_payment_id", providerPaymentId)
     .maybeSingle();
   if (!current) throw notFound("Платёж не найден");
@@ -156,6 +175,14 @@ async function applyPaymentStatus(
     .eq("id", current.id)
     .eq("status", current.status); // оптимистичная блокировка от гонки вебхуков
   if (error) throw error;
+
+  if (status === "succeeded" && current.request_id) {
+    await admin
+      .from("payment_requests")
+      .update({ status: "paid", paid_at: new Date().toISOString() })
+      .eq("id", current.request_id)
+      .eq("status", "open");
+  }
 
   if (status === "succeeded") {
     notifyPaymentSucceeded(current.order_id, Number(current.amount)).catch((e: unknown) =>
@@ -211,7 +238,7 @@ export async function confirmMockPayment(paymentId: string): Promise<void> {
   await applyPaymentStatus(payment.provider_payment_id, "succeeded", { mock: true, confirmed_at: new Date().toISOString() });
 }
 
-/** Менеджер: ручная отметка оплаты (наличные / счёт). */
+/** Менеджер: ручная отметка оплаты (наличные / терминал в точке / счёт). */
 export async function recordManualPayment(
   orderId: string,
   amount: number,

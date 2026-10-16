@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import type { DeliveryType, ServiceRow } from "@/types/database.types";
+import type { DeliveryType, PaymentMode, ServiceRow } from "@/types/database.types";
 import type { CartItem, UrgencyKey } from "@/types/domain";
 
 export interface CartOptions {
@@ -15,6 +15,8 @@ export interface CartOptions {
   officeId: string | null;
   /** Введённый клиентом промокод (проверяет и применяет сервер). */
   promoCode: string | null;
+  /** Как платит клиент: онлайн сейчас или в точке при сдаче документов. */
+  paymentMode: PaymentMode;
 }
 
 interface CartState extends CartOptions {
@@ -41,6 +43,7 @@ interface CartContextValue {
   setLanguageTo: (v: string | null) => void;
   setOfficeId: (v: string | null) => void;
   setPromoCode: (v: string | null) => void;
+  setPaymentMode: (v: PaymentMode) => void;
   resetOptions: () => void;
 }
 
@@ -57,6 +60,7 @@ const DEFAULT_OPTIONS: CartOptions = {
   languageTo: null,
   officeId: null,
   promoCode: null,
+  paymentMode: "online",
 };
 
 const EMPTY_STATE: CartState = { items: [], ...DEFAULT_OPTIONS };
@@ -128,6 +132,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         languageTo: state.languageTo,
         officeId: state.officeId,
         promoCode: state.promoCode,
+        paymentMode: state.paymentMode,
       },
       itemsCount: state.items.reduce((sum, i) => sum + i.quantity, 0),
       hydrated,
@@ -158,6 +163,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setLanguageTo: (languageTo) => setState((s) => ({ ...s, languageTo })),
       setOfficeId: (officeId) => setState((s) => ({ ...s, officeId })),
       setPromoCode: (promoCode) => setState((s) => ({ ...s, promoCode })),
+      setPaymentMode: (paymentMode) => setState((s) => ({ ...s, paymentMode })),
       resetOptions: () => setState((s) => ({ ...s, ...DEFAULT_OPTIONS })),
     };
   }, [state, hydrated]);

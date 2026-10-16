@@ -414,7 +414,23 @@
     "iPaid": "I have paid",
     "mockNote": "Test mode: payment is simulated by a mock provider (YooKassa keys are not set)",
     "noAccessTitle": "No access to payment",
-    "noAccessText": "Open the link on the same device you used to place the order, or log in to your account."
+    "noAccessText": "Open the link on the same device you used to place the order, or log in to your account.",
+    "modeTitle": "How would you like to pay?",
+    "modeOnline": "Pay online",
+    "modeOnlinePrepay": "Now {amount} (prepayment {percent}%), the remaining {rest} on receiving your order. SBP, QR code or card.",
+    "modeOnlineFull": "In full {amount} — SBP, QR code or bank card.",
+    "modeOffice": "Pay at our office",
+    "modeOfficeHint": "Cash or card when you hand over your documents. A good choice if you don't have a Russian card. We will start work after payment.",
+    "dueNow": "Due now",
+    "restLater": "Remainder on receiving your order",
+    "officeTotal": "Payment at the office",
+    "submitOffice": "Place order",
+    "officeCardTitle": "Pay {amount} at our office",
+    "officeCardText": "Cash or card when you hand over your documents — tell the staff your order number. We will start work after payment.",
+    "requestExtra": "Additional payment for the order",
+    "requestBalance": "Remaining balance",
+    "requestPaid": "This link has already been paid. Thank you!",
+    "requestCancelled": "This payment link has been cancelled. Please ask your manager."
   },
   "success": {
     "paidTitle": "Order {number} has been paid",
@@ -423,7 +439,8 @@
     "pendingText": "Your payment is being processed — we will notify you as soon as the bank confirms it.",
     "keepNumber": "Save your order number — you can use it with your phone number to check the status.",
     "track": "Track status",
-    "myOrders": "My orders"
+    "myOrders": "My orders",
+    "officeText": "Your order has been placed. Please pay for it at our office when you hand over your documents — we will start work after payment."
   },
   "mockSbp": {
     "title": "Test SBP QR code",
@@ -555,7 +572,8 @@
     "proofChanges": "Remarks sent. We are waiting for the corrected version.",
     "proofApproved": "Translation approved, the document will be printed.",
     "proofOpen": "Check translation",
-    "proofView": "Open"
+    "proofView": "Open",
+    "payInOffice": "Pay at the office when handing over documents"
   },
   "profile": {
     "name": "Name",

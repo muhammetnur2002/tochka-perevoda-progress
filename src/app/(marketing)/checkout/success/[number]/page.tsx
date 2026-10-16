@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { CheckCircle2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { OfficePaymentCard } from "@/components/payments/office-payment-card";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
@@ -18,11 +19,13 @@ export default async function CheckoutSuccessPage({
   searchParams,
 }: {
   params: { number: string };
-  searchParams: { paid?: string };
+  searchParams: { paid?: string; order?: string; office?: string };
 }) {
   const t = await getTranslations("success");
   const number = decodeURIComponent(params.number);
   const paid = searchParams.paid === "1";
+  // «Оплата в точке»: онлайн платить не нужно — показываем, сколько и куда принести
+  const officeOrder = searchParams.office === "1" && /^[0-9a-f-]{36}$/i.test(searchParams.order ?? "") ? searchParams.order! : null;
   const statusHref = `/status?number=${encodeURIComponent(number)}`;
 
   return (
@@ -37,7 +40,10 @@ export default async function CheckoutSuccessPage({
       <h1 className="text-3xl font-extrabold text-brand-800 md:text-4xl">
         {paid ? t("paidTitle", { number }) : t("createdTitle", { number })}
       </h1>
-      <p className="mt-4 text-lg leading-relaxed text-slate-700">{paid ? t("paidText") : t("pendingText")}</p>
+      <p className="mt-4 text-lg leading-relaxed text-slate-700">
+        {paid ? t("paidText") : officeOrder ? t("officeText") : t("pendingText")}
+      </p>
+      {officeOrder && <OfficePaymentCard orderId={officeOrder} />}
       <p className="mt-2 text-sm text-muted-foreground">{t("keepNumber")}</p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Button asChild size="lg">

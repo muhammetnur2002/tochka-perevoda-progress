@@ -12,14 +12,19 @@ export default function PayPage({
   searchParams,
 }: {
   params: { orderId: string };
-  searchParams: { method?: string };
+  searchParams: { method?: string; request?: string; token?: string };
 }) {
   const method = ["sbp", "qr", "card"].includes(searchParams.method ?? "")
     ? (searchParams.method as "sbp" | "qr" | "card")
     : "sbp";
   return (
     <div className="container max-w-3xl py-10">
-      <PayView orderId={params.orderId} method={method} />
+      <PayView
+        orderId={params.orderId}
+        method={method}
+        requestId={/^[0-9a-f-]{36}$/i.test(searchParams.request ?? "") ? searchParams.request! : null}
+        linkToken={searchParams.token?.slice(0, 200) ?? null}
+      />
     </div>
   );
 }

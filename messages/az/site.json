@@ -414,7 +414,23 @@
     "iPaid": "Ödədim",
     "mockNote": "Test rejimi: ödəniş mock-provayder tərəfindən imitasiya edilir (ЮKassa açarları təyin edilməyib)",
     "noAccessTitle": "Ödənişə giriş yoxdur",
-    "noAccessText": "Linki sifariş verdiyiniz cihazda açın və ya şəxsi kabinetə daxil olun."
+    "noAccessText": "Linki sifariş verdiyiniz cihazda açın və ya şəxsi kabinetə daxil olun.",
+    "modeTitle": "Necə ödəmək istəyirsiniz?",
+    "modeOnline": "Onlayn ödə",
+    "modeOnlinePrepay": "İndi {amount} (avans {percent}%), qalan {rest} — sifarişi təhvil alanda. SBP, QR-kod və ya kart.",
+    "modeOnlineFull": "Tam {amount} — SBP, QR-kod və ya bank kartı ilə.",
+    "modeOffice": "Ofisdə ödə",
+    "modeOfficeHint": "Sənədləri təhvil verəndə nağd və ya kartla. Rusiya kartınız yoxdursa, uyğundur. İşə ödənişdən sonra başlayacağıq.",
+    "dueNow": "İndi ödənilməli",
+    "restLater": "Qalan məbləğ təhvil alanda",
+    "officeTotal": "Ofisdə ödəniş",
+    "submitOffice": "Sifarişi rəsmiləşdir",
+    "officeCardTitle": "{amount} ofisdə ödəyin",
+    "officeCardText": "Sənədləri təhvil verəndə nağd və ya kartla — əməkdaşa sifariş nömrəsini deyin. İşə ödənişdən sonra başlayacağıq.",
+    "requestExtra": "Sifariş üzrə əlavə ödəniş",
+    "requestBalance": "Qalan ödəniş",
+    "requestPaid": "Bu link üzrə artıq ödənilib. Təşəkkür edirik!",
+    "requestCancelled": "Bu ödəniş linki ləğv edilib. Menecerlə dəqiqləşdirin."
   },
   "success": {
     "paidTitle": "{number} sifarişi ödənildi",
@@ -423,7 +439,8 @@
     "pendingText": "Ödəniş emal olunur — bank ödənişi təsdiq edən kimi bildiriş göndərəcəyik.",
     "keepNumber": "Sifariş nömrəsini yadda saxlayın — onunla və telefonla statusu yoxlamaq olar.",
     "track": "Statusu izlə",
-    "myOrders": "Sifarişlərim"
+    "myOrders": "Sifarişlərim",
+    "officeText": "Sifariş qəbul edildi. Sənədləri təhvil verəndə ofisdə ödəyin — işə ödənişdən sonra başlayacağıq."
   },
   "mockSbp": {
     "title": "Test SBP QR-kodu",
@@ -555,7 +572,8 @@
     "proofChanges": "Qeydlər göndərildi. Düzəldilmiş versiyanı gözləyirik.",
     "proofApproved": "Tərcümə təsdiqlənib, sənəd çap olunacaq.",
     "proofOpen": "Tərcüməni yoxla",
-    "proofView": "Aç"
+    "proofView": "Aç",
+    "payInOffice": "Sənədlərin təhvili zamanı ofisdə ödəniş"
   },
   "proof": {
     "title": "Tərcümənin yoxlanılması",

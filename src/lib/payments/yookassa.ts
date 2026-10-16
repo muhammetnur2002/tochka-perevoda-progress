@@ -3,8 +3,11 @@ import type { Json, PaymentStatus } from "@/types/database.types";
 import type {
   CreatePaymentParams,
   CreatePaymentResult,
+  CreateRefundParams,
   PaymentProvider,
   ProviderPaymentStatus,
+  ProviderRefund,
+  RefundStatus,
 } from "./provider";
 
 const API_BASE = "https://api.yookassa.ru/v3";
@@ -25,6 +28,18 @@ interface YookassaPaymentResponse {
     confirmation_data?: string;
   };
 }
+
+interface YookassaRefundResponse {
+  id: string;
+  status: "pending" | "succeeded" | "canceled";
+  amount?: YookassaAmount;
+}
+
+const REFUND_STATUS_MAP: Record<string, RefundStatus> = {
+  pending: "pending",
+  succeeded: "succeeded",
+  canceled: "canceled",
+};
 
 const STATUS_MAP: Record<string, PaymentStatus> = {
   pending: "pending",
@@ -113,6 +128,35 @@ export class YookassaProvider implements PaymentProvider {
       status: STATUS_MAP[res.status] ?? "pending",
       confirmationUrl: res.confirmation?.confirmation_url ?? null,
       confirmationData: res.confirmation?.confirmation_data ?? null,
+      raw: res as unknown as Json,
+    };
+  }
+
+  /** Возврат по платежу (полный или частичный). Чек возврата формирует онлайн-касса ЮKassa. */
+  async createRefund(params: CreateRefundParams): Promise<ProviderRefund> {
+    const res = await this.request<YookassaRefundResponse>("/refunds", {
+      method: "POST",
+      headers: { "Idempotence-Key": params.idempotenceKey },
+      body: JSON.stringify({
+        payment_id: params.providerPaymentId,
+        amount: { value: params.amount.toFixed(2), currency: params.currency },
+        description: params.description.slice(0, 250),
+      }),
+    });
+    return {
+      providerRefundId: res.id,
+      status: REFUND_STATUS_MAP[res.status] ?? "pending",
+      amount: res.amount ? Number(res.amount.value) : null,
+      raw: res as unknown as Json,
+    };
+  }
+
+  async getRefund(providerRefundId: string): Promise<ProviderRefund> {
+    const res = await this.request<YookassaRefundResponse>(`/refunds/${providerRefundId}`, { method: "GET" });
+    return {
+      providerRefundId: res.id,
+      status: REFUND_STATUS_MAP[res.status] ?? "pending",
+      amount: res.amount ? Number(res.amount.value) : null,
       raw: res as unknown as Json,
     };
   }
