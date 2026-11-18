@@ -7,7 +7,7 @@ import { TelegramProvider } from "@/components/telegram/telegram-provider";
 import { TgShell } from "@/components/telegram/tg-shell";
 
 export const metadata: Metadata = {
-  title: "Точка Перевода — Telegram",
+  title: "Terjime hyzmatlary — Telegram",
   robots: { index: false, follow: false },
 };
 
@@ -20,7 +20,7 @@ export const viewport: Viewport = {
 
 /**
  * Telegram Mini App: без шапки и подвала сайта, своя оболочка с вкладками.
- * Mini App работает только на русском — общие компоненты получают русские тексты
+ * Mini App работает на основном языке — общие компоненты получают туркменские тексты
  * независимо от выбранного на сайте языка.
  */
 export default async function TgLayout({ children }: { children: React.ReactNode }) {

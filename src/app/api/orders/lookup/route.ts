@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, clientIp } from "@/lib/rate-limit";
 import { errorResponse, parseJson, tooManyRequests } from "@/lib/api";
-import { isValidRuPhone, normalizePhone } from "@/lib/format/phone";
+import { isValidTmPhone, normalizePhone } from "@/lib/format/phone";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +13,7 @@ const lookupSchema = z.object({
     .trim()
     .transform((v) => v.toUpperCase().replace(/^TP/, "ТП"))
     .pipe(z.string().regex(/^ТП-\d{4}-\d{5,7}$/, "Номер вида ТП-2026-000123")),
-  phone: z.string().trim().refine(isValidRuPhone, "Введите телефон, указанный в заказе"),
+  phone: z.string().trim().refine(isValidTmPhone, "Введите телефон, указанный в заказе"),
 });
 
 /**
@@ -24,7 +24,14 @@ const lookupSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const ip = clientIp(req.headers);
-    if (!(await checkRateLimit({ bucket: "order-lookup", identifier: ip, limit: 5, windowMs: 10 * 60_000 }))) {
+    if (
+      !(await checkRateLimit({
+        bucket: "order-lookup",
+        identifier: ip,
+        limit: 5,
+        windowMs: 10 * 60_000,
+      }))
+    ) {
       return tooManyRequests();
     }
     const { number, phone } = await parseJson(req, lookupSchema);
@@ -33,7 +40,7 @@ export async function POST(req: NextRequest) {
     const { data: order, error } = await admin
       .from("orders")
       .select(
-        "id, public_number, status, total_price, paid_amount, deadline, delivery_type, created_at, client:clients(phone), items:order_items(name_snapshot, quantity), office:offices(address, hours, phone)",
+        "id, currency, public_number, status, total_price, paid_amount, deadline, delivery_type, created_at, client:clients(phone), items:order_items(name_snapshot, quantity), office:offices(address, hours, phone)",
       )
       .eq("public_number", number)
       .maybeSingle();
@@ -53,12 +60,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       order: {
         public_number: order.public_number,
+        currency: order.currency,
         status: order.status,
         total_price: order.total_price,
         paid: Number(order.paid_amount) >= Number(order.total_price),
         deadline: order.deadline,
         delivery_type: order.delivery_type,
-        office: order.office,
+        office: order.office
+          ? {
+              ...order.office,
+              phone:
+                order.office.phone && isValidTmPhone(order.office.phone)
+                  ? order.office.phone
+                  : null,
+            }
+          : null,
         created_at: order.created_at,
         items: order.items ?? [],
         history: history ?? [],

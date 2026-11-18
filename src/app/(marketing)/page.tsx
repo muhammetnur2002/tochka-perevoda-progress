@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import {
@@ -64,10 +63,11 @@ export default async function HomePage() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     name: COMPANY.name,
-    image: "/brand/logo.png",
-    telephone: COMPANY.phone,
-    priceRange: "₽₽",
-    address: (offices.length ? offices : [{ address: COMPANY.addressShort, city: COMPANY.city }]).map((o) => ({
+    priceRange: "TMT",
+    address: (offices.length
+      ? offices
+      : [{ address: COMPANY.addressShort, city: COMPANY.city }]
+    ).map((o) => ({
       "@type": "PostalAddress",
       streetAddress: o.address,
       addressLocality: o.city,
@@ -77,20 +77,27 @@ export default async function HomePage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-brand-900 text-white">
         <div
           className="pointer-events-none absolute inset-0 opacity-10"
-          style={{ backgroundImage: "radial-gradient(circle at 80% 20%, #d4a02a 0, transparent 45%)" }}
+          style={{
+            backgroundImage: "radial-gradient(circle at 80% 20%, #d4a02a 0, transparent 45%)",
+          }}
         />
         <div className="container relative grid items-center gap-10 py-16 md:grid-cols-2 md:py-24">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-gold-400/40 bg-gold-400/10 px-3 py-1 text-sm text-gold-200">
               <MapPin className="h-4 w-4" /> {t("badge")}
             </div>
-            <h1 className="text-balance text-4xl font-bold leading-tight md:text-5xl">{t("heroTitle")}</h1>
+            <h1 className="text-balance text-4xl font-bold leading-tight md:text-5xl">
+              {t("heroTitle")}
+            </h1>
             <p className="max-w-xl text-lg text-brand-100">{t("heroText")}</p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="xl" variant="gold">
@@ -124,8 +131,8 @@ export default async function HomePage() {
           </div>
 
           <div className="flex justify-center md:justify-end">
-            <div className="rounded-2xl bg-white/95 p-6 shadow-2xl">
-              <Image src="/brand/logo.png" alt={t("logoAlt")} width={320} height={280} priority className="h-auto w-auto" />
+            <div aria-hidden="true" className="h-48 w-full">
+              <span aria-hidden="true" className="inline-block h-10 w-10 shrink-0" />
             </div>
           </div>
         </div>
@@ -212,7 +219,10 @@ export default async function HomePage() {
                 {o.phone && (
                   <p className="flex items-center gap-2 text-sm">
                     <Phone className="h-4 w-4 text-gold-500" />
-                    <a href={`tel:${o.phone.replace(/[^\d+]/g, "")}`} className="hover:text-brand-700">
+                    <a
+                      href={`tel:${o.phone.replace(/[^\d+]/g, "")}`}
+                      className="hover:text-brand-700"
+                    >
                       {o.phone}
                     </a>
                   </p>

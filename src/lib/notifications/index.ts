@@ -41,11 +41,11 @@ const RETRY_DELAY_MS = 15 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
 
 const SOURCE_LABELS: Record<string, string> = {
-  web: "сайт",
+  web: "saýt",
   mini_app: "Mini App",
-  bot: "бот",
-  admin: "админка",
-  walkin: "офис",
+  bot: "bot",
+  admin: "CRM",
+  walkin: "kabul ediş nokady",
 };
 
 interface Recipient {
@@ -61,7 +61,11 @@ interface Target {
 }
 
 /** Отправка в конкретный канал. Возвращает id сообщения у провайдера. */
-export async function deliver(channel: NotificationChannel, address: string, msg: Message): Promise<string | null> {
+export async function deliver(
+  channel: NotificationChannel,
+  address: string,
+  msg: Message,
+): Promise<string | null> {
   switch (channel) {
     case "telegram":
       return sendTelegram(address, msg.text);
@@ -82,20 +86,24 @@ async function record(
   result: { ok: true; providerId: string | null } | { ok: false; error: string },
 ): Promise<string | null> {
   const admin = createAdminClient();
-  const { data } = await admin.from("notifications").insert({
-    user_id: userId,
-    order_id: orderId,
-    channel: target.channel,
-    recipient: target.address,
-    subject: msg.subject,
-    message: msg.text,
-    status: result.ok ? "sent" : "failed",
-    provider_id: result.ok ? result.providerId : null,
-    attempts: 1,
-    sent_at: result.ok ? new Date().toISOString() : null,
-    last_error: result.ok ? null : result.error,
-    next_attempt_at: new Date(Date.now() + RETRY_DELAY_MS).toISOString(),
-  }).select("id").single();
+  const { data } = await admin
+    .from("notifications")
+    .insert({
+      user_id: userId,
+      order_id: orderId,
+      channel: target.channel,
+      recipient: target.address,
+      subject: msg.subject,
+      message: msg.text,
+      status: result.ok ? "sent" : "failed",
+      provider_id: result.ok ? result.providerId : null,
+      attempts: 1,
+      sent_at: result.ok ? new Date().toISOString() : null,
+      last_error: result.ok ? null : result.error,
+      next_attempt_at: new Date(Date.now() + RETRY_DELAY_MS).toISOString(),
+    })
+    .select("id")
+    .single();
   return data?.id ?? null;
 }
 
@@ -106,7 +114,8 @@ async function deliverWithFallback(
   msg: Message,
 ): Promise<NotificationChannel | null> {
   const targets: Target[] = [];
-  if (recipient.telegramId) targets.push({ channel: "telegram", address: String(recipient.telegramId) });
+  if (recipient.telegramId)
+    targets.push({ channel: "telegram", address: String(recipient.telegramId) });
   if (recipient.phone) targets.push({ channel: "sms", address: recipient.phone });
   if (recipient.email) targets.push({ channel: "email", address: recipient.email });
 
@@ -117,12 +126,18 @@ async function deliverWithFallback(
       await record(orderId, recipient.userId, target, msg, { ok: true, providerId });
       if (failedIds.length) {
         // доставлено другим каналом — неудачные попытки не повторяем
-        await createAdminClient().from("notifications").update({ attempts: MAX_ATTEMPTS }).in("id", failedIds);
+        await createAdminClient()
+          .from("notifications")
+          .update({ attempts: MAX_ATTEMPTS })
+          .in("id", failedIds);
       }
       return target.channel;
     } catch (err) {
       const error = (err as Error).message;
-      logger.warn("Канал уведомления недоступен, пробуем следующий", { channel: target.channel, error });
+      logger.warn("Канал уведомления недоступен, пробуем следующий", {
+        channel: target.channel,
+        error,
+      });
       const id = await record(orderId, recipient.userId, target, msg, { ok: false, error });
       if (id) failedIds.push(id);
     }
@@ -134,14 +149,20 @@ async function orderRecipient(orderId: string) {
   const admin = createAdminClient();
   const { data: order } = await admin
     .from("orders")
-    .select("id, user_id, public_number, status, delivery_type, total_price, client:clients(phone, email), office:offices(address, hours)")
+    .select(
+      "id, currency, user_id, public_number, status, delivery_type, total_price, client:clients(phone, email), office:offices(address, hours)",
+    )
     .eq("id", orderId)
     .maybeSingle();
   if (!order) return null;
 
   let telegramId: number | null = null;
   if (order.user_id) {
-    const { data: u } = await admin.from("users").select("telegram_id").eq("id", order.user_id).maybeSingle();
+    const { data: u } = await admin
+      .from("users")
+      .select("telegram_id")
+      .eq("id", order.user_id)
+      .maybeSingle();
     telegramId = u?.telegram_id ?? null;
   }
   const recipient: Recipient = {
@@ -153,9 +174,16 @@ async function orderRecipient(orderId: string) {
   return { order, recipient };
 }
 
-async function notificationSettings(): Promise<{ client_status_change: boolean; client_ready: boolean }> {
+async function notificationSettings(): Promise<{
+  client_status_change: boolean;
+  client_ready: boolean;
+}> {
   const admin = createAdminClient();
-  const { data } = await admin.from("settings").select("value").eq("key", "notifications").maybeSingle();
+  const { data } = await admin
+    .from("settings")
+    .select("value")
+    .eq("key", "notifications")
+    .maybeSingle();
   const v = (data?.value ?? {}) as Record<string, unknown>;
   return {
     client_status_change: v.client_status_change !== false,
@@ -185,7 +213,11 @@ export async function notifyOrderStatusChange(orderId: string): Promise<void> {
 export async function notifyPaymentSucceeded(orderId: string, amount: number): Promise<void> {
   const found = await orderRecipient(orderId);
   if (!found) return;
-  await deliverWithFallback(found.order.id, found.recipient, paymentReceivedMessage(found.order.public_number, formatMoney(amount)));
+  await deliverWithFallback(
+    found.order.id,
+    found.recipient,
+    paymentReceivedMessage(found.order.public_number, formatMoney(amount, found.order.currency)),
+  );
 }
 
 /** Telegram chat id менеджеров: из env и из профилей с ролью manager/admin. */
@@ -222,7 +254,9 @@ export async function notifyNewOrderToManagers(orderId: string): Promise<void> {
   const admin = createAdminClient();
   const { data: order } = await admin
     .from("orders")
-    .select("id, public_number, total_price, source, payment_mode, items:order_items(name_snapshot, quantity)")
+    .select(
+      "id, currency, public_number, total_price, source, payment_mode, items:order_items(name_snapshot, quantity)",
+    )
     .eq("id", orderId)
     .maybeSingle();
   if (!order) return;
@@ -231,14 +265,23 @@ export async function notifyNewOrderToManagers(orderId: string): Promise<void> {
     (order.payment_mode === "office" ? "\n💵 Оплата в точке при сдаче документов" : "");
   await broadcastToManagers(
     order.id,
-    newOrderMessage(order.public_number, formatMoney(Number(order.total_price)), SOURCE_LABELS[order.source] ?? order.source, summary),
+    newOrderMessage(
+      order.public_number,
+      formatMoney(Number(order.total_price), order.currency),
+      SOURCE_LABELS[order.source] ?? order.source,
+      summary,
+    ),
   );
 }
 
 /** Менеджерам: сообщение клиента в чате заказа. */
 export async function notifyChatMessage(orderId: string, body: string): Promise<void> {
   const admin = createAdminClient();
-  const { data: order } = await admin.from("orders").select("public_number").eq("id", orderId).maybeSingle();
+  const { data: order } = await admin
+    .from("orders")
+    .select("public_number")
+    .eq("id", orderId)
+    .maybeSingle();
   if (!order) return;
   await broadcastToManagers(orderId, chatMessageToManager(order.public_number, body));
 }
@@ -260,7 +303,12 @@ export async function notifyPaymentRequest(
   const channel = await deliverWithFallback(
     orderId,
     found.recipient,
-    paymentRequestMessage(found.order.public_number, formatMoney(Number(request.amount)), request.reason, url),
+    paymentRequestMessage(
+      found.order.public_number,
+      formatMoney(Number(request.amount), found.order.currency),
+      request.reason,
+      url,
+    ),
   );
   return { url, delivered: channel !== null };
 }
@@ -269,7 +317,11 @@ export async function notifyPaymentRequest(
 export async function notifyRefund(orderId: string, amount: number): Promise<void> {
   const found = await orderRecipient(orderId);
   if (!found) return;
-  await deliverWithFallback(orderId, found.recipient, refundMessage(found.order.public_number, formatMoney(amount)));
+  await deliverWithFallback(
+    orderId,
+    found.recipient,
+    refundMessage(found.order.public_number, formatMoney(amount, found.order.currency)),
+  );
 }
 
 /** Клиенту: перевод готов к проверке (ссылка с токеном — работает и без входа в кабинет). */
@@ -279,14 +331,26 @@ export async function notifyProofRequested(orderId: string, reminder = false): P
   const site = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
   const token = issueOrderToken(orderId, Date.now(), PROOF_LINK_TTL_DAYS * 24 * 60 * 60 * 1000);
   const url = `${site}/proof/${orderId}?token=${token}`;
-  const channel = await deliverWithFallback(orderId, found.recipient, proofRequestMessage(found.order.public_number, url, reminder));
+  const channel = await deliverWithFallback(
+    orderId,
+    found.recipient,
+    proofRequestMessage(found.order.public_number, url, reminder),
+  );
   return channel !== null;
 }
 
 /** Менеджерам: клиент подтвердил перевод или оставил замечания. */
-export async function notifyProofDecision(orderId: string, kind: "approved" | "changes", count = 0): Promise<void> {
+export async function notifyProofDecision(
+  orderId: string,
+  kind: "approved" | "changes",
+  count = 0,
+): Promise<void> {
   const admin = createAdminClient();
-  const { data: order } = await admin.from("orders").select("public_number").eq("id", orderId).maybeSingle();
+  const { data: order } = await admin
+    .from("orders")
+    .select("public_number")
+    .eq("id", orderId)
+    .maybeSingle();
   if (!order) return;
   await broadcastToManagers(orderId, proofDecisionToManager(order.public_number, kind, count));
 }
@@ -327,8 +391,11 @@ export async function notifyDeadlineApproaching(): Promise<number> {
   const { data: rows } = await admin.from("v_deadline_approaching").select("*");
   let count = 0;
   for (const row of rows ?? []) {
-    if (await alreadyNotified(row.id, "Дедлайн")) continue;
-    await broadcastToManagers(row.id, deadlineWarning(row.public_number, row.deadline ? formatDateTime(row.deadline) : "скоро"));
+    if (await alreadyNotified(row.id, "möhleti")) continue;
+    await broadcastToManagers(
+      row.id,
+      deadlineWarning(row.public_number, row.deadline ? formatDateTime(row.deadline) : "скоро"),
+    );
     count += 1;
   }
   return count;
@@ -340,9 +407,14 @@ export async function notifyUnclaimedOrders(): Promise<number> {
   const { data: rows } = await admin.from("v_unclaimed_orders").select("*");
   let count = 0;
   for (const row of rows ?? []) {
-    if (await alreadyNotified(row.id, "ждёт вас")) continue;
+    if (await alreadyNotified(row.id, "size garaşýar")) continue;
     const found = await orderRecipient(row.id);
-    if (found) await deliverWithFallback(row.id, found.recipient, pickupReminder(row.public_number, found.order.office));
+    if (found)
+      await deliverWithFallback(
+        row.id,
+        found.recipient,
+        pickupReminder(row.public_number, found.order.office),
+      );
     const days = Math.floor((Date.now() - new Date(row.updated_at).getTime()) / 86_400_000);
     await broadcastToManagers(row.id, unclaimedManagerWarning(row.public_number, days));
     count += 1;
@@ -364,7 +436,9 @@ async function alreadyNotified(orderId: string, subjectPart: string): Promise<bo
 }
 
 /** Воркер очереди: повторяет неудачные отправки (вызывается cron'ом). */
-export async function retryFailedNotifications(limit = 100): Promise<{ sent: number; failed: number }> {
+export async function retryFailedNotifications(
+  limit = 100,
+): Promise<{ sent: number; failed: number }> {
   const admin = createAdminClient();
   const { data: pending } = await admin
     .from("notifications")
@@ -380,10 +454,18 @@ export async function retryFailedNotifications(limit = 100): Promise<{ sent: num
   for (const n of pending ?? []) {
     if (!n.recipient) continue;
     try {
-      const providerId = await deliver(n.channel, n.recipient, { subject: n.subject ?? "", text: n.message });
+      const providerId = await deliver(n.channel, n.recipient, {
+        subject: n.subject ?? "",
+        text: n.message,
+      });
       await admin
         .from("notifications")
-        .update({ status: "sent", provider_id: providerId, sent_at: new Date().toISOString(), attempts: n.attempts + 1 })
+        .update({
+          status: "sent",
+          provider_id: providerId,
+          sent_at: new Date().toISOString(),
+          attempts: n.attempts + 1,
+        })
         .eq("id", n.id);
       sent += 1;
     } catch (err) {

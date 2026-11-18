@@ -5,7 +5,7 @@ import { MANAGER_ROLES } from "@/lib/auth/roles";
 import { AdminShell } from "@/components/admin/admin-shell";
 
 export const metadata: Metadata = {
-  title: { default: "CRM", template: "%s · CRM «Точка Перевода»" },
+  title: { default: "CRM", template: "%s · CRM «Terjime hyzmatlary»" },
   robots: { index: false, follow: false },
 };
 
@@ -15,6 +15,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const profile = await requireRole(MANAGER_ROLES, "/admin");
   const t = await getTranslations("roles");
   return (
-    <AdminShell user={{ name: profile.name ?? profile.email ?? t(profile.role), role: profile.role }}>{children}</AdminShell>
+    <AdminShell
+      user={{ name: profile.name ?? profile.email ?? t(profile.role), role: profile.role }}
+    >
+      {children}
+    </AdminShell>
   );
 }

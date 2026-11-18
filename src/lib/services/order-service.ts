@@ -101,7 +101,13 @@ async function resolveOfficeAndLanguages(
 
   if (!input.languageFrom) throw badRequest("Укажите язык оригинала документа");
   const [{ data: from }, { data: ru }] = await Promise.all([
-    admin.from("languages").select("id").eq("id", input.languageFrom).eq("is_source", true).eq("is_active", true).maybeSingle(),
+    admin
+      .from("languages")
+      .select("id")
+      .eq("id", input.languageFrom)
+      .eq("is_source", true)
+      .eq("is_active", true)
+      .maybeSingle(),
     admin.from("languages").select("id").eq("code", "ru").maybeSingle(),
   ]);
   if (!from) throw badRequest("С этого языка мы пока не переводим");
@@ -114,7 +120,12 @@ async function resolveClient(input: CreateOrderInput, actorId?: string): Promise
   const phone = normalizePhone(input.phone);
 
   if (actorId) {
-    const { data: own } = await admin.from("clients").select("id").eq("user_id", actorId).limit(1).maybeSingle();
+    const { data: own } = await admin
+      .from("clients")
+      .select("id")
+      .eq("user_id", actorId)
+      .limit(1)
+      .maybeSingle();
     if (own) return own.id;
   }
 
@@ -186,6 +197,7 @@ export async function createOrder(
       user_id: ctx.actorId ?? null,
       status: "new",
       office_id: placement.officeId,
+      currency: "TMT",
       payment_mode: input.paymentMode,
       language_from: placement.languageFrom,
       language_to: placement.languageTo,
@@ -200,13 +212,14 @@ export async function createOrder(
       total_price: pricing.total,
       deadline: pricing.deadline ? pricing.deadline.toISOString() : null,
       delivery_type: input.deliveryType,
-      delivery_address: input.deliveryType === "delivery" ? input.deliveryAddress ?? null : null,
-      comment: [input.comment, input.telegram ? `Telegram: ${input.telegram}` : null]
-        .filter(Boolean)
-        .join("\n") || null,
+      delivery_address: input.deliveryType === "delivery" ? (input.deliveryAddress ?? null) : null,
+      comment:
+        [input.comment, input.telegram ? `Telegram: ${input.telegram}` : null]
+          .filter(Boolean)
+          .join("\n") || null,
       source: input.source,
     })
-    .select("id, public_number, total_price, deadline")
+    .select("id, currency, public_number, total_price, deadline")
     .single();
   if (orderError) throw orderError;
 
@@ -253,10 +266,18 @@ export async function createOrder(
   }
 
   // Итог пересчитан триггером recalc_order_totals — читаем фактическое значение
-  const { data: fresh } = await admin.from("orders").select("total_price").eq("id", order.id).single();
+  const { data: fresh } = await admin
+    .from("orders")
+    .select("total_price")
+    .eq("id", order.id)
+    .single();
   const total = Number(fresh?.total_price ?? order.total_price);
   if (Math.abs(total - pricing.total) > 0.01) {
-    logger.warn("Расхождение цены сервера и БД", { orderId: order.id, server: pricing.total, db: total });
+    logger.warn("Расхождение цены сервера и БД", {
+      orderId: order.id,
+      server: pricing.total,
+      db: total,
+    });
   }
 
   notifyNewOrderToManagers(order.id).catch((e: unknown) =>

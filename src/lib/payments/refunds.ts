@@ -22,16 +22,26 @@ import type { ProviderRefund } from "./provider";
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
 /** После успешного возврата: платёж возвращён целиком → статус refunded; уведомляем клиента. */
-async function finalizeSucceeded(refund: Pick<RefundRow, "id" | "payment_id" | "order_id" | "amount">): Promise<void> {
+async function finalizeSucceeded(
+  refund: Pick<RefundRow, "id" | "payment_id" | "order_id" | "amount">,
+): Promise<void> {
   const admin = createAdminClient();
   const [{ data: payment }, { data: refunds }] = await Promise.all([
     admin.from("payments").select("id, amount, status").eq("id", refund.payment_id).maybeSingle(),
-    admin.from("refunds").select("amount").eq("payment_id", refund.payment_id).eq("status", "succeeded"),
+    admin
+      .from("refunds")
+      .select("amount")
+      .eq("payment_id", refund.payment_id)
+      .eq("status", "succeeded"),
   ]);
   if (payment && payment.status === "succeeded") {
     const total = (refunds ?? []).reduce((sum, r) => sum + Number(r.amount), 0);
     if (total >= Number(payment.amount) - 0.009) {
-      await admin.from("payments").update({ status: "refunded" }).eq("id", payment.id).eq("status", "succeeded");
+      await admin
+        .from("payments")
+        .update({ status: "refunded" })
+        .eq("id", payment.id)
+        .eq("status", "succeeded");
     }
   }
   notifyRefund(refund.order_id, Number(refund.amount)).catch((e: unknown) =>
@@ -44,7 +54,11 @@ export async function refundableAmount(paymentId: string): Promise<number> {
   const admin = createAdminClient();
   const [{ data: payment }, { data: refunds }] = await Promise.all([
     admin.from("payments").select("amount").eq("id", paymentId).maybeSingle(),
-    admin.from("refunds").select("amount").eq("payment_id", paymentId).in("status", ["pending", "succeeded"]),
+    admin
+      .from("refunds")
+      .select("amount")
+      .eq("payment_id", paymentId)
+      .in("status", ["pending", "succeeded"]),
   ]);
   if (!payment) return 0;
   return round2(Number(payment.amount) - (refunds ?? []).reduce((s, r) => s + Number(r.amount), 0));
@@ -59,7 +73,9 @@ export async function refundPayment(
   const admin = createAdminClient();
   const { data: payment } = await admin
     .from("payments")
-    .select("id, order_id, amount, status, provider, provider_payment_id, order:orders(public_number)")
+    .select(
+      "id, currency, order_id, amount, status, provider, provider_payment_id, order:orders(public_number)",
+    )
     .eq("id", paymentId)
     .maybeSingle();
   if (!payment) throw notFound("Платёж не найден");
@@ -68,7 +84,9 @@ export async function refundPayment(
   const amount = round2(input.amount);
   const refundable = await refundableAmount(paymentId);
   if (amount > refundable + 0.009) {
-    throw badRequest(`Можно вернуть не больше ${refundable.toFixed(2)} ₽ по этому платежу`);
+    throw badRequest(
+      `Можно вернуть не больше ${refundable.toFixed(2)} ${payment.currency} по этому платежу`,
+    );
   }
 
   let result: ProviderRefund;
@@ -82,7 +100,7 @@ export async function refundPayment(
     result = await yk.createRefund({
       providerPaymentId: payment.provider_payment_id,
       amount,
-      currency: "RUB",
+      currency: payment.currency,
       idempotenceKey: randomUUID(),
       description: `Возврат по заказу ${payment.order?.public_number ?? ""}`.trim(),
     });
@@ -91,14 +109,19 @@ export async function refundPayment(
     result = await new MockPaymentProvider().createRefund({
       providerPaymentId: payment.provider_payment_id ?? payment.id,
       amount,
-      currency: "RUB",
+      currency: payment.currency,
       idempotenceKey: randomUUID(),
       description: "mock",
     });
   } else {
     // наличные / терминал / счёт: деньги вернул менеджер, провайдера нет
     provider = "manual";
-    result = { providerRefundId: `manual-${randomUUID()}`, status: "succeeded", amount, raw: { manual: true } };
+    result = {
+      providerRefundId: `manual-${randomUUID()}`,
+      status: "succeeded",
+      amount,
+      raw: { manual: true },
+    };
   }
 
   const { data: refund, error } = await admin

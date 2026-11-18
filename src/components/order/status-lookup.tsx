@@ -16,6 +16,7 @@ import type { OrderStatus } from "@/lib/config/constants";
 
 interface LookupOrder {
   public_number: string;
+  currency: string;
   status: OrderStatus;
   total_price: number;
   paid: boolean;
@@ -58,7 +59,10 @@ export function StatusLookup({ initialNumber = "" }: { initialNumber?: string })
 
   return (
     <div className="space-y-5">
-      <form onSubmit={submit} className="flex flex-wrap items-end gap-3 rounded-2xl border bg-card p-5">
+      <form
+        onSubmit={submit}
+        className="flex flex-wrap items-end gap-3 rounded-2xl border bg-card p-5"
+      >
         <div className="min-w-0 flex-1 basis-56 space-y-1.5">
           <Label htmlFor="number">{t("number")}</Label>
           <Input
@@ -79,7 +83,7 @@ export function StatusLookup({ initialNumber = "" }: { initialNumber?: string })
             inputMode="tel"
             value={phone}
             onChange={(e) => setPhone(phoneMask(e.target.value))}
-            placeholder="+7 (___) ___-__-__"
+            placeholder="+993 (__) __-__-__"
             required
           />
         </div>
@@ -103,11 +107,17 @@ export function StatusLookup({ initialNumber = "" }: { initialNumber?: string })
             </div>
             <OrderStatusBadge status={order.status} />
           </div>
-          <OrderTimeline status={order.status} history={order.history} createdAt={order.created_at} />
+          <OrderTimeline
+            status={order.status}
+            history={order.history}
+            createdAt={order.created_at}
+          />
           <div className="grid gap-3 text-sm sm:grid-cols-3">
             <div className="rounded-xl bg-muted p-3.5">
               <div className="text-muted-foreground">{t("services")}</div>
-              <strong>{order.items.map((i) => `${i.name_snapshot} × ${i.quantity}`).join(", ")}</strong>
+              <strong>
+                {order.items.map((i) => `${i.name_snapshot} × ${i.quantity}`).join(", ")}
+              </strong>
             </div>
             <div className="rounded-xl bg-muted p-3.5">
               <div className="text-muted-foreground">{t("readiness")}</div>
@@ -116,7 +126,8 @@ export function StatusLookup({ initialNumber = "" }: { initialNumber?: string })
             <div className="rounded-xl bg-muted p-3.5">
               <div className="text-muted-foreground">{t("sum")}</div>
               <strong>
-                {formatMoney(order.total_price)} · {order.paid ? t("paid") : t("unpaid")}
+                {formatMoney(order.total_price, order.currency)} ·{" "}
+                {order.paid ? t("paid") : t("unpaid")}
               </strong>
             </div>
           </div>
@@ -125,7 +136,8 @@ export function StatusLookup({ initialNumber = "" }: { initialNumber?: string })
             {order.delivery_type === "delivery"
               ? t("courier")
               : to("pickupAt", {
-                  address: [order.office?.address, order.office?.hours].filter(Boolean).join(", ") || "—",
+                  address:
+                    [order.office?.address, order.office?.hours].filter(Boolean).join(", ") || "—",
                 })}
           </p>
         </section>

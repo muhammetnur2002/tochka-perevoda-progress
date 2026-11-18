@@ -26,9 +26,7 @@ export async function SiteFooter() {
           <div className="space-y-2 text-sm">
             <p className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-gold-300" />
-              <a href={`tel:${COMPANY.phoneHref}`} className="hover:text-white">
-                {COMPANY.phone}
-              </a>
+              <span>{COMPANY.phone}</span>
             </p>
             <p className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-gold-300" />
@@ -40,7 +38,9 @@ export async function SiteFooter() {
         </div>
 
         <div>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">{to("title")}</h3>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
+            {to("title")}
+          </h3>
           <ul className="space-y-3 text-sm">
             {offices.map((o) => (
               <li key={o.id} className="flex gap-2">
@@ -57,7 +57,9 @@ export async function SiteFooter() {
         </div>
 
         <div>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">{t("clients")}</h3>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
+            {t("clients")}
+          </h3>
           <ul className="space-y-2 text-sm">
             <li>
               <Link className="hover:text-white" href="/services">
@@ -88,7 +90,9 @@ export async function SiteFooter() {
         </div>
 
         <div>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">{t("info")}</h3>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
+            {t("info")}
+          </h3>
           <ul className="space-y-2 text-sm">
             <li>
               <Link className="hover:text-white" href="/legal/privacy">

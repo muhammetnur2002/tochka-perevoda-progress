@@ -8,6 +8,7 @@ import { assignExecutor, changeOrderStatus } from "@/lib/services/order-admin";
 import { recordManualPayment } from "@/lib/payments";
 import { refundPayment } from "@/lib/payments/refunds";
 import { cancelPaymentRequest, createPaymentRequest } from "@/lib/payments/requests";
+import { phoneSchema } from "@/lib/validation/common";
 import { serviceSchema } from "@/lib/validation/service";
 import { manualPaymentSchema, paymentRequestSchema, refundSchema } from "@/lib/validation/payment";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -40,7 +41,9 @@ class CodedError extends Error {
 function errorMessage(err: unknown, t: Translator): string {
   if (err instanceof ZodError) {
     const issue = err.issues[0];
-    return issue?.path.length ? t("errors.invalidField", { field: issue.path.join(".") }) : t("errors.invalid");
+    return issue?.path.length
+      ? t("errors.invalidField", { field: issue.path.join(".") })
+      : t("errors.invalid");
   }
   if (err instanceof ApiError) {
     if (err.code === "FORBIDDEN") return t("errors.forbidden");
@@ -53,7 +56,8 @@ function errorMessage(err: unknown, t: Translator): string {
   return e?.message ?? t("errors.generic");
 }
 
-type RunOutput = string | void | { message: string; data: Record<string, string | number | boolean | null> };
+type RunOutput =
+  string | void | { message: string; data: Record<string, string | number | boolean | null> };
 
 async function run(fn: (t: Translator) => Promise<RunOutput>): Promise<ActionResult> {
   const t = await getTranslations("admin.actions");
@@ -62,20 +66,42 @@ async function run(fn: (t: Translator) => Promise<RunOutput>): Promise<ActionRes
     if (out && typeof out === "object") return { ok: true, message: out.message, data: out.data };
     return { ok: true, message: out ?? undefined };
   } catch (err) {
-    return { ok: false, error: errorMessage(err, t), code: err instanceof CodedError ? err.code : undefined };
+    return {
+      ok: false,
+      error: errorMessage(err, t),
+      code: err instanceof CodedError ? err.code : undefined,
+    };
   }
 }
 
-const statusSchema = z.enum(["new", "confirmed", "in_progress", "ready", "issued", "completed", "cancelled"]);
+const statusSchema = z.enum([
+  "new",
+  "confirmed",
+  "in_progress",
+  "ready",
+  "issued",
+  "completed",
+  "cancelled",
+]);
 
-export async function setOrderStatusAction(orderId: string, status: OrderStatus, comment?: string): Promise<ActionResult> {
+export async function setOrderStatusAction(
+  orderId: string,
+  status: OrderStatus,
+  comment?: string,
+): Promise<ActionResult> {
   return run(async (t) => {
     const actor = await requirePermission("order.change_status");
     try {
-      await changeOrderStatus(actor.supabase, z.string().uuid().parse(orderId), statusSchema.parse(status), comment);
+      await changeOrderStatus(
+        actor.supabase,
+        z.string().uuid().parse(orderId),
+        statusSchema.parse(status),
+        comment,
+      );
     } catch (err) {
       // Недопустимый переход статуса
-      if (err instanceof ApiError && err.code === "CONFLICT") throw new CodedError(t("errors.transition"), "TRANSITION");
+      if (err instanceof ApiError && err.code === "CONFLICT")
+        throw new CodedError(t("errors.transition"), "TRANSITION");
       throw err;
     }
     revalidatePath(`/admin/orders/${orderId}`);
@@ -83,11 +109,17 @@ export async function setOrderStatusAction(orderId: string, status: OrderStatus,
   });
 }
 
-export async function setOrderDeadlineAction(orderId: string, deadline: string): Promise<ActionResult> {
+export async function setOrderDeadlineAction(
+  orderId: string,
+  deadline: string,
+): Promise<ActionResult> {
   return run(async (t) => {
     const actor = await requirePermission("order.change_status");
     const iso = new Date(deadline).toISOString();
-    const { error } = await actor.supabase.from("orders").update({ deadline: iso }).eq("id", orderId);
+    const { error } = await actor.supabase
+      .from("orders")
+      .update({ deadline: iso })
+      .eq("id", orderId);
     if (error) throw error;
     revalidatePath(`/admin/orders/${orderId}`);
     return t("deadlineSaved");
@@ -104,11 +136,14 @@ export async function assignExecutorAction(input: {
     const actor = await requirePermission("order.assign");
     let overloaded = false;
     try {
-      overloaded = (await assignExecutor(actor.supabase, { ...input, assignedBy: actor.id })).overloaded;
+      overloaded = (await assignExecutor(actor.supabase, { ...input, assignedBy: actor.id }))
+        .overloaded;
     } catch (err) {
       // assignExecutor бросает CONFLICT только при перегрузке переводчика (без force)
-      if (err instanceof ApiError && err.code === "CONFLICT") throw new CodedError(t("errors.overloaded"), "OVERLOADED");
-      if (err instanceof ApiError && err.code === "BAD_REQUEST") throw new CodedError(t("errors.roleMismatch"), "ROLE_MISMATCH");
+      if (err instanceof ApiError && err.code === "CONFLICT")
+        throw new CodedError(t("errors.overloaded"), "OVERLOADED");
+      if (err instanceof ApiError && err.code === "BAD_REQUEST")
+        throw new CodedError(t("errors.roleMismatch"), "ROLE_MISMATCH");
       throw err;
     }
     revalidatePath(`/admin/orders/${input.orderId}`);
@@ -116,7 +151,10 @@ export async function assignExecutorAction(input: {
   });
 }
 
-export async function recordPaymentAction(orderId: string, input: { amount: number; method: string }): Promise<ActionResult> {
+export async function recordPaymentAction(
+  orderId: string,
+  input: { amount: number; method: string },
+): Promise<ActionResult> {
   return run(async (t) => {
     await requirePermission("payment.manage");
     const parsed = manualPaymentSchema.parse(input);
@@ -130,7 +168,10 @@ export async function recordPaymentAction(orderId: string, input: { amount: numb
  * Ссылка на оплату: остаток (isExtra=false) или доплата (isExtra=true — увеличивает стоимость заказа).
  * Клиенту уходит уведомление; ссылка возвращается для копирования (data.url, data.delivered).
  */
-export async function createPaymentRequestAction(orderId: string, input: unknown): Promise<ActionResult> {
+export async function createPaymentRequestAction(
+  orderId: string,
+  input: unknown,
+): Promise<ActionResult> {
   return run(async (t) => {
     const actor = await requirePermission("payment.manage");
     const parsed = paymentRequestSchema.parse(input);
@@ -144,7 +185,10 @@ export async function createPaymentRequestAction(orderId: string, input: unknown
 }
 
 /** Отозвать открытую ссылку на оплату (неоплаченная доплата снимается со стоимости заказа). */
-export async function cancelPaymentRequestAction(orderId: string, requestId: string): Promise<ActionResult> {
+export async function cancelPaymentRequestAction(
+  orderId: string,
+  requestId: string,
+): Promise<ActionResult> {
   return run(async (t) => {
     await requirePermission("payment.manage");
     await cancelPaymentRequest(z.string().uuid().parse(requestId));
@@ -154,7 +198,11 @@ export async function cancelPaymentRequestAction(orderId: string, requestId: str
 }
 
 /** Возврат по платежу (полный или частичный). */
-export async function refundPaymentAction(orderId: string, paymentId: string, input: unknown): Promise<ActionResult> {
+export async function refundPaymentAction(
+  orderId: string,
+  paymentId: string,
+  input: unknown,
+): Promise<ActionResult> {
   return run(async (t) => {
     const actor = await requirePermission("payment.manage");
     const parsed = refundSchema.parse(input);
@@ -190,7 +238,10 @@ const officeSchema = z.object({
   name: z.string().trim().min(2).max(100),
   address: z.string().trim().min(5).max(200),
   hours: optionalText(200),
-  phone: optionalText(40),
+  phone: z
+    .union([phoneSchema, z.literal(""), z.null()])
+    .optional()
+    .transform((v) => v || null),
   is_active: z.boolean(),
   sort_order: z.number().int().min(0).max(1000),
 });
@@ -253,7 +304,8 @@ const promoSchema = z
     is_active: z.boolean(),
   })
   .superRefine((p, ctx) => {
-    if (p.discount_type === "percent" && p.value > 100) ctx.addIssue({ code: "custom", path: ["value"], message: "percent" });
+    if (p.discount_type === "percent" && p.value > 100)
+      ctx.addIssue({ code: "custom", path: ["value"], message: "percent" });
     if (p.valid_from && p.valid_to && new Date(p.valid_to) <= new Date(p.valid_from)) {
       ctx.addIssue({ code: "custom", path: ["valid_to"], message: "dates" });
     }
@@ -287,7 +339,9 @@ export async function savePromoAction(id: string | null, input: unknown): Promis
       }
       if (!row) throw notFound();
     } else {
-      const { error } = await actor.supabase.from("promo_codes").insert({ ...data, created_by: actor.id });
+      const { error } = await actor.supabase
+        .from("promo_codes")
+        .insert({ ...data, created_by: actor.id });
       if (error) {
         if (error.code === "23505") throw new CodedError(t("errors.promoCodeTaken"), "CODE_TAKEN");
         throw error;
@@ -364,11 +418,18 @@ export async function saveSettingAction(key: string, value: Json): Promise<Actio
 
 export async function updateClientAction(
   clientId: string,
-  input: { name: string; phone: string | null; email: string | null; inn: string | null; type: "individual" | "company" },
+  input: {
+    name: string;
+    phone: string | null;
+    email: string | null;
+    inn: string | null;
+    type: "individual" | "company";
+  },
 ): Promise<ActionResult> {
   return run(async (t) => {
     const actor = await requirePermission("order.view_all");
-    const { error } = await actor.supabase.from("clients").update(input).eq("id", clientId);
+    const parsed = { ...input, phone: input.phone ? phoneSchema.parse(input.phone) : null };
+    const { error } = await actor.supabase.from("clients").update(parsed).eq("id", clientId);
     if (error) throw error;
     revalidatePath(`/admin/clients/${clientId}`);
     return t("clientSaved");
@@ -379,13 +440,17 @@ export async function updateClientAction(
 export async function setUserRoleAction(userId: string, role: UserRole): Promise<ActionResult> {
   return run(async (t) => {
     const actor = await requirePermission("user.change_role");
-    const parsed = z.enum(["client", "manager", "translator", "notary", "printer", "admin"]).parse(role);
+    const parsed = z
+      .enum(["client", "manager", "translator", "notary", "printer", "admin"])
+      .parse(role);
     const { error } = await actor.supabase.from("users").update({ role: parsed }).eq("id", userId);
     if (error) throw error;
     // Роль хранится и в app_metadata — для JWT-claims (на случай использования в политиках)
     await createAdminClient().auth.admin.updateUserById(userId, { app_metadata: { role: parsed } });
     if (parsed === "translator") {
-      await actor.supabase.from("translators").upsert({ user_id: userId }, { onConflict: "user_id" });
+      await actor.supabase
+        .from("translators")
+        .upsert({ user_id: userId }, { onConflict: "user_id" });
     }
     revalidatePath("/admin/translators");
     return t("roleChanged");
@@ -413,7 +478,12 @@ export async function grantRoleByEmailAction(email: string, role: UserRole): Pro
 
 export async function updateTranslatorAction(
   userId: string,
-  input: { capacity_per_day: number; is_available: boolean; specialization: string | null; languages: string[] },
+  input: {
+    capacity_per_day: number;
+    is_available: boolean;
+    specialization: string | null;
+    languages: string[];
+  },
 ): Promise<ActionResult> {
   return run(async (t) => {
     const actor = await requirePermission("order.assign");

@@ -13,6 +13,7 @@ export type PayMethod = "sbp" | "qr" | "card";
 
 interface PaymentResponse {
   paymentId: string;
+  currency: string;
   status: string;
   amount: number;
   confirmationUrl: string | null;
@@ -49,7 +50,15 @@ interface PaymentPanelProps {
  * страницу ЮKassa для карты, поллинг статуса каждые 3 с. В mock-режиме —
  * кнопка «Я оплатил(а)» имитирует успешную оплату.
  */
-export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sbp", requestId, onPaid, compact }: PaymentPanelProps) {
+export function PaymentPanel({
+  orderId,
+  publicNumber,
+  token,
+  initialMethod = "sbp",
+  requestId,
+  onPaid,
+  compact,
+}: PaymentPanelProps) {
   const t = useTranslations("payment");
   const [method, setMethod] = React.useState<PayMethod>(initialMethod);
   const [payment, setPayment] = React.useState<PaymentResponse | null>(null);
@@ -91,7 +100,9 @@ export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sb
     if (!payment) return;
     const timer = setInterval(async () => {
       try {
-        const data = await apiFetch<PaymentStatusResponse>(`/api/payments/${payment.paymentId}`, { orderToken: token });
+        const data = await apiFetch<PaymentStatusResponse>(`/api/payments/${payment.paymentId}`, {
+          orderToken: token,
+        });
         if (data.payment.status === "succeeded") {
           clearInterval(timer);
           onPaid();
@@ -107,7 +118,10 @@ export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sb
     if (!payment) return;
     setConfirming(true);
     try {
-      await apiFetch(`/api/payments/${payment.paymentId}/mock-confirm`, { method: "POST", orderToken: token });
+      await apiFetch(`/api/payments/${payment.paymentId}/mock-confirm`, {
+        method: "POST",
+        orderToken: token,
+      });
       onPaid();
     } catch (err) {
       toast.error((err as Error).message);
@@ -127,7 +141,9 @@ export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sb
             aria-pressed={method === m.id}
             className={cn(
               "flex min-h-16 flex-col items-start gap-1 rounded-xl border p-3 text-left transition-colors",
-              method === m.id ? "border-2 border-gold-400 bg-gold-50" : "border-input bg-background hover:border-brand-800",
+              method === m.id
+                ? "border-2 border-gold-400 bg-gold-50"
+                : "border-input bg-background hover:border-brand-800",
             )}
           >
             <span className="flex items-center gap-2 font-semibold text-brand-800">
@@ -154,8 +170,12 @@ export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sb
               />
             )}
             <div className="flex min-w-0 flex-1 flex-col gap-3">
-              <span className="text-sm text-muted-foreground">{t("order", { number: publicNumber })}</span>
-              <span className="text-3xl font-extrabold text-brand-800">{formatMoney(payment.amount)}</span>
+              <span className="text-sm text-muted-foreground">
+                {t("order", { number: publicNumber })}
+              </span>
+              <span className="text-3xl font-extrabold text-brand-800">
+                {formatMoney(payment.amount, payment.currency)}
+              </span>
               <p className="text-sm text-muted-foreground">
                 {method === "card" ? t("cardText") : t("qrText")}
               </p>
@@ -165,11 +185,13 @@ export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sb
                     <a href={payment.qrPayload}>{t("openBank")}</a>
                   </Button>
                 )}
-                {method === "card" && payment.confirmationUrl && payment.provider === "yookassa" && (
-                  <Button asChild variant="gold" size="lg">
-                    <a href={payment.confirmationUrl}>{t("goPay")}</a>
-                  </Button>
-                )}
+                {method === "card" &&
+                  payment.confirmationUrl &&
+                  payment.provider === "yookassa" && (
+                    <Button asChild variant="gold" size="lg">
+                      <a href={payment.confirmationUrl}>{t("goPay")}</a>
+                    </Button>
+                  )}
                 {payment.mock && (
                   <Button variant="gold" size="lg" onClick={confirmMock} disabled={confirming}>
                     {confirming ? <Loader2 className="animate-spin" /> : t("iPaid")}
@@ -177,9 +199,7 @@ export function PaymentPanel({ orderId, publicNumber, token, initialMethod = "sb
                 )}
               </div>
               {payment.mock && (
-                <span className="text-xs font-semibold text-gold-800">
-                  {t("mockNote")}
-                </span>
+                <span className="text-xs font-semibold text-gold-800">{t("mockNote")}</span>
               )}
             </div>
           </>

@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
-import { isValidRuPhone, phoneMask } from "@/lib/format/phone";
+import { isValidTmPhone, phoneMask } from "@/lib/format/phone";
 
 export default function RegisterPage() {
   const t = useTranslations("auth");
@@ -26,7 +26,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
-    if (!isValidRuPhone(phone)) {
+    if (!isValidTmPhone(phone)) {
       toast.error(t("register.phoneInvalid"));
       return;
     }
@@ -67,19 +67,46 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">{t("register.name")}</Label>
-            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder={t("register.namePlaceholder")} required />
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={t("register.namePlaceholder")}
+              required
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="phone">{t("register.phone")}</Label>
-            <Input id="phone" inputMode="tel" value={phone} onChange={(e) => setPhone(phoneMask(e.target.value))} placeholder="+7 (900) 123-45-67" required />
+            <Input
+              id="phone"
+              inputMode="tel"
+              value={phone}
+              onChange={(e) => setPhone(phoneMask(e.target.value))}
+              placeholder="+993 (61) 23-45-67"
+              required
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">{t("email")}</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              required
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">{t("password")}</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("register.passwordPlaceholder")} required />
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={t("register.passwordPlaceholder")}
+              required
+            />
           </div>
           <Button type="submit" className="w-full" size="lg" disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("register.submit")}

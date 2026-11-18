@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -8,7 +7,7 @@ import { SignOutButton } from "@/components/layout/sign-out-button";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 
 export const metadata: Metadata = {
-  title: { default: "Рабочее место", template: "%s · Рабочее место" },
+  title: { default: "Iş ýeri", template: "%s · Iş ýeri" },
   robots: { index: false, follow: false },
 };
 
@@ -22,7 +21,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
       <header className="bg-brand-800 text-white">
         <div className="container flex flex-wrap items-center gap-3 py-3">
           <Link href="/workspace" className="flex items-center gap-3">
-            <Image src="/brand/logo-mark.png" alt="" width={38} height={38} className="h-[38px] w-[38px] rounded-lg bg-white p-0.5" />
+            <span aria-hidden="true" className="inline-block h-10 w-10 shrink-0" />
             <span>
               <span className="block font-extrabold">{t("title")}</span>
               <span className="text-xs text-[#C9D6EA]">

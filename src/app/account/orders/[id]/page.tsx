@@ -27,23 +27,45 @@ export default async function AccountOrderPage({ params }: { params: { id: strin
   const supabase = createClient();
   const { data: order } = await supabase
     .from("orders")
-    .select("*, office:offices(address), from:languages!orders_language_from_fkey(code, name), to:languages!orders_language_to_fkey(code, name)")
+    .select(
+      "*, office:offices(address), from:languages!orders_language_from_fkey(code, name), to:languages!orders_language_to_fkey(code, name)",
+    )
     .eq("id", params.id)
     .maybeSingle();
   if (!order) notFound();
-  const langName = (l: { code: string; name: string } | null) => (l ? (tl.has(l.code) ? tl(l.code) : l.name) : "");
+  const langName = (l: { code: string; name: string } | null) =>
+    l ? (tl.has(l.code) ? tl(l.code) : l.name) : "";
 
   const [items, files, payments, history] = await Promise.all([
-    supabase.from("order_items").select("id, service_id, name_snapshot, quantity, price").eq("order_id", order.id).order("created_at"),
-    supabase.from("files").select("id, original_name, kind, size_bytes, created_at").eq("order_id", order.id).order("created_at"),
-    supabase.from("payments").select("id, amount, method, status, paid_at, created_at").eq("order_id", order.id).order("created_at", { ascending: false }),
-    supabase.from("status_history").select("to_status, created_at").eq("order_id", order.id).order("created_at"),
+    supabase
+      .from("order_items")
+      .select("id, service_id, name_snapshot, quantity, price")
+      .eq("order_id", order.id)
+      .order("created_at"),
+    supabase
+      .from("files")
+      .select("id, original_name, kind, size_bytes, created_at")
+      .eq("order_id", order.id)
+      .order("created_at"),
+    supabase
+      .from("payments")
+      .select("id, currency, amount, method, status, paid_at, created_at")
+      .eq("order_id", order.id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("status_history")
+      .select("to_status, created_at")
+      .eq("order_id", order.id)
+      .order("created_at"),
   ]);
   const due = Math.max(0, Number(order.total_price) - Number(order.paid_amount));
 
   return (
     <div className="space-y-5">
-      <Link href="/account" className="inline-flex min-h-11 items-center text-sm font-bold text-brand-500">
+      <Link
+        href="/account"
+        className="inline-flex min-h-11 items-center text-sm font-bold text-brand-500"
+      >
         {t("allOrders")}
       </Link>
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -52,7 +74,9 @@ export default async function AccountOrderPage({ params }: { params: { id: strin
           <OrderStatusBadge status={order.status} />
           {due > 0 && order.status !== "cancelled" && (
             <Button asChild variant="outline">
-              <Link href={`/checkout/pay/${order.id}`}>{t("payAmount", { amount: formatMoney(due) })}</Link>
+              <Link href={`/checkout/pay/${order.id}`}>
+                {t("payAmount", { amount: formatMoney(due, order.currency) })}
+              </Link>
             </Button>
           )}
           <RepeatOrderButton items={items.data ?? []} />
@@ -78,20 +102,31 @@ export default async function AccountOrderPage({ params }: { params: { id: strin
             </p>
           </div>
           <Button asChild variant={order.proof_status === "awaiting_client" ? "gold" : "outline"}>
-            <Link href={`/proof/${order.id}`}>{order.proof_status === "awaiting_client" ? t("proofOpen") : t("proofView")}</Link>
+            <Link href={`/proof/${order.id}`}>
+              {order.proof_status === "awaiting_client" ? t("proofOpen") : t("proofView")}
+            </Link>
           </Button>
         </section>
       )}
 
       <section className="rounded-2xl border bg-card p-5">
-        <OrderTimeline status={order.status} history={history.data ?? []} createdAt={order.created_at} />
+        <OrderTimeline
+          status={order.status}
+          history={history.data ?? []}
+          createdAt={order.created_at}
+        />
         <p className="mt-4 text-sm text-muted-foreground">
-          {order.deadline && order.status !== "completed" ? `${t("readiness", { date: formatDateTime(order.deadline) })} · ` : ""}
+          {order.deadline && order.status !== "completed"
+            ? `${t("readiness", { date: formatDateTime(order.deadline) })} · `
+            : ""}
           {order.delivery_type === "delivery"
             ? t("deliveryTo", { address: order.delivery_address ?? t("addressTbd") })
             : to("pickupAt", { address: order.office?.address ?? "—" })}
-          {order.payment_mode === "office" && Number(order.paid_amount) === 0 && ` · ${t("payInOffice")}`}
-          {order.from && ` · ${t("translationPair", { from: langName(order.from), to: langName(order.to) })}`}
+          {order.payment_mode === "office" &&
+            Number(order.paid_amount) === 0 &&
+            ` · ${t("payInOffice")}`}
+          {order.from &&
+            ` · ${t("translationPair", { from: langName(order.from), to: langName(order.to) })}`}
         </p>
       </section>
 
@@ -104,25 +139,26 @@ export default async function AccountOrderPage({ params }: { params: { id: strin
                 <span>
                   {i.name_snapshot} × {i.quantity}
                 </span>
-                <span>{formatMoney(Number(i.price))}</span>
+                <span>{formatMoney(Number(i.price), order.currency)}</span>
               </li>
             ))}
           </ul>
           <div className="mt-3 space-y-1 border-t pt-3 text-sm">
             <div className="flex justify-between font-bold text-brand-800">
               <span>{t("total")}</span>
-              <span>{formatMoney(Number(order.total_price))}</span>
+              <span>{formatMoney(Number(order.total_price), order.currency)}</span>
             </div>
             <div className="flex justify-between">
               <span>{t("paid")}</span>
-              <span>{formatMoney(Number(order.paid_amount))}</span>
+              <span>{formatMoney(Number(order.paid_amount), order.currency)}</span>
             </div>
           </div>
           {(payments.data ?? []).length > 0 && (
             <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
               {(payments.data ?? []).map((p) => (
                 <li key={p.id}>
-                  {formatDateTime(p.paid_at ?? p.created_at)} · {p.method.toUpperCase()} · {formatMoney(Number(p.amount))} ·{" "}
+                  {formatDateTime(p.paid_at ?? p.created_at)} · {p.method.toUpperCase()} ·{" "}
+                  {formatMoney(Number(p.amount), p.currency)} ·{" "}
                   {t.has(`paymentStatus.${p.status}`) ? t(`paymentStatus.${p.status}`) : p.status}
                 </li>
               ))}

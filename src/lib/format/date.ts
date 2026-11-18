@@ -1,18 +1,18 @@
 /** Форматирование дат и времени (ru-RU). */
 
-const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
+const dateFormatter = new Intl.DateTimeFormat("tk-TM", {
   day: "numeric",
   month: "long",
   year: "numeric",
 });
 
-const shortDateFormatter = new Intl.DateTimeFormat("ru-RU", {
+const shortDateFormatter = new Intl.DateTimeFormat("tk-TM", {
   day: "2-digit",
   month: "2-digit",
   year: "numeric",
 });
 
-const dateTimeFormatter = new Intl.DateTimeFormat("ru-RU", {
+const dateTimeFormatter = new Intl.DateTimeFormat("tk-TM", {
   day: "2-digit",
   month: "2-digit",
   year: "numeric",

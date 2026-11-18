@@ -10,7 +10,7 @@ export interface Column<Row> {
   header: string;
   width?: number;
   value: (row: Row) => string | number | Date | null | undefined;
-  /** Формат числа в Excel, например '#,##0.00 "₽"'. */
+  /** Формат числа в Excel, например '#,##0.00 "manat"'. */
   numFmt?: string;
 }
 
@@ -33,9 +33,13 @@ export function toCsv<Row>(rows: Row[], columns: Column<Row>[]): string {
   return "﻿" + lines.join("\r\n");
 }
 
-export async function toXlsx<Row>(sheetName: string, rows: Row[], columns: Column<Row>[]): Promise<Buffer> {
+export async function toXlsx<Row>(
+  sheetName: string,
+  rows: Row[],
+  columns: Column<Row>[],
+): Promise<Buffer> {
   const wb = new ExcelJS.Workbook();
-  wb.creator = "Точка Перевода Прогресс";
+  wb.creator = "Terjime hyzmatlary";
   wb.created = new Date();
   const ws = wb.addWorksheet(sheetName.slice(0, 31), { views: [{ state: "frozen", ySplit: 1 }] });
   ws.columns = columns.map((c, i) => ({ header: c.header, key: `c${i}`, width: c.width ?? 18 }));

@@ -3,15 +3,15 @@
  * Реквизиты телефона/email — плейсхолдеры: замените на реальные перед продакшеном.
  */
 export const COMPANY = {
-  name: "Точка Перевода Прогресс",
-  shortName: "Точка Перевода",
-  legalName: "Бюро переводов «Точка Перевода Прогресс»",
+  name: "Terjime hyzmatlary",
+  shortName: "Terjime hyzmatlary",
+  legalName: "Terjime hyzmatlary",
   city: "Казань",
   address: "г. Казань, ул. Сибирский Тракт, 7/6",
   addressShort: "ул. Сибирский Тракт, 7/6",
   /** TODO: заменить на реальный телефон. */
-  phone: "8 (843) 000-00-00",
-  phoneHref: "+78430000000",
+  phone: "+993 (__) __-__-__",
+  phoneHref: "",
   /** TODO: заменить на реальный email. */
   email: "info@tochka-perevoda.ru",
   workHours: "Пн–Пт 9:00–19:00, Сб 10:00–16:00",

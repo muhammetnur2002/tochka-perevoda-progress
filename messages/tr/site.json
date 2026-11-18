@@ -1,9 +1,9 @@
 {
   "common": {
     "language": "Dil",
-    "brandName": "Точка Перевода Прогресс",
-    "brandShort": "ТОЧКА ПЕРЕВОДА",
-    "brandSub": "ПРОГРЕСС",
+    "brandName": "",
+    "brandShort": "",
+    "brandSub": "",
     "city": "Kazan",
     "toHome": "ana sayfaya",
     "loading": "Yükleniyor…",
@@ -15,14 +15,14 @@
     "download": "İndir",
     "open": "Aç",
     "remove": "Sil",
-    "phonePlaceholder": "+7 (___) ___-__-__",
+    "phonePlaceholder": "+993 (__) __-__-__",
     "error": "Bir sorun oluştu",
     "retry": "Tekrar dene",
     "notFoundTitle": "Sayfa bulunamadı",
     "notFoundText": "Aradığınız sayfa mevcut değil veya taşınmış.",
     "toMain": "Ana sayfaya",
     "errorText": "Bir hata oluştu. Lütfen tekrar deneyin.",
-    "rub": "₽"
+    "rub": "manat"
   },
   "nav": {
     "home": "Ana sayfa",
@@ -211,7 +211,7 @@
     "factDays": "1–2 gün",
     "factServices": "Fiyat listesinde 24 hizmet",
     "factOffices": "3 teslim noktası",
-    "logoAlt": "«Точка Перевода Прогресс» logosu",
+    "logoAlt": "",
     "servicesTitle": "Hizmetler ve fiyatlar",
     "servicesSubtitle": "Güncel fiyat listesi. Aciliyet ve sayfa sayısına göre kesin tutarı hesaplayıcı belirler.",
     "allServices": "Tüm hizmetler ve fiyatlar",
@@ -259,7 +259,7 @@
     "faq": {
       "price": {
         "q": "Bir sayfanın çevirisi ne kadar?",
-        "a": "Hukuki ve tıbbi belgeler sayfa başına 550 ₽, teknik belgeler 650 ₽. Pasaport, diploma ve resmî belgeler katalogdaki sabit fiyatla çevrilir."
+        "a": "Hukuki ve tıbbi belgeler sayfa başına 550 manat, teknik belgeler 650 manat. Pasaport, diploma ve resmî belgeler katalogdaki sabit fiyatla çevrilir."
       },
       "time": {
         "q": "Çeviri ne kadar sürede hazır olur?",
@@ -379,7 +379,7 @@
     "changeItems": "Siparişi düzenle",
     "errors": {
       "name": "Adınızı girin",
-      "phone": "Rusya telefon numarası girin",
+      "phone": "Türkmenistan telefon numarası girin: +993 ve 8 rakam",
       "email": "Geçersiz e-posta",
       "consent": "Veri işleme onayı olmadan sipariş verilemez",
       "address": "Teslimat adresini girin",
@@ -509,7 +509,7 @@
       "submit": "Kayıt ol",
       "created": "Hesap oluşturuldu",
       "confirmEmail": "E-postanızı onaylayın — bağlantı gönderdik",
-      "phoneInvalid": "Geçerli bir Rusya telefon numarası girin",
+      "phoneInvalid": "Türkmenistan telefon numarası girin: +993 ve 8 rakam",
       "haveAccount": "Zaten hesabınız var mı?",
       "login": "Giriş yap"
     },
@@ -592,7 +592,7 @@
     "phoneTitle": "Telefon",
     "phoneText": "Sipariş bildirimleri telefonunuza gelir. Kodla onayladıktan sonra, bu numarayla giriş yapmadan verilen siparişler hesabınıza bağlanır.",
     "phoneNumber": "Numara",
-    "phoneInvalid": "Rusya telefon numarası girin",
+    "phoneInvalid": "Türkmenistan telefon numarası girin: +993 ve 8 rakam",
     "verified": "onaylandı",
     "getCode": "Kod al",
     "resendCode": "Kodu tekrar gönder",

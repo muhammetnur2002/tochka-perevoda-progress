@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { COMPANY, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/config/constants";
 import { formatMoney } from "@/lib/format/money";
 import { formatDateTime } from "@/lib/format/date";
-import { isValidRuPhone, normalizePhone } from "@/lib/format/phone";
+import { isValidTmPhone, normalizePhone } from "@/lib/format/phone";
 import { canTransition } from "@/lib/auth/roles";
 import { logger } from "@/lib/logger";
 import { answerCallback, sendTelegramMessage } from "./api";
@@ -53,7 +53,12 @@ async function resolveSender(from: TelegramUser | undefined, chatId: number): Pr
   const isManager =
     (user?.is_active && (user.role === "manager" || user.role === "admin")) ||
     envManagers.includes(String(telegramId));
-  return { telegramId, userId: user?.id ?? null, phone: user?.phone ?? null, isManager: Boolean(isManager) };
+  return {
+    telegramId,
+    userId: user?.id ?? null,
+    phone: user?.phone ?? null,
+    isManager: Boolean(isManager),
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -76,7 +81,11 @@ async function handleMessage(msg: TelegramMessage): Promise<void> {
     case "/start":
       return cmdStart(chatId, args[0]);
     case "/order":
-      return sendTelegramMessage(chatId, "Нажмите кнопку — откроется форма заказа 👇", orderButton());
+      return sendTelegramMessage(
+        chatId,
+        "Нажмите кнопку — откроется форма заказа 👇",
+        orderButton(),
+      );
     case "/status":
       return cmdStatus(chatId, sender, args.join(" "));
     case "/help":
@@ -148,7 +157,13 @@ async function cmdHelp(chatId: number, isManager: boolean): Promise<void> {
     "/help — справка",
   ];
   if (isManager) {
-    lines.push("", "Для менеджеров:", "/new — новые заказы", "/deadline — срок < 24 ч", "/take ТП-… — взять заказ в работу");
+    lines.push(
+      "",
+      "Для менеджеров:",
+      "/new — новые заказы",
+      "/deadline — срок < 24 ч",
+      "/take ТП-… — взять заказ в работу",
+    );
   }
   await sendTelegramMessage(chatId, lines.join("\n"));
 }
@@ -165,8 +180,12 @@ async function handleContact(msg: TelegramMessage, sender: Sender): Promise<void
     await sendTelegramMessage(chatId, "Можно привязать только свой номер.", removeKeyboard());
     return;
   }
-  if (!isValidRuPhone(contact.phone_number)) {
-    await sendTelegramMessage(chatId, "Поддерживаются номера РФ (+7).", removeKeyboard());
+  if (!isValidTmPhone(contact.phone_number)) {
+    await sendTelegramMessage(
+      chatId,
+      "Diňe Türkmenistanyň telefon belgileri (+993) kabul edilýär.",
+      removeKeyboard(),
+    );
     return;
   }
   const phone = normalizePhone(contact.phone_number);
@@ -174,7 +193,10 @@ async function handleContact(msg: TelegramMessage, sender: Sender): Promise<void
 
   if (sender.userId) {
     // Контакт подтверждён Telegram (contact.user_id === from.id) — считаем телефон верифицированным
-    await admin.from("users").update({ phone, phone_verified_at: new Date().toISOString() }).eq("id", sender.userId);
+    await admin
+      .from("users")
+      .update({ phone, phone_verified_at: new Date().toISOString() })
+      .eq("id", sender.userId);
     await admin.rpc("claim_guest_orders", { p_user_id: sender.userId });
   }
   const { count } = await admin
@@ -199,13 +221,19 @@ async function cmdStatus(chatId: number, sender: Sender, arg: string): Promise<v
 
   let query = admin
     .from("orders")
-    .select("id, public_number, status, total_price, paid_amount, deadline, user_id, client:clients(phone)")
+    .select(
+      "id, currency, public_number, status, total_price, paid_amount, deadline, user_id, client:clients(phone)",
+    )
     .order("created_at", { ascending: false })
     .limit(1);
   if (number) query = query.eq("public_number", number);
   else if (sender.userId) query = query.eq("user_id", sender.userId);
   else {
-    await sendTelegramMessage(chatId, "Укажите номер: /status ТП-2026-000123", shareContactKeyboard());
+    await sendTelegramMessage(
+      chatId,
+      "Укажите номер: /status ТП-2026-000123",
+      shareContactKeyboard(),
+    );
     return;
   }
 
@@ -229,7 +257,7 @@ async function cmdStatus(chatId: number, sender: Sender, arg: string): Promise<v
   const lines = [
     `Заказ <b>${order.public_number}</b>`,
     `Статус: <b>${ORDER_STATUS_LABELS[order.status as OrderStatus]}</b>`,
-    `Сумма: ${formatMoney(Number(order.total_price))}${Number(order.paid_amount) >= Number(order.total_price) ? " (оплачен)" : ""}`,
+    `Сумма: ${formatMoney(Number(order.total_price), order.currency)}${Number(order.paid_amount) >= Number(order.total_price) ? " (оплачен)" : ""}`,
   ];
   if (order.deadline && !["issued", "completed", "cancelled"].includes(order.status)) {
     lines.push(`Готовность: ${formatDateTime(order.deadline)}`);
@@ -244,7 +272,7 @@ async function cmdNewOrders(chatId: number): Promise<void> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("orders")
-    .select("id, public_number, total_price, created_at, client:clients(name)")
+    .select("id, currency, public_number, total_price, created_at, client:clients(name)")
     .eq("status", "new")
     .order("created_at", { ascending: true })
     .limit(10);
@@ -255,7 +283,7 @@ async function cmdNewOrders(chatId: number): Promise<void> {
   for (const o of data) {
     await sendTelegramMessage(
       chatId,
-      `🆕 <b>${o.public_number}</b> · ${o.client?.name ?? "—"} · ${formatMoney(Number(o.total_price))}\n${formatDateTime(o.created_at)}`,
+      `🆕 <b>${o.public_number}</b> · ${o.client?.name ?? "—"} · ${formatMoney(Number(o.total_price), o.currency)}\n${formatDateTime(o.created_at)}`,
       adminOrderButton(o.id, o.public_number),
     );
   }
@@ -263,13 +291,18 @@ async function cmdNewOrders(chatId: number): Promise<void> {
 
 async function cmdDeadlines(chatId: number): Promise<void> {
   const admin = createAdminClient();
-  const { data } = await admin.from("v_deadline_approaching").select("*").order("deadline").limit(20);
+  const { data } = await admin
+    .from("v_deadline_approaching")
+    .select("*")
+    .order("deadline")
+    .limit(20);
   if (!data?.length) {
     await sendTelegramMessage(chatId, "Горящих сроков нет 👌");
     return;
   }
   const lines = data.map(
-    (o) => `⏰ <b>${o.public_number}</b> — ${o.deadline ? formatDateTime(o.deadline) : "—"} · ${ORDER_STATUS_LABELS[o.status as OrderStatus]} · ${o.client_name}`,
+    (o) =>
+      `⏰ <b>${o.public_number}</b> — ${o.deadline ? formatDateTime(o.deadline) : "—"} · ${ORDER_STATUS_LABELS[o.status as OrderStatus]} · ${o.client_name}`,
   );
   await sendTelegramMessage(chatId, lines.join("\n"));
 }
@@ -280,7 +313,11 @@ async function takeOrder(sender: Sender, number: string | undefined): Promise<st
   if (!sender.userId) return "Привяжите Telegram к профилю менеджера в админке.";
 
   const admin = createAdminClient();
-  const { data: order } = await admin.from("orders").select("id, status").eq("public_number", normalized).maybeSingle();
+  const { data: order } = await admin
+    .from("orders")
+    .select("id, status")
+    .eq("public_number", normalized)
+    .maybeSingle();
   if (!order) return `Заказ ${normalized} не найден.`;
 
   const { data: existing } = await admin
@@ -290,7 +327,8 @@ async function takeOrder(sender: Sender, number: string | undefined): Promise<st
     .eq("role", "manager")
     .neq("status", "rejected")
     .maybeSingle();
-  if (existing && existing.user_id !== sender.userId) return `Заказ ${normalized} уже ведёт другой менеджер.`;
+  if (existing && existing.user_id !== sender.userId)
+    return `Заказ ${normalized} уже ведёт другой менеджер.`;
   if (!existing) {
     await admin.from("order_assignments").insert({
       order_id: order.id,

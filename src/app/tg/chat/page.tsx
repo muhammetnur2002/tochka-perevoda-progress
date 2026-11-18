@@ -29,7 +29,7 @@ export default function TgChatPage() {
   if (error || orders.length === 0) {
     return (
       <p className="m-3 rounded-2xl bg-white p-5 text-center text-sm text-slate-700">
-        Чат доступен по оформленному заказу. Вопрос до заказа можно задать боту обычным сообщением.
+        Söhbetdeşlik berlen sargyt üçin elýeterlidir. Sargyt bermezden öň botdan sorap bilersiňiz.
       </p>
     );
   }
@@ -37,7 +37,7 @@ export default function TgChatPage() {
   return (
     <div className="flex flex-1 flex-col gap-2.5 p-3">
       <label className="sr-only" htmlFor="tg-chat-order">
-        Заказ
+        Sargyt
       </label>
       <select
         id="tg-chat-order"
@@ -47,11 +47,17 @@ export default function TgChatPage() {
       >
         {orders.map((o) => (
           <option key={o.id} value={o.id}>
-            Чат по заказу {o.public_number}
+            Sargyt boýunça söhbetdeşlik {o.public_number}
           </option>
         ))}
       </select>
-      {selected && <ChatPanel key={selected} orderId={selected} className="h-[calc(100vh-190px)] min-h-[360px]" />}
+      {selected && (
+        <ChatPanel
+          key={selected}
+          orderId={selected}
+          className="h-[calc(100vh-190px)] min-h-[360px]"
+        />
+      )}
     </div>
   );
 }

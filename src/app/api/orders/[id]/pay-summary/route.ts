@@ -16,13 +16,16 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     await requireOrderAccess(req, params.id);
     const { data: order } = await createAdminClient()
       .from("orders")
-      .select("public_number, total_price, paid_amount, payment_mode, office:offices(address, hours, phone)")
+      .select(
+        "currency, public_number, total_price, paid_amount, payment_mode, office:offices(address, hours, phone)",
+      )
       .eq("id", params.id)
       .maybeSingle();
     if (!order) throw notFound("Заказ не найден");
     return NextResponse.json(
       {
         publicNumber: order.public_number,
+        currency: order.currency,
         total: Number(order.total_price),
         paid: Number(order.paid_amount),
         remaining: Math.max(0, Number(order.total_price) - Number(order.paid_amount)),

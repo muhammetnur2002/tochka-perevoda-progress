@@ -10,7 +10,14 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,7 +25,7 @@ import { FileDropzone } from "./file-dropzone";
 import { LanguagePairPicker, OfficePicker } from "./placement-pickers";
 import { PaymentModePicker } from "./payment-mode-picker";
 import { useCart } from "@/components/cart/cart-provider";
-import { isValidRuPhone, phoneMask } from "@/lib/format/phone";
+import { isValidTmPhone, phoneMask } from "@/lib/format/phone";
 import { apiFetch, saveOrderToken, uploadOrderFile } from "@/lib/client/api";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +34,7 @@ const PAY_METHODS = ["sbp", "qr", "card"] as const;
 function buildSchema(t: (key: string) => string) {
   return z.object({
     name: z.string().trim().min(2, t("errors.name")).max(120),
-    phone: z.string().refine(isValidRuPhone, t("errors.phone")),
+    phone: z.string().refine(isValidTmPhone, t("errors.phone")),
     email: z.string().trim().email(t("errors.email")).or(z.literal("")),
     telegram: z.string().trim().max(64),
     type: z.enum(["individual", "company"]),
@@ -61,7 +68,10 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
   const { items, options, clear, setDeliveryAddress } = useCart();
   const [files, setFiles] = React.useState<File[]>([]);
   const [stage, setStage] = React.useState<string | null>(null);
-  const [placementErrors, setPlacementErrors] = React.useState<{ office?: string; language?: string }>({});
+  const [placementErrors, setPlacementErrors] = React.useState<{
+    office?: string;
+    language?: string;
+  }>({});
   const schema = React.useMemo(() => buildSchema(t), [t]);
   const needsLanguage = items.some((i) => i.category === "translation");
 
@@ -145,7 +155,9 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
       if (onCreated) onCreated({ ...order, payMethod: values.payMethod });
       else if (options.paymentMode === "office") {
         // оплата в точке: онлайн ничего не платим, показываем, куда и сколько принести
-        router.push(`/checkout/success/${encodeURIComponent(order.publicNumber)}?order=${order.orderId}&office=1`);
+        router.push(
+          `/checkout/success/${encodeURIComponent(order.publicNumber)}?order=${order.orderId}&office=1`,
+        );
       } else router.push(`/checkout/pay/${order.orderId}?method=${values.payMethod}`);
     } catch (err) {
       toast.error((err as Error).message);
@@ -169,7 +181,10 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
   return (
     <Form {...form}>
       <form id="order-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-5" noValidate>
-        <section id="placement" className="grid gap-5 rounded-2xl border bg-card p-5 lg:grid-cols-2">
+        <section
+          id="placement"
+          className="grid gap-5 rounded-2xl border bg-card p-5 lg:grid-cols-2"
+        >
           <OfficePicker error={placementErrors.office} />
           {needsLanguage && <LanguagePairPicker error={placementErrors.language} />}
         </section>
@@ -183,7 +198,12 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
               <FormItem>
                 <FormLabel>{t("name")}</FormLabel>
                 <FormControl>
-                  <Input autoComplete="name" placeholder={t("namePlaceholder")} className="h-11" {...field} />
+                  <Input
+                    autoComplete="name"
+                    placeholder={t("namePlaceholder")}
+                    className="h-11"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -200,7 +220,7 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
                     type="tel"
                     inputMode="tel"
                     autoComplete="tel"
-                    placeholder="+7 (___) ___-__-__"
+                    placeholder="+993 (__) __-__-__"
                     className="h-11"
                     {...field}
                     onChange={(e) => field.onChange(phoneMask(e.target.value))}
@@ -217,7 +237,13 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
               <FormItem>
                 <FormLabel>{t("email")}</FormLabel>
                 <FormControl>
-                  <Input type="email" autoComplete="email" placeholder={t("emailPlaceholder")} className="h-11" {...field} />
+                  <Input
+                    type="email"
+                    autoComplete="email"
+                    placeholder={t("emailPlaceholder")}
+                    className="h-11"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -267,7 +293,12 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
                 <FormItem>
                   <FormLabel>{t("inn")}</FormLabel>
                   <FormControl>
-                    <Input inputMode="numeric" placeholder={t("innPlaceholder")} className="h-11" {...field} />
+                    <Input
+                      inputMode="numeric"
+                      placeholder={t("innPlaceholder")}
+                      className="h-11"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -321,32 +352,34 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
         </section>
 
         {options.paymentMode === "online" && (
-        <section className="space-y-3 rounded-2xl border bg-card p-5">
-          <h2 className="text-lg font-bold text-brand-800">{t("payMethod")}</h2>
-          <FormField
-            control={form.control}
-            name="payMethod"
-            render={({ field }) => (
-              <div className="grid gap-2.5 sm:grid-cols-3">
-                {PAY_METHODS.map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    aria-pressed={field.value === m}
-                    onClick={() => field.onChange(m)}
-                    className={cn(
-                      "flex min-h-16 flex-col items-start gap-0.5 rounded-xl p-3 text-left text-brand-800",
-                      field.value === m ? "border-2 border-gold-400 bg-gold-50" : "border border-input bg-background",
-                    )}
-                  >
-                    <strong>{tp(m)}</strong>
-                    <span className="text-xs text-muted-foreground">{tp(`${m}Hint`)}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          />
-        </section>
+          <section className="space-y-3 rounded-2xl border bg-card p-5">
+            <h2 className="text-lg font-bold text-brand-800">{t("payMethod")}</h2>
+            <FormField
+              control={form.control}
+              name="payMethod"
+              render={({ field }) => (
+                <div className="grid gap-2.5 sm:grid-cols-3">
+                  {PAY_METHODS.map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      aria-pressed={field.value === m}
+                      onClick={() => field.onChange(m)}
+                      className={cn(
+                        "flex min-h-16 flex-col items-start gap-0.5 rounded-xl p-3 text-left text-brand-800",
+                        field.value === m
+                          ? "border-2 border-gold-400 bg-gold-50"
+                          : "border border-input bg-background",
+                      )}
+                    >
+                      <strong>{tp(m)}</strong>
+                      <span className="text-xs text-muted-foreground">{tp(`${m}Hint`)}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            />
+          </section>
         )}
 
         <FormField
@@ -384,7 +417,13 @@ export function OrderForm({ source = "web", defaults, onCreated }: OrderFormProp
           )}
         />
 
-        <Button type="submit" variant="gold" size="xl" className="w-full lg:hidden" disabled={!!stage}>
+        <Button
+          type="submit"
+          variant="gold"
+          size="xl"
+          className="w-full lg:hidden"
+          disabled={!!stage}
+        >
           {stage ? (
             <>
               <Loader2 className="animate-spin" /> {stage}
@@ -406,7 +445,13 @@ export function OrderSubmitButton() {
   const tp = useTranslations("payment");
   const { options } = useCart();
   return (
-    <Button type="submit" form="order-form" variant="gold" size="xl" className="hidden w-full lg:inline-flex">
+    <Button
+      type="submit"
+      form="order-form"
+      variant="gold"
+      size="xl"
+      className="hidden w-full lg:inline-flex"
+    >
       {options.paymentMode === "office" ? tp("submitOffice") : t("submit")}
     </Button>
   );

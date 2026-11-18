@@ -1,19 +1,15 @@
 import { z } from "zod";
-import { isValidRuPhone, normalizePhone } from "@/lib/format/phone";
+import { isValidTmPhone, normalizePhone } from "@/lib/format/phone";
 
 /** Имя: 2–120 символов. */
-export const nameSchema = z
-  .string()
-  .trim()
-  .min(2, "Укажите имя")
-  .max(120, "Имя слишком длинное");
+export const nameSchema = z.string().trim().min(2, "Укажите имя").max(120, "Имя слишком длинное");
 
-/** Телефон РФ с нормализацией в E.164. */
+/** Телефон Туркменистана с нормализацией в E.164. */
 export const phoneSchema = z
   .string()
   .trim()
   .min(6, "Укажите телефон")
-  .refine(isValidRuPhone, "Введите корректный номер телефона РФ")
+  .refine(isValidTmPhone, "+993 belgili dogry telefon belgisini giriziň")
   .transform(normalizePhone);
 
 /** Email (необязательный). */

@@ -21,7 +21,9 @@ export default async function AccountOrdersPage() {
   const supabase = createClient();
   const { data: orders } = await supabase
     .from("orders")
-    .select("id, public_number, status, proof_status, total_price, paid_amount, created_at, items:order_items(service_id, name_snapshot, quantity), files(id)")
+    .select(
+      "id, currency, public_number, status, proof_status, total_price, paid_amount, created_at, items:order_items(service_id, name_snapshot, quantity), files(id)",
+    )
     .eq("user_id", profile.id)
     .order("created_at", { ascending: false })
     .limit(100);
@@ -29,9 +31,7 @@ export default async function AccountOrdersPage() {
   if (!orders?.length) {
     return (
       <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed p-12 text-center">
-        <p className="text-muted-foreground">
-          {t("empty")}
-        </p>
+        <p className="text-muted-foreground">{t("empty")}</p>
         <Button asChild variant="gold">
           <Link href="/calculator">{t("calculate")}</Link>
         </Button>
@@ -45,14 +45,23 @@ export default async function AccountOrdersPage() {
         const unpaid = Number(o.paid_amount) < Number(o.total_price) && o.status !== "cancelled";
         const filesCount = o.files?.length ?? 0;
         return (
-          <li key={o.id} className="flex flex-wrap items-center gap-4 rounded-2xl border bg-card px-5 py-4">
+          <li
+            key={o.id}
+            className="flex flex-wrap items-center gap-4 rounded-2xl border bg-card px-5 py-4"
+          >
             <div className="min-w-0 flex-1 basis-64">
-              <Link href={`/account/orders/${o.id}`} className="text-lg font-bold text-brand-800 hover:underline">
+              <Link
+                href={`/account/orders/${o.id}`}
+                className="text-lg font-bold text-brand-800 hover:underline"
+              >
                 {o.public_number}
               </Link>
-              <div className="text-sm text-slate-700">{(o.items ?? []).map((i) => i.name_snapshot).join(", ")}</div>
+              <div className="text-sm text-slate-700">
+                {(o.items ?? []).map((i) => i.name_snapshot).join(", ")}
+              </div>
               <div className="text-xs text-muted-foreground">
-                {t("from", { date: formatDateShort(o.created_at) })} · {t("files", { count: filesCount })}
+                {t("from", { date: formatDateShort(o.created_at) })} ·{" "}
+                {t("files", { count: filesCount })}
               </div>
             </div>
             {o.proof_status === "awaiting_client" && (
@@ -61,7 +70,9 @@ export default async function AccountOrdersPage() {
               </Button>
             )}
             <OrderStatusBadge status={o.status} />
-            <strong className="w-28 text-right text-lg text-brand-800">{formatMoney(Number(o.total_price))}</strong>
+            <strong className="w-28 text-right text-lg text-brand-800">
+              {formatMoney(Number(o.total_price), o.currency)}
+            </strong>
             <div className="flex gap-2">
               {unpaid ? (
                 <Button asChild variant="outline">

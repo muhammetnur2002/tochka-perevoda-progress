@@ -1,9 +1,9 @@
 {
   "common": {
     "language": "Til",
-    "brandName": "Точка Перевода Прогресс",
-    "brandShort": "ТОЧКА ПЕРЕВОДА",
-    "brandSub": "ПРОГРЕСС",
+    "brandName": "",
+    "brandShort": "",
+    "brandSub": "",
     "city": "Qozon",
     "toHome": "bosh sahifaga",
     "loading": "Yuklanmoqda…",
@@ -15,14 +15,14 @@
     "download": "Yuklab olish",
     "open": "Ochish",
     "remove": "Oʻchirish",
-    "phonePlaceholder": "+7 (___) ___-__-__",
+    "phonePlaceholder": "+993 (__) __-__-__",
     "error": "Nimadir notoʻgʻri ketdi",
     "retry": "Qayta urinish",
     "notFoundTitle": "Sahifa topilmadi",
     "notFoundText": "Soʻralgan sahifa mavjud emas yoki koʻchirilgan.",
     "toMain": "Bosh sahifaga",
     "errorText": "Xatolik yuz berdi. Qaytadan urinib koʻring.",
-    "rub": "₽"
+    "rub": "manat"
   },
   "nav": {
     "home": "Bosh sahifa",
@@ -211,7 +211,7 @@
     "factDays": "1–2 kun",
     "factServices": "Narxnomada 24 ta xizmat",
     "factOffices": "3 ta qabul punkti",
-    "logoAlt": "«Точка Перевода Прогресс» logotipi",
+    "logoAlt": "",
     "servicesTitle": "Xizmatlar va narxlar",
     "servicesSubtitle": "Amaldagi narxnoma. Shoshilinchlik va sahifalar sonini hisobga olgan aniq narxni kalkulyator hisoblaydi.",
     "allServices": "Barcha xizmatlar va narxlar",
@@ -259,7 +259,7 @@
     "faq": {
       "price": {
         "q": "Bir sahifa tarjimasi qancha turadi?",
-        "a": "Yuridik va tibbiy hujjatlar — sahifasi 550 ₽, texnik hujjatlar — 650 ₽. Pasport, diplom, maʼlumotnoma — katalogdagi qatʼiy narxda."
+        "a": "Yuridik va tibbiy hujjatlar — sahifasi 550 manat, texnik hujjatlar — 650 manat. Pasport, diplom, maʼlumotnoma — katalogdagi qatʼiy narxda."
       },
       "time": {
         "q": "Tarjima qancha vaqtda tayyor boʻladi?",
@@ -379,7 +379,7 @@
     "changeItems": "Tarkibni oʻzgartirish",
     "errors": {
       "name": "Ismingizni kiriting",
-      "phone": "Rossiya telefon raqamini kiriting",
+      "phone": "Turkmaniston telefon raqamini kiriting: +993 va 8 ta raqam",
       "email": "Email notoʻgʻri",
       "consent": "Maʼlumotlarni qayta ishlashga roziliksiz buyurtma berib boʻlmaydi",
       "address": "Yetkazib berish manzilini kiriting",
@@ -509,7 +509,7 @@
       "submit": "Roʻyxatdan oʻtish",
       "created": "Akkaunt yaratildi",
       "confirmEmail": "Emailni tasdiqlang — havolani yubordik",
-      "phoneInvalid": "Toʻgʻri Rossiya telefon raqamini kiriting",
+      "phoneInvalid": "Turkmaniston telefon raqamini kiriting: +993 va 8 ta raqam",
       "haveAccount": "Akkauntingiz bormi?",
       "login": "Kirish"
     },
@@ -592,7 +592,7 @@
     "phoneTitle": "Telefon",
     "phoneText": "Buyurtmalar haqidagi xabarnomalar telefonga keladi. Kod bilan tasdiqlangandan soʻng, shu raqamga tizimga kirmasdan berilgan buyurtmalar kabinetga biriktiriladi.",
     "phoneNumber": "Raqam",
-    "phoneInvalid": "Rossiya telefon raqamini kiriting",
+    "phoneInvalid": "Turkmaniston telefon raqamini kiriting: +993 va 8 ta raqam",
     "verified": "tasdiqlangan",
     "getCode": "Kod olish",
     "resendCode": "Kodni qayta yuborish",

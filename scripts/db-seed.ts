@@ -22,7 +22,9 @@ if (process.env.NODE_ENV === "production" && !process.argv.includes("--yes-i-kno
   process.exit(1);
 }
 
-const admin = createClient<Database>(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
+const admin = createClient<Database>(url, key, {
+  auth: { autoRefreshToken: false, persistSession: false },
+});
 
 interface DemoUser {
   email: string;
@@ -34,17 +36,63 @@ interface DemoUser {
 
 /** Пароли — только для локальной разработки (см. README «Демо-доступы»). */
 const DEMO_USERS: DemoUser[] = [
-  { email: "admin@tochka.local", password: "Admin123!", role: "admin", name: "Администратор", phone: "79000000001" },
-  { email: "manager@tochka.local", password: "Manager123!", role: "manager", name: "Менеджер Гульнара", phone: "79000000002" },
-  { email: "translator@tochka.local", password: "Translator123!", role: "translator", name: "Переводчик Ирина", phone: "79000000003" },
-  { email: "notary@tochka.local", password: "Notary123!", role: "notary", name: "Нотариус Галина", phone: "79000000004" },
-  { email: "printer@tochka.local", password: "Printer123!", role: "printer", name: "Печать Алсу", phone: "79000000005" },
-  { email: "client@tochka.local", password: "Client123!", role: "client", name: "Айгуль Сафина", phone: "79000000006" },
-  { email: "client2@tochka.local", password: "Client123!", role: "client", name: "Бехруз Ахмадов", phone: "79000000007" },
+  {
+    email: "admin@tochka.local",
+    password: "Admin123!",
+    role: "admin",
+    name: "Администратор",
+    phone: "99361000001",
+  },
+  {
+    email: "manager@tochka.local",
+    password: "Manager123!",
+    role: "manager",
+    name: "Менеджер Гульнара",
+    phone: "99361000002",
+  },
+  {
+    email: "translator@tochka.local",
+    password: "Translator123!",
+    role: "translator",
+    name: "Переводчик Ирина",
+    phone: "99361000003",
+  },
+  {
+    email: "notary@tochka.local",
+    password: "Notary123!",
+    role: "notary",
+    name: "Нотариус Галина",
+    phone: "99361000004",
+  },
+  {
+    email: "printer@tochka.local",
+    password: "Printer123!",
+    role: "printer",
+    name: "Печать Алсу",
+    phone: "99361000005",
+  },
+  {
+    email: "client@tochka.local",
+    password: "Client123!",
+    role: "client",
+    name: "Айгуль Сафина",
+    phone: "99361000006",
+  },
+  {
+    email: "client2@tochka.local",
+    password: "Client123!",
+    role: "client",
+    name: "Бехруз Ахмадов",
+    phone: "99361000007",
+  },
 ];
 
 async function ensureUser(u: DemoUser): Promise<string> {
-  const { data: existing } = await admin.from("users").select("id").eq("email", u.email).maybeSingle();
+  const { data: existing } = await admin
+    .from("users")
+    .select("id")
+    .eq("email", u.email)
+    .maybeSingle();
   let id = existing?.id;
 
   if (!id) {
@@ -65,14 +113,23 @@ async function ensureUser(u: DemoUser): Promise<string> {
   // Роль и подтверждённый телефон выставляет сервер (service_role)
   const { error } = await admin
     .from("users")
-    .update({ role: u.role, name: u.name, phone: u.phone, phone_verified_at: new Date().toISOString() })
+    .update({
+      role: u.role,
+      name: u.name,
+      phone: u.phone,
+      phone_verified_at: new Date().toISOString(),
+    })
     .eq("id", id);
   if (error) throw error;
   return id;
 }
 
 async function serviceBySlug(slug: string) {
-  const { data, error } = await admin.from("services").select("id, name, price").eq("slug", slug).single();
+  const { data, error } = await admin
+    .from("services")
+    .select("id, name, price")
+    .eq("slug", slug)
+    .single();
   if (error || !data) throw new Error(`Услуга ${slug} не найдена — сначала pnpm db:push`);
   return data;
 }
@@ -83,7 +140,12 @@ async function languageId(code: string): Promise<string | null> {
 }
 
 async function clientIdFor(userId: string): Promise<string> {
-  const { data } = await admin.from("clients").select("id").eq("user_id", userId).limit(1).maybeSingle();
+  const { data } = await admin
+    .from("clients")
+    .select("id")
+    .eq("user_id", userId)
+    .limit(1)
+    .maybeSingle();
   if (data) return data.id;
   throw new Error("Карточка клиента не создана триггером handle_new_user");
 }
@@ -103,7 +165,9 @@ interface DemoOrder {
 
 async function createDemoOrder(o: DemoOrder, ids: Map<string, string>) {
   const userId = ids.get(o.clientUser)!;
-  const items = await Promise.all(o.items.map(async (i) => ({ ...(await serviceBySlug(i.slug)), quantity: i.quantity })));
+  const items = await Promise.all(
+    o.items.map(async (i) => ({ ...(await serviceBySlug(i.slug)), quantity: i.quantity })),
+  );
   const subtotal = items.reduce((s, i) => s + Number(i.price) * i.quantity, 0);
 
   const { data: order, error } = await admin
@@ -149,7 +213,11 @@ async function createDemoOrder(o: DemoOrder, ids: Map<string, string>) {
   }
   for (const status of o.path) {
     if (status === "confirmed" && o.paid) continue;
-    await admin.rpc("change_order_status", { p_order_id: order.id, p_status: status, p_comment: "демо-данные" });
+    await admin.rpc("change_order_status", {
+      p_order_id: order.id,
+      p_status: status,
+      p_comment: "демо-данные",
+    });
   }
   if (o.assignTranslator) {
     await admin.from("order_assignments").insert({
@@ -161,7 +229,9 @@ async function createDemoOrder(o: DemoOrder, ids: Map<string, string>) {
       due_at: new Date(Date.now() + o.deadlineHours * 3_600_000).toISOString(),
     });
   }
-  console.log(`  + ${order.public_number}: ${o.items.map((i) => i.slug).join(", ")} → ${o.path.at(-1) ?? "new"}`);
+  console.log(
+    `  + ${order.public_number}: ${o.items.map((i) => i.slug).join(", ")} → ${o.path.at(-1) ?? "new"}`,
+  );
 }
 
 async function main() {
@@ -170,11 +240,18 @@ async function main() {
   for (const u of DEMO_USERS) ids.set(u.email, await ensureUser(u));
 
   const translatorId = ids.get("translator@tochka.local")!;
-  const langs = (await Promise.all(["en", "uz", "tg", "de"].map(languageId))).filter((x): x is string => Boolean(x));
+  const langs = (await Promise.all(["en", "uz", "tg", "de"].map(languageId))).filter(
+    (x): x is string => Boolean(x),
+  );
   await admin
     .from("translators")
     .upsert(
-      { user_id: translatorId, languages: langs, specialization: "юридические, документы личного статуса", capacity_per_day: 5 },
+      {
+        user_id: translatorId,
+        languages: langs,
+        specialization: "юридические, документы личного статуса",
+        capacity_per_day: 5,
+      },
       { onConflict: "user_id" },
     );
 
@@ -187,11 +264,65 @@ async function main() {
   } else {
     console.log("Заказы:");
     const orders: DemoOrder[] = [
-      { clientUser: "client@tochka.local", items: [{ slug: "passport-all", quantity: 1 }], path: ["confirmed", "in_progress"], paid: true, source: "web", from: "uz", to: "ru", deadlineHours: 20, comment: "ФИО латиницей как в загранпаспорте", assignTranslator: true },
-      { clientUser: "client@tochka.local", items: [{ slug: "diploma", quantity: 1 }, { slug: "diploma-stitching", quantity: 1 }], path: ["confirmed", "in_progress", "ready"], paid: true, source: "mini_app", from: "tg", to: "ru", deadlineHours: -80, assignTranslator: true },
-      { clientUser: "client@tochka.local", items: [{ slug: "dms-student", quantity: 1 }], path: ["confirmed", "in_progress", "ready", "issued", "completed"], paid: true, source: "walkin", from: "ru", to: "ru", deadlineHours: -240 },
-      { clientUser: "client2@tochka.local", items: [{ slug: "legal", quantity: 12 }], path: [], paid: false, source: "web", from: "en", to: "ru", deadlineHours: 44 },
-      { clientUser: "client2@tochka.local", items: [{ slug: "photo", quantity: 1 }, { slug: "laminating", quantity: 2 }], path: ["confirmed"], paid: false, source: "walkin", from: "ru", to: "ru", deadlineHours: 6 },
+      {
+        clientUser: "client@tochka.local",
+        items: [{ slug: "passport-all", quantity: 1 }],
+        path: ["confirmed", "in_progress"],
+        paid: true,
+        source: "web",
+        from: "uz",
+        to: "ru",
+        deadlineHours: 20,
+        comment: "ФИО латиницей как в загранпаспорте",
+        assignTranslator: true,
+      },
+      {
+        clientUser: "client@tochka.local",
+        items: [
+          { slug: "diploma", quantity: 1 },
+          { slug: "diploma-stitching", quantity: 1 },
+        ],
+        path: ["confirmed", "in_progress", "ready"],
+        paid: true,
+        source: "mini_app",
+        from: "tg",
+        to: "ru",
+        deadlineHours: -80,
+        assignTranslator: true,
+      },
+      {
+        clientUser: "client@tochka.local",
+        items: [{ slug: "dms-student", quantity: 1 }],
+        path: ["confirmed", "in_progress", "ready", "issued", "completed"],
+        paid: true,
+        source: "walkin",
+        from: "ru",
+        to: "ru",
+        deadlineHours: -240,
+      },
+      {
+        clientUser: "client2@tochka.local",
+        items: [{ slug: "legal", quantity: 12 }],
+        path: [],
+        paid: false,
+        source: "web",
+        from: "en",
+        to: "ru",
+        deadlineHours: 44,
+      },
+      {
+        clientUser: "client2@tochka.local",
+        items: [
+          { slug: "photo", quantity: 1 },
+          { slug: "laminating", quantity: 2 },
+        ],
+        path: ["confirmed"],
+        paid: false,
+        source: "walkin",
+        from: "ru",
+        to: "ru",
+        deadlineHours: 6,
+      },
     ];
     for (const o of orders) await createDemoOrder(o, ids);
   }

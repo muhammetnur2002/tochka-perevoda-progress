@@ -28,7 +28,7 @@ export async function createPaymentRequest(
   const admin = createAdminClient();
   const { data: order } = await admin
     .from("orders")
-    .select("id, status, total_price, paid_amount, extra_charge")
+    .select("id, currency, status, total_price, paid_amount, extra_charge")
     .eq("id", orderId)
     .maybeSingle();
   if (!order) throw notFound("Заказ не найден");
@@ -46,7 +46,9 @@ export async function createPaymentRequest(
       .eq("id", orderId);
     if (error) throw error;
   } else if (amount > remaining + 0.009) {
-    throw badRequest(`К оплате осталось ${remaining.toFixed(2)} ₽ — выставить больше нельзя`);
+    throw badRequest(
+      `К оплате осталось ${remaining.toFixed(2)} ${order.currency} — выставить больше нельзя`,
+    );
   }
 
   const { data: request, error } = await admin
@@ -62,7 +64,11 @@ export async function createPaymentRequest(
     .single();
   if (error) {
     // не оставляем доплату без запроса
-    if (input.isExtra) await admin.from("orders").update({ extra_charge: Number(order.extra_charge) }).eq("id", orderId);
+    if (input.isExtra)
+      await admin
+        .from("orders")
+        .update({ extra_charge: Number(order.extra_charge) })
+        .eq("id", orderId);
     throw error;
   }
 
@@ -91,11 +97,17 @@ export async function cancelPaymentRequest(requestId: string): Promise<void> {
   if (!updated) throw conflict("Запрос уже обработан");
 
   if (request.is_extra) {
-    const { data: order } = await admin.from("orders").select("extra_charge").eq("id", request.order_id).maybeSingle();
+    const { data: order } = await admin
+      .from("orders")
+      .select("extra_charge")
+      .eq("id", request.order_id)
+      .maybeSingle();
     if (order) {
       await admin
         .from("orders")
-        .update({ extra_charge: Math.max(0, round2(Number(order.extra_charge) - Number(request.amount))) })
+        .update({
+          extra_charge: Math.max(0, round2(Number(order.extra_charge) - Number(request.amount))),
+        })
         .eq("id", request.order_id);
     }
   }
@@ -103,25 +115,39 @@ export async function cancelPaymentRequest(requestId: string): Promise<void> {
 
 export interface PaymentRequestInfo {
   request: Pick<PaymentRequestRow, "id" | "amount" | "reason" | "is_extra" | "status">;
-  order: { id: string; publicNumber: string; remaining: number };
+  order: { id: string; publicNumber: string; remaining: number; currency: string };
 }
 
 /** Данные для страницы оплаты по ссылке (без лишнего: только сумма, причина, остаток). */
-export async function getPaymentRequestInfo(requestId: string): Promise<PaymentRequestInfo & { orderId: string }> {
+export async function getPaymentRequestInfo(
+  requestId: string,
+): Promise<PaymentRequestInfo & { orderId: string }> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("payment_requests")
-    .select("id, order_id, amount, reason, is_extra, status, order:orders(id, public_number, total_price, paid_amount)")
+    .select(
+      "id, order_id, amount, reason, is_extra, status, order:orders(id, currency, public_number, total_price, paid_amount)",
+    )
     .eq("id", requestId)
     .maybeSingle();
   if (!data || !data.order) throw notFound("Ссылка на оплату не найдена");
   return {
     orderId: data.order_id,
-    request: { id: data.id, amount: data.amount, reason: data.reason, is_extra: data.is_extra, status: data.status },
+    request: {
+      id: data.id,
+      amount: data.amount,
+      reason: data.reason,
+      is_extra: data.is_extra,
+      status: data.status,
+    },
     order: {
       id: data.order.id,
       publicNumber: data.order.public_number,
-      remaining: Math.max(0, round2(Number(data.order.total_price) - Number(data.order.paid_amount))),
+      currency: data.order.currency,
+      remaining: Math.max(
+        0,
+        round2(Number(data.order.total_price) - Number(data.order.paid_amount)),
+      ),
     },
   };
 }

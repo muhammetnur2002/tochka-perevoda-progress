@@ -17,13 +17,24 @@ export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
   try {
     const ip = clientIp(req.headers);
-    if (!(await checkRateLimit({ bucket: "order-create", identifier: ip, limit: 5, windowMs: 10 * 60_000 }))) {
+    if (
+      !(await checkRateLimit({
+        bucket: "order-create",
+        identifier: ip,
+        limit: 5,
+        windowMs: 10 * 60_000,
+      }))
+    ) {
       return tooManyRequests();
     }
     const input = await parseJson(req, createOrderSchema);
     const actor = await getActor();
     const meta = requestMeta(req);
-    const result = await createOrder(input, { actorId: actor?.id, ip: meta.ip, userAgent: meta.userAgent });
+    const result = await createOrder(input, {
+      actorId: actor?.id,
+      ip: meta.ip,
+      userAgent: meta.userAgent,
+    });
     return NextResponse.json(result, { status: 201 });
   } catch (err) {
     return errorResponse(err);
@@ -40,7 +51,7 @@ export async function GET(req: NextRequest) {
     let query = actor.supabase
       .from("orders")
       .select(
-        "id, public_number, status, proof_status, total_price, paid_amount, payment_mode, deadline, delivery_type, source, language_from, office_id, created_at, updated_at, office:offices(name), client:clients(name, phone), items:order_items(service_id, name_snapshot, quantity), assignments:order_assignments(role, status, user_id, user:users!order_assignments_user_id_fkey(name))",
+        "id, currency, public_number, status, proof_status, total_price, paid_amount, payment_mode, deadline, delivery_type, source, language_from, office_id, created_at, updated_at, office:offices(name), client:clients(name, phone), items:order_items(service_id, name_snapshot, quantity), assignments:order_assignments(role, status, user_id, user:users!order_assignments_user_id_fkey(name))",
       )
       .order("created_at", { ascending: false })
       .limit(limit);

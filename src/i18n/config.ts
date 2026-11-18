@@ -2,8 +2,8 @@
  * Языки интерфейса.
  *  - Сайт и личный кабинет клиента — 9 языков (русский + 8 для иностранных граждан).
  *  - CRM и кабинет сотрудника — 3 языка (русский, английский, туркменский).
- * Язык хранится в cookie NEXT_LOCALE (без префиксов в URL); по умолчанию —
- * из заголовка Accept-Language браузера, иначе русский.
+ * Язык хранится в cookie NEXT_LOCALE_TM (без префиксов в URL); по умолчанию —
+ * туркменский независимо от языка браузера.
  */
 export const SITE_LOCALES = ["ru", "en", "tk", "tr", "uz", "kk", "ky", "az", "fr"] as const;
 export const STAFF_LOCALES = ["ru", "en", "tk"] as const;
@@ -11,8 +11,8 @@ export const STAFF_LOCALES = ["ru", "en", "tk"] as const;
 export type Locale = (typeof SITE_LOCALES)[number];
 export type StaffLocale = (typeof STAFF_LOCALES)[number];
 
-export const DEFAULT_LOCALE: Locale = "ru";
-export const LOCALE_COOKIE = "NEXT_LOCALE";
+export const DEFAULT_LOCALE: Locale = "tk";
+export const LOCALE_COOKIE = "NEXT_LOCALE_TM";
 
 /** Названия языков на самих языках — для переключателя. */
 export const LOCALE_NAMES: Record<Locale, string> = {

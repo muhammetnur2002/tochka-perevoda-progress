@@ -19,13 +19,18 @@ import { usePricing } from "@/hooks/use-pricing";
 import { PromoField } from "@/components/cart/promo-field";
 import { apiFetch, saveOrderToken, uploadOrderFile } from "@/lib/client/api";
 import { formatMoney } from "@/lib/format/money";
-import { isValidRuPhone, phoneMask } from "@/lib/format/phone";
-import { SERVICE_CATEGORY_LABELS } from "@/lib/config/constants";
+import { isValidTmPhone, phoneMask } from "@/lib/format/phone";
+import { useTranslations } from "next-intl";
+import { useServiceName } from "@/i18n/names";
 import type { ServiceCategory } from "@/types/database.types";
 import { cn } from "@/lib/utils";
 
 type Step = "catalog" | "cart" | "docs" | "pay" | "done";
-const UNIT: Record<string, string> = { page: "за стр.", document: "за док.", item: "за шт." };
+const UNIT: Record<string, string> = {
+  page: "sahypa üçin",
+  document: "resminama üçin",
+  item: "sany üçin",
+};
 
 interface CreatedOrder {
   orderId: string;
@@ -35,6 +40,8 @@ interface CreatedOrder {
 
 /** Заказ в Mini App: каталог → корзина → документы → оплата → готово. */
 export function MiniAppOrderFlow() {
+  const tCategories = useTranslations("categories");
+  const serviceName = useServiceName();
   const { webApp, user, auth, haptic } = useTelegram();
   const { data, isLoading } = useCatalog();
   const cart = useCart();
@@ -52,12 +59,13 @@ export function MiniAppOrderFlow() {
   const pricing = usePricing({ deliveryType: "pickup" });
   const count = cart.itemsCount;
   const hasTranslation = cart.items.some((i) => i.category === "translation");
-  const placementReady = Boolean(cart.options.officeId) && (!hasTranslation || Boolean(cart.options.languageFrom));
+  const placementReady =
+    Boolean(cart.options.officeId) && (!hasTranslation || Boolean(cart.options.languageFrom));
   const services = (data?.services ?? []).filter((s) => s.category === category);
   const back: Partial<Record<Step, Step>> = { cart: "catalog", docs: "cart" };
 
   const sharePhone = () => {
-    if (!webApp?.requestContact) return toast.info("Введите номер вручную");
+    if (!webApp?.requestContact) return toast.info("Telefon belgisini el bilen giriziň");
     webApp.requestContact((shared, res) => {
       const p = res?.responseUnsafe?.contact?.phone_number;
       if (shared && p) setPhone(phoneMask(p));
@@ -65,14 +73,15 @@ export function MiniAppOrderFlow() {
   };
 
   const createOrder = async () => {
-    if (!isValidRuPhone(phone)) return toast.error("Укажите телефон для уведомлений");
-    if (!consent) return toast.error("Нужно согласие на обработку персональных данных");
+    if (!isValidTmPhone(phone)) return toast.error("+993 belgili telefon belgisini giriziň");
+    if (!consent) return toast.error("Şahsy maglumatlary işlemäge razylyk gerek");
     setBusy(true);
     try {
       const created = await apiFetch<CreatedOrder>("/api/orders", {
         method: "POST",
         body: JSON.stringify({
-          name: [user?.first_name, user?.last_name].filter(Boolean).join(" ") || "Клиент Telegram",
+          name:
+            [user?.first_name, user?.last_name].filter(Boolean).join(" ") || "Telegram müşderisi",
           phone,
           telegram: user?.username ? `@${user.username}` : null,
           type: "individual",
@@ -89,8 +98,8 @@ export function MiniAppOrderFlow() {
       });
       saveOrderToken(created.orderId, created.accessToken, created.publicNumber);
       for (const f of files) {
-        await uploadOrderFile(created.orderId, f, { token: created.accessToken }).catch((e: Error) =>
-          toast.warning(`«${f.name}»: ${e.message}`),
+        await uploadOrderFile(created.orderId, f, { token: created.accessToken }).catch(
+          (e: Error) => toast.warning(`«${f.name}»: ${e.message}`),
         );
       }
       cart.clear();
@@ -124,20 +133,27 @@ export function MiniAppOrderFlow() {
                   onClick={() => setCategory(c)}
                   className={cn(
                     "min-h-9 whitespace-nowrap rounded-full border px-3.5 text-sm font-bold",
-                    category === c ? "border-brand-800 bg-brand-800 text-white" : "border-slate-300 bg-white text-brand-800",
+                    category === c
+                      ? "border-brand-800 bg-brand-800 text-white"
+                      : "border-slate-300 bg-white text-brand-800",
                   )}
                 >
-                  {SERVICE_CATEGORY_LABELS[c]}
+                  {tCategories(c)}
                 </button>
               ))}
             </div>
-            {isLoading && Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-16 rounded-2xl" />)}
+            {isLoading &&
+              Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="h-16 rounded-2xl" />
+              ))}
             {services.map((s) => {
               const qty = cart.items.find((i) => i.key === s.slug)?.quantity ?? 0;
               return (
                 <div key={s.id} className="flex items-center gap-2.5 rounded-2xl bg-white p-3">
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-bold leading-snug">{s.name}</div>
+                    <div className="text-sm font-bold leading-snug">
+                      {serviceName(s.slug, s.name)}
+                    </div>
                     <div className="text-xs text-muted-foreground">
                       {formatMoney(Number(s.price))} {UNIT[s.unit]}
                     </div>
@@ -146,7 +162,7 @@ export function MiniAppOrderFlow() {
                     <>
                       <button
                         type="button"
-                        aria-label="Уменьшить"
+                        aria-label="Azaltmak"
                         onClick={() => cart.setQuantity(s.slug, qty - 1)}
                         className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 bg-white text-brand-800"
                       >
@@ -157,7 +173,7 @@ export function MiniAppOrderFlow() {
                   )}
                   <button
                     type="button"
-                    aria-label="Добавить"
+                    aria-label="Goşmak"
                     onClick={() => {
                       if (qty === 0) cart.addItem(s);
                       else cart.setQuantity(s.slug, qty + 1);
@@ -165,7 +181,9 @@ export function MiniAppOrderFlow() {
                     }}
                     className={cn(
                       "flex h-9 w-9 items-center justify-center rounded-lg border",
-                      qty > 0 ? "border-brand-800 bg-brand-800 text-white" : "border-slate-300 bg-white text-brand-800",
+                      qty > 0
+                        ? "border-brand-800 bg-brand-800 text-white"
+                        : "border-slate-300 bg-white text-brand-800",
                     )}
                   >
                     <Plus className="h-4 w-4" />
@@ -179,13 +197,15 @@ export function MiniAppOrderFlow() {
         {step === "cart" && (
           <>
             <section className="space-y-2 rounded-2xl bg-white p-3.5">
-              <strong className="text-brand-800">Корзина</strong>
+              <strong className="text-brand-800">Sebet</strong>
               {cart.items.map((i) => (
                 <div key={i.key} className="flex justify-between gap-2.5 text-sm">
                   <span>
-                    {i.name} × {i.quantity}
+                    {serviceName(i.slug, i.name)} × {i.quantity}
                   </span>
-                  <strong className="whitespace-nowrap">{formatMoney(i.unitPrice * i.quantity)}</strong>
+                  <strong className="whitespace-nowrap">
+                    {formatMoney(i.unitPrice * i.quantity)}
+                  </strong>
                 </div>
               ))}
             </section>
@@ -211,36 +231,57 @@ export function MiniAppOrderFlow() {
         {step === "docs" && (
           <>
             <section className="space-y-2.5 rounded-2xl bg-white p-3.5">
-              <strong className="text-brand-800">Фото или скан документа</strong>
+              <strong className="text-brand-800">Resminamanyň suraty ýa-da skany</strong>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => photoRef.current?.click()}
                   className="flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-slate-400 bg-slate-50 text-sm font-bold text-brand-800"
                 >
-                  <Camera className="h-6 w-6 text-brand-500" /> Камера
+                  <Camera className="h-6 w-6 text-brand-500" /> Kamera
                 </button>
                 <button
                   type="button"
                   onClick={() => fileRef.current?.click()}
                   className="flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-slate-400 bg-slate-50 text-sm font-bold text-brand-800"
                 >
-                  <FileText className="h-6 w-6 text-brand-500" /> Файл
+                  <FileText className="h-6 w-6 text-brand-500" /> Faýl
                 </button>
               </div>
-              <input ref={photoRef} type="file" accept="image/*" capture="environment" className="sr-only" onChange={(e) => addFiles(e.target.files)} />
-              <input ref={fileRef} type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.heic,.zip" className="sr-only" onChange={(e) => addFiles(e.target.files)} />
+              <input
+                ref={photoRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="sr-only"
+                onChange={(e) => addFiles(e.target.files)}
+              />
+              <input
+                ref={fileRef}
+                type="file"
+                multiple
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.heic,.zip"
+                className="sr-only"
+                onChange={(e) => addFiles(e.target.files)}
+              />
               {files.map((f, i) => (
-                <div key={`${f.name}-${i}`} className="flex items-center gap-2 rounded-xl border px-2.5 py-2 text-sm">
+                <div
+                  key={`${f.name}-${i}`}
+                  className="flex items-center gap-2 rounded-xl border px-2.5 py-2 text-sm"
+                >
                   <span className="min-w-0 flex-1 truncate font-semibold">{f.name}</span>
-                  <button type="button" className="text-xs text-destructive" onClick={() => setFiles(files.filter((_, j) => j !== i))}>
-                    удалить
+                  <button
+                    type="button"
+                    className="text-xs text-destructive"
+                    onClick={() => setFiles(files.filter((_, j) => j !== i))}
+                  >
+                    aýyrmak
                   </button>
                 </div>
               ))}
             </section>
             <section className="space-y-2.5 rounded-2xl bg-white p-3.5">
-              <Label htmlFor="tg-phone">Телефон для уведомлений</Label>
+              <Label htmlFor="tg-phone">Habarlar üçin telefon</Label>
               <Input
                 id="tg-phone"
                 type="tel"
@@ -248,19 +289,27 @@ export function MiniAppOrderFlow() {
                 className="h-11"
                 value={phone}
                 onChange={(e) => setPhone(phoneMask(e.target.value))}
-                placeholder="+7 (___) ___-__-__"
+                placeholder="+993 (__) __-__-__"
               />
               {webApp?.requestContact && (
-                <button type="button" onClick={sharePhone} className="min-h-10 w-full rounded-xl bg-[#EAF1FB] text-sm font-bold text-brand-500">
-                  Поделиться номером из Telegram
+                <button
+                  type="button"
+                  onClick={sharePhone}
+                  className="min-h-10 w-full rounded-xl bg-[#EAF1FB] text-sm font-bold text-brand-500"
+                >
+                  Telegram telefon belgisini paýlaşmak
                 </button>
               )}
               <label className="flex items-start gap-2.5 text-sm leading-snug text-slate-700">
-                <Checkbox checked={consent} onCheckedChange={(v) => setConsent(v === true)} className="mt-0.5 h-5 w-5" />
+                <Checkbox
+                  checked={consent}
+                  onCheckedChange={(v) => setConsent(v === true)}
+                  className="mt-0.5 h-5 w-5"
+                />
                 <span>
-                  Согласен на{" "}
+                  Razylyk berýärin:{" "}
                   <Link href="/legal/consent" className="text-brand-500 underline" target="_blank">
-                    обработку персональных данных
+                    şahsy maglumatlary işlemek
                   </Link>{" "}
                   (152-ФЗ)
                 </span>
@@ -287,10 +336,15 @@ export function MiniAppOrderFlow() {
         {step === "done" && order && (
           <section className="flex flex-col items-center gap-3 rounded-2xl bg-white p-6 text-center">
             <CheckCircle2 className="h-12 w-12 text-emerald-700" />
-            <strong className="text-xl text-brand-800">Заказ {order.publicNumber} оплачен</strong>
-            <p className="text-sm text-slate-700">Мы пришлём сообщение в этот чат, когда перевод будет готов.</p>
-            <Link href="/tg/orders" className="min-h-11 rounded-xl bg-brand-800 px-5 py-3 text-sm font-bold text-white">
-              Мои заказы
+            <strong className="text-xl text-brand-800">Sargyt {order.publicNumber} tölendi</strong>
+            <p className="text-sm text-slate-700">
+              Terjime taýýar bolanda şu söhbetdeşlige habar ibereris.
+            </p>
+            <Link
+              href="/tg/orders"
+              className="min-h-11 rounded-xl bg-brand-800 px-5 py-3 text-sm font-bold text-white"
+            >
+              Meniň sargytlarym
             </Link>
           </section>
         )}
@@ -298,22 +352,28 @@ export function MiniAppOrderFlow() {
 
       {step === "catalog" && (
         <TgMainButton
-          text={count ? `Корзина · ${count} · ${formatMoney(pricing.total)}` : "Выберите услугу"}
+          text={count ? `Sebet · ${count} · ${formatMoney(pricing.total)}` : "Hyzmat saýlaň"}
           disabled={count === 0}
           onClick={() => setStep("cart")}
         />
       )}
       {step === "cart" && (
         <TgMainButton
-          text={placementReady ? "Далее: документы" : hasTranslation ? "Выберите язык и точку" : "Выберите точку приёма"}
+          text={
+            placementReady
+              ? "Indiki: resminamalar"
+              : hasTranslation
+                ? "Dili we kabul ediş nokadyny saýlaň"
+                : "Kabul ediş nokadyny saýlaň"
+          }
           disabled={count === 0 || !placementReady}
           onClick={() => setStep("docs")}
         />
       )}
       {step === "docs" && (
         <TgMainButton
-          text={`Оформить и оплатить ${formatMoney(pricing.total)}`}
-          disabled={!consent || !isValidRuPhone(phone) || auth === "pending"}
+          text={`Sargyt edip tölemek ${formatMoney(pricing.total)}`}
+          disabled={!consent || !isValidTmPhone(phone) || auth === "pending"}
           loading={busy}
           onClick={createOrder}
         />

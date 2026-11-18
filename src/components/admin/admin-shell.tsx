@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -39,7 +38,13 @@ const NAV: { href: string; key: string; icon: typeof ClipboardList; adminOnly?: 
 ];
 
 /** Оболочка CRM: тёмно-синее меню слева (на телефоне — сверху), контент справа. */
-export function AdminShell({ children, user }: { children: React.ReactNode; user: { name: string; role: UserRole } }) {
+export function AdminShell({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user: { name: string; role: UserRole };
+}) {
   const t = useTranslations("admin.shell");
   const tRoles = useTranslations("roles");
   const pathname = usePathname();
@@ -59,7 +64,7 @@ export function AdminShell({ children, user }: { children: React.ReactNode; user
         className="flex max-w-full flex-[1_1_220px] flex-col gap-1 bg-brand-800 px-3 py-4 text-[#C9D6EA] lg:sticky lg:top-0 lg:h-screen"
       >
         <Link href="/admin" className="flex items-center gap-2.5 px-2 pb-4">
-          <Image src="/brand/logo-mark.png" alt="" width={38} height={38} className="h-[38px] w-[38px] rounded-lg bg-white p-0.5" />
+          <span aria-hidden="true" className="inline-block h-10 w-10 shrink-0" />
           <span>
             <span className="block font-extrabold text-white">{t("brand")}</span>
             <span className="text-xs">CRM · {tRoles(user.role).toLowerCase()}</span>
@@ -67,7 +72,8 @@ export function AdminShell({ children, user }: { children: React.ReactNode; user
         </Link>
         <div className="flex flex-wrap gap-1 lg:flex-col">
           {NAV.filter((n) => !n.adminOnly || user.role === "admin").map((n) => {
-            const active = n.href === "/admin" ? pathname === "/admin" : pathname.startsWith(n.href);
+            const active =
+              n.href === "/admin" ? pathname === "/admin" : pathname.startsWith(n.href);
             return (
               <Link
                 key={n.href}
@@ -91,7 +97,10 @@ export function AdminShell({ children, user }: { children: React.ReactNode; user
           />
           <div>
             <div className="truncate">{user.name}</div>
-            <button onClick={signOut} className="mt-1 inline-flex min-h-9 items-center gap-1.5 text-gold-200 hover:underline">
+            <button
+              onClick={signOut}
+              className="mt-1 inline-flex min-h-9 items-center gap-1.5 text-gold-200 hover:underline"
+            >
               <LogOut className="h-4 w-4" /> {t("signOut")}
             </button>
           </div>

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { apiFetch } from "@/lib/client/api";
-import { isValidRuPhone, normalizePhone, phoneMask } from "@/lib/format/phone";
+import { isValidTmPhone, normalizePhone, phoneMask } from "@/lib/format/phone";
 
 interface ProfileFormProps {
   initial: {
@@ -51,7 +51,10 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) throw new Error(t("sessionExpired"));
-      const { error } = await supabase.from("users").update({ name: name.trim() }).eq("id", user.id);
+      const { error } = await supabase
+        .from("users")
+        .update({ name: name.trim() })
+        .eq("id", user.id);
       if (error) throw error;
       if (password) {
         if (password.length < 8) throw new Error(t("passwordShort"));
@@ -69,7 +72,7 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
   };
 
   const sendCode = async () => {
-    if (!isValidRuPhone(phone)) return toast.error(t("phoneInvalid"));
+    if (!isValidTmPhone(phone)) return toast.error(t("phoneInvalid"));
     setPhoneBusy(true);
     try {
       await apiFetch("/api/account/phone", { method: "POST", body: JSON.stringify({ phone }) });
@@ -91,7 +94,9 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
       });
       setCodeSent(false);
       setCode("");
-      toast.success(r.claimedOrders > 0 ? t("confirmedWithOrders", { count: r.claimedOrders }) : t("confirmed"));
+      toast.success(
+        r.claimedOrders > 0 ? t("confirmedWithOrders", { count: r.claimedOrders }) : t("confirmed"),
+      );
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);
@@ -105,7 +110,13 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
       <form onSubmit={save} className="grid gap-4 rounded-2xl border bg-card p-6 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="name">{t("name")}</Label>
-          <Input id="name" className="h-11" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
+          <Input
+            id="name"
+            className="h-11"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            autoComplete="name"
+          />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="email">{t("email")}</Label>
@@ -114,10 +125,19 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
         <div className="space-y-1.5">
           <Label>{t("telegram")}</Label>
           <div className="flex h-11 items-center rounded-md border bg-muted px-3 text-sm">
-            {initial.telegramLinked ? (initial.telegram ? t("linkedAs", { username: initial.telegram }) : t("linked")) : t("notLinked")}
+            {initial.telegramLinked
+              ? initial.telegram
+                ? t("linkedAs", { username: initial.telegram })
+                : t("linked")
+              : t("notLinked")}
           </div>
           {!initial.telegramLinked && botUsername && (
-            <a className="text-xs text-brand-500 underline" href={`https://t.me/${botUsername}`} target="_blank" rel="noreferrer">
+            <a
+              className="text-xs text-brand-500 underline"
+              href={`https://t.me/${botUsername}`}
+              target="_blank"
+              rel="noreferrer"
+            >
               {t("openBot", { bot: botUsername })}
             </a>
           )}
@@ -141,9 +161,7 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
 
       <section className="space-y-3 rounded-2xl border bg-card p-6">
         <h2 className="text-lg font-bold text-brand-800">{t("phoneTitle")}</h2>
-        <p className="text-sm text-muted-foreground">
-          {t("phoneText")}
-        </p>
+        <p className="text-sm text-muted-foreground">{t("phoneText")}</p>
         <div className="flex flex-wrap items-end gap-3">
           <div className="min-w-0 flex-1 basis-56 space-y-1.5">
             <Label htmlFor="phone">{t("phoneNumber")}</Label>
@@ -157,7 +175,7 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
                 setPhone(phoneMask(e.target.value));
                 setCodeSent(false);
               }}
-              placeholder="+7 (___) ___-__-__"
+              placeholder="+993 (__) __-__-__"
             />
           </div>
           {initial.phoneVerified && !phoneChanged ? (
@@ -165,7 +183,13 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
               <CheckCircle2 className="h-4 w-4" /> {t("verified")}
             </span>
           ) : (
-            <Button type="button" variant="outline" className="h-11" onClick={sendCode} disabled={phoneBusy}>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11"
+              onClick={sendCode}
+              disabled={phoneBusy}
+            >
               {codeSent ? t("resendCode") : t("getCode")}
             </Button>
           )}
@@ -184,7 +208,12 @@ export function ProfileForm({ initial, botUsername }: ProfileFormProps) {
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
               />
             </div>
-            <Button type="button" className="h-11" onClick={confirmCode} disabled={phoneBusy || code.length !== 6}>
+            <Button
+              type="button"
+              className="h-11"
+              onClick={confirmCode}
+              disabled={phoneBusy || code.length !== 6}
+            >
               {phoneBusy ? <Loader2 className="animate-spin" /> : t("confirm")}
             </Button>
           </div>

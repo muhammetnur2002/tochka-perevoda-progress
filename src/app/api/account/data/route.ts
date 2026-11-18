@@ -23,16 +23,21 @@ export async function GET() {
       db.from("clients").select("*").eq("user_id", actor.id),
       db
         .from("orders")
-        .select("*, items:order_items(*), payments(amount, method, status, paid_at), files(original_name, kind, created_at)")
+        .select(
+          "*, items:order_items(*), payments(amount, method, status, paid_at), files(original_name, kind, created_at)",
+        )
         .eq("user_id", actor.id),
       db.from("consents").select("*").eq("user_id", actor.id),
       db.from("chat_messages").select("order_id, body, created_at").eq("sender_id", actor.id),
-      db.from("notifications").select("channel, subject, message, created_at").eq("user_id", actor.id),
+      db
+        .from("notifications")
+        .select("channel, subject, message, created_at")
+        .eq("user_id", actor.id),
     ]);
 
     const payload = {
       exported_at: new Date().toISOString(),
-      operator: "Бюро переводов «Точка Перевода Прогресс», г. Казань, ул. Сибирский Тракт, 7/6",
+      operator: "Бюро переводов «Terjime hyzmatlary», г. Казань, ул. Сибирский Тракт, 7/6",
       profile: profile.data,
       clients: clients.data ?? [],
       orders: orders.data ?? [],
@@ -68,19 +73,36 @@ export async function DELETE() {
         .is("deleted_at", null);
       const storage = await getStorage();
       for (const f of files ?? []) {
-        await storage.remove(f.storage_path).catch((e: unknown) =>
-          logger.warn("Не удалось удалить файл при удалении ПД", { id: f.id, error: (e as Error).message }),
-        );
+        await storage
+          .remove(f.storage_path)
+          .catch((e: unknown) =>
+            logger.warn("Не удалось удалить файл при удалении ПД", {
+              id: f.id,
+              error: (e as Error).message,
+            }),
+          );
       }
-      await admin.from("files").update({ deleted_at: new Date().toISOString() }).in("order_id", orderIds);
+      await admin
+        .from("files")
+        .update({ deleted_at: new Date().toISOString() })
+        .in("order_id", orderIds);
       await admin.from("chat_messages").delete().in("order_id", orderIds);
-      await admin.from("orders").update({ delivery_address: null, comment: null, user_id: null }).in("id", orderIds);
+      await admin
+        .from("orders")
+        .update({ delivery_address: null, comment: null, user_id: null })
+        .in("id", orderIds);
     }
 
     // 2. Обезличивание карточек клиента и профиля
-    await admin.from("clients").update({ name: "Удалено по запросу", phone: null, email: null, inn: null, user_id: null }).eq("user_id", actor.id);
+    await admin
+      .from("clients")
+      .update({ name: "Удалено по запросу", phone: null, email: null, inn: null, user_id: null })
+      .eq("user_id", actor.id);
     await admin.from("notifications").delete().eq("user_id", actor.id);
-    await admin.from("consents").update({ phone: null, ip: null, user_agent: null }).eq("user_id", actor.id);
+    await admin
+      .from("consents")
+      .update({ phone: null, ip: null, user_agent: null })
+      .eq("user_id", actor.id);
 
     // 3. Удаление учётной записи (профиль users удалится каскадно)
     const { error } = await admin.auth.admin.deleteUser(actor.id);

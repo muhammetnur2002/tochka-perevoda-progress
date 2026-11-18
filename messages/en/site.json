@@ -1,9 +1,9 @@
 {
   "common": {
     "language": "Language",
-    "brandName": "Точка Перевода Прогресс",
-    "brandShort": "ТОЧКА ПЕРЕВОДА",
-    "brandSub": "ПРОГРЕСС",
+    "brandName": "",
+    "brandShort": "",
+    "brandSub": "",
     "city": "Kazan",
     "toHome": "to the home page",
     "loading": "Loading…",
@@ -15,14 +15,14 @@
     "download": "Download",
     "open": "Open",
     "remove": "Remove",
-    "phonePlaceholder": "+7 (___) ___-__-__",
+    "phonePlaceholder": "+993 (__) __-__-__",
     "error": "Something went wrong",
     "retry": "Try again",
     "notFoundTitle": "Page not found",
     "notFoundText": "The page you requested does not exist or has been moved.",
     "toMain": "Go to home page",
     "errorText": "An error occurred. Please try again.",
-    "rub": "₽"
+    "rub": "manat"
   },
   "nav": {
     "home": "Home",
@@ -211,7 +211,7 @@
     "factDays": "1–2 days",
     "factServices": "24 services in the price list",
     "factOffices": "3 drop-off points",
-    "logoAlt": "«Точка Перевода Прогресс» logo",
+    "logoAlt": "",
     "servicesTitle": "Services & prices",
     "servicesSubtitle": "Current price list. The calculator gives the exact price based on urgency and the number of pages.",
     "allServices": "All services & prices",
@@ -259,7 +259,7 @@
     "faq": {
       "price": {
         "q": "How much does it cost to translate one page?",
-        "a": "Legal and medical documents — 550 ₽ per page, technical documentation — 650 ₽. Passport, diploma and certificate translations have fixed prices listed in the catalog."
+        "a": "Legal and medical documents — 550 manat per page, technical documentation — 650 manat. Passport, diploma and certificate translations have fixed prices listed in the catalog."
       },
       "time": {
         "q": "How quickly will the translation be ready?",
@@ -379,7 +379,7 @@
     "changeItems": "Edit order",
     "errors": {
       "name": "Please enter your name",
-      "phone": "Enter a Russian phone number",
+      "phone": "Enter a Turkmenistan phone number: +993 and 8 digits",
       "email": "Invalid email",
       "consent": "You cannot place an order without consenting to data processing",
       "address": "Please enter a delivery address",
@@ -509,7 +509,7 @@
       "submit": "Sign up",
       "created": "Account created",
       "confirmEmail": "Confirm your email — we have sent you a link",
-      "phoneInvalid": "Enter a valid Russian phone number",
+      "phoneInvalid": "Enter a Turkmenistan phone number: +993 and 8 digits",
       "haveAccount": "Already have an account?",
       "login": "Log in"
     },
@@ -592,7 +592,7 @@
     "phoneTitle": "Phone",
     "phoneText": "Order notifications are sent to your phone. After you confirm it with a code, orders placed with this number without logging in will be linked to your account.",
     "phoneNumber": "Number",
-    "phoneInvalid": "Enter a Russian phone number",
+    "phoneInvalid": "Enter a Turkmenistan phone number: +993 and 8 digits",
     "verified": "verified",
     "getCode": "Get code",
     "resendCode": "Resend code",

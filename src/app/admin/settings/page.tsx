@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/common/page-header";
 import { SettingsForm } from "@/components/admin/settings-form";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "Настройки" };
+export const metadata: Metadata = { title: "Sazlamalar" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminSettingsPage() {

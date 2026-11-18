@@ -1,41 +1,31 @@
-/** Утилиты нормализации и форматирования телефонов (RU). */
-
-/** Оставляет только цифры; при 10 цифрах и 8/7 в начале приводит к формату E.164. */
+/** Телефоны Туркменистана: +993 и восемь цифр национального номера. */
 export function normalizePhone(input: string): string {
-  let digits = input.replace(/\D/g, "");
-
-  if (digits.startsWith("8") && digits.length === 11) {
-    digits = "7" + digits.slice(1);
-  } else if (digits.length === 10) {
-    digits = "7" + digits;
-  }
-  return digits;
-}
-
-/** Красивый формат «+7 (900) 123-45-67». */
-export function formatPhone(input: string): string {
   const digits = input.replace(/\D/g, "");
-  if (digits.length < 10) return input;
-
-  const base = digits.startsWith("7") || digits.startsWith("8") ? digits.slice(1) : digits;
-  const cc = "7";
-  return `+${cc} (${base.slice(0, 3)}) ${base.slice(3, 6)}-${base.slice(6, 8)}-${base.slice(8, 10)}`;
+  if (input.trim().startsWith("+")) return digits;
+  if (digits.startsWith("00993")) return digits.slice(2);
+  return digits.length === 8 ? `993${digits}` : digits;
 }
-
-/** Маска для поля ввода. */
+export function isValidTmPhone(input: string): boolean {
+  return /^993\d{8}$/.test(normalizePhone(input));
+}
+export function formatPhone(input: string): string {
+  if (!isValidTmPhone(input)) return input;
+  const d = normalizePhone(input).slice(3);
+  return `+993 (${d.slice(0, 2)}) ${d.slice(2, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`;
+}
+/** Не обрезаем иностранные/слишком длинные номера: валидация их отклонит. */
 export function phoneMask(value: string): string {
-  const digits = value.replace(/\D/g, "").slice(0, 11);
-  const d = digits.startsWith("7") || digits.startsWith("8") ? digits.slice(1) : digits;
-  let res = "+7";
-  if (d.length > 0) res += ` (${d.slice(0, 3)}`;
-  if (d.length >= 3) res += `) ${d.slice(3, 6)}`;
-  if (d.length >= 6) res += `-${d.slice(6, 8)}`;
-  if (d.length >= 8) res += `-${d.slice(8, 10)}`;
-  return res;
-}
-
-/** Проверка корректности номера РФ (11 цифр, начинается с 7). */
-export function isValidRuPhone(input: string): boolean {
-  const digits = normalizePhone(input);
-  return /^7\d{10}$/.test(digits);
+  let digits = value.replace(/\D/g, "");
+  if (digits.startsWith("00993")) digits = digits.slice(2);
+  if (value.trim().startsWith("+") && !digits.startsWith("993")) {
+    return /^9(?:9(?:3)?)?$/.test(digits) || !digits ? "+993" : value;
+  }
+  const d = digits.startsWith("993") ? digits.slice(3) : digits;
+  if (d.length > 8) return value;
+  let result = "+993";
+  if (d.length) result += ` (${d.slice(0, 2)}`;
+  if (d.length >= 2) result += `) ${d.slice(2, 4)}`;
+  if (d.length > 4) result += `-${d.slice(4, 6)}`;
+  if (d.length > 6) result += `-${d.slice(6, 8)}`;
+  return result;
 }

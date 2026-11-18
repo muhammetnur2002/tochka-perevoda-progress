@@ -28,9 +28,14 @@ if (!url) {
 
 const env = { ...process.env, PGCLIENTENCODING: "UTF8" };
 const psql = (target, args) => {
-  const r = spawnSync("psql", ["-v", "ON_ERROR_STOP=1", "-q", ...args, target], { stdio: "inherit", env });
+  const r = spawnSync("psql", ["-v", "ON_ERROR_STOP=1", "-q", ...args, target], {
+    stdio: "inherit",
+    env,
+  });
   if (r.error) {
-    console.error("psql не найден. Установите клиент PostgreSQL или запустите тест в Supabase SQL Editor.");
+    console.error(
+      "psql не найден. Установите клиент PostgreSQL или запустите тест в Supabase SQL Editor.",
+    );
     process.exit(1);
   }
   if (r.status !== 0) process.exit(r.status ?? 1);
@@ -44,7 +49,9 @@ if (process.argv.includes("--fresh")) {
   u.pathname = `/${db}`;
   target = u.toString();
   psql(target, ["-f", "supabase/tests/supabase_stubs.sql"]);
-  for (const f of readdirSync("supabase/migrations").filter((f) => f.endsWith(".sql")).sort()) {
+  for (const f of readdirSync("supabase/migrations")
+    .filter((f) => f.endsWith(".sql"))
+    .sort()) {
     psql(target, ["-f", path.join("supabase/migrations", f)]);
   }
   console.log(`Временная БД: ${db} (удалите после проверки: drop database ${db})`);
@@ -52,3 +59,4 @@ if (process.argv.includes("--fresh")) {
 
 psql(target, ["-f", "supabase/tests/rls_check.sql"]);
 psql(target, ["-f", "supabase/tests/pricing_check.sql"]);
+psql(target, ["-f", "supabase/tests/turkmen_check.sql"]);

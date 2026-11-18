@@ -30,6 +30,7 @@ export function getPaymentProvider(): PaymentProvider {
 
 export interface PaymentCreateResult {
   paymentId: string;
+  currency: string;
   status: PaymentStatus;
   amount: number;
   confirmationUrl: string | null;
@@ -55,7 +56,9 @@ export async function createOrderPayment(input: CreatePaymentInput): Promise<Pay
 
   const { data: order } = await admin
     .from("orders")
-    .select("id, public_number, status, total_price, paid_amount, notary_fee, client:clients(phone, email), items:order_items(name_snapshot, quantity, price, service:services(is_notarial))")
+    .select(
+      "id, currency, public_number, status, total_price, paid_amount, notary_fee, client:clients(phone, email), items:order_items(name_snapshot, quantity, price, service:services(is_notarial))",
+    )
     .eq("id", input.orderId)
     .maybeSingle();
   if (!order) throw notFound("Заказ не найден");
@@ -78,24 +81,28 @@ export async function createOrderPayment(input: CreatePaymentInput): Promise<Pay
     if (request.status !== "open") throw conflict("Эта ссылка на оплату уже недействительна");
     amount = Math.min(Number(request.amount), remaining);
   } else {
-    const hasNotarial = Number(order.notary_fee) > 0 || (order.items ?? []).some((i) => i.service?.is_notarial);
+    const hasNotarial =
+      Number(order.notary_fee) > 0 || (order.items ?? []).some((i) => i.service?.is_notarial);
     const policy = await loadPaymentPolicy();
     amount = dueNow(policy, { total, paid: Number(order.paid_amount), hasNotarial }).amount;
   }
   if (amount < 1) throw badRequest("Сумма платежа слишком мала");
 
   const provider = getPaymentProvider();
+  if (provider.name === "yookassa" && order.currency !== "RUB") {
+    throw badRequest("TMT üçin onlaýn töleg birikdirilmedik. Kabul ediş nokadynda töläň.");
+  }
   const idempotenceKey = randomUUID();
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
   const returnUrl = `${siteUrl}/checkout/success/${encodeURIComponent(order.public_number)}?order=${order.id}`;
 
   const result = await provider.createPayment({
     amount,
-    currency: "RUB",
+    currency: order.currency,
     method: input.method,
     idempotenceKey,
     returnUrl,
-    description: `Заказ ${order.public_number} — «Точка Перевода Прогресс»`,
+    description: `Sargyt ${order.public_number}`,
     metadata: { order_id: order.id, public_number: order.public_number },
     receipt: {
       customer: {
@@ -116,7 +123,7 @@ export async function createOrderPayment(input: CreatePaymentInput): Promise<Pay
     .insert({
       order_id: order.id,
       amount,
-      currency: "RUB",
+      currency: order.currency,
       method: input.method,
       status: result.status,
       provider: provider.name,
@@ -131,11 +138,16 @@ export async function createOrderPayment(input: CreatePaymentInput): Promise<Pay
   if (error) throw error;
 
   const qrSvg = result.confirmationData
-    ? await QRCode.toString(result.confirmationData, { type: "svg", margin: 1, color: { dark: "#00214C" } })
+    ? await QRCode.toString(result.confirmationData, {
+        type: "svg",
+        margin: 1,
+        color: { dark: "#00214C" },
+      })
     : null;
 
   return {
     paymentId: payment.id,
+    currency: order.currency,
     status: result.status,
     amount,
     confirmationUrl: result.confirmationUrl,
@@ -195,7 +207,9 @@ async function applyPaymentStatus(
 /**
  * Вебхук ЮKassa: телу НЕ доверяем — перезапрашиваем платёж у API и сверяем сумму.
  */
-export async function handlePaymentWebhook(providerPaymentId: string): Promise<{ changed: boolean }> {
+export async function handlePaymentWebhook(
+  providerPaymentId: string,
+): Promise<{ changed: boolean }> {
   const provider = getPaymentProvider();
   if (provider.name !== "yookassa") throw badRequest("Вебхуки принимаются только для ЮKassa");
 
@@ -235,7 +249,10 @@ export async function confirmMockPayment(paymentId: string): Promise<void> {
   if (!payment || payment.provider !== "mock" || !payment.provider_payment_id) {
     throw notFound("Тестовый платёж не найден");
   }
-  await applyPaymentStatus(payment.provider_payment_id, "succeeded", { mock: true, confirmed_at: new Date().toISOString() });
+  await applyPaymentStatus(payment.provider_payment_id, "succeeded", {
+    mock: true,
+    confirmed_at: new Date().toISOString(),
+  });
 }
 
 /** Менеджер: ручная отметка оплаты (наличные / терминал в точке / счёт). */
@@ -245,8 +262,11 @@ export async function recordManualPayment(
   method: "cash" | "invoice" | "card" | "sbp",
 ): Promise<void> {
   const admin = createAdminClient();
+  const { data: order } = await admin.from("orders").select("currency").eq("id", orderId).single();
+  if (!order) throw notFound("Sargyt tapylmady");
   const { error } = await admin.from("payments").insert({
     order_id: orderId,
+    currency: order.currency,
     amount,
     method,
     status: "succeeded",

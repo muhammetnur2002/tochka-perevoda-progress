@@ -1,13 +1,12 @@
 import "server-only";
+import { isValidTmPhone, formatPhone } from "@/lib/format/phone";
 import type { LanguageRow, OfficeRow, ServiceRow, SettingRow } from "@/types/database.types";
 import { SEED_LANGUAGES, SEED_OFFICES, SEED_SERVICES } from "@/lib/seed/services";
 import { isDemoMode } from "@/lib/config/env";
 import { createClient } from "@/lib/supabase/server";
 
 function hasSupabaseConfig(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 }
 
 /** Активные услуги каталога (из БД или демо-данные). */
@@ -87,9 +86,16 @@ export async function getOffices(): Promise<OfficeRow[]> {
     }));
   }
   const supabase = createClient();
-  const { data, error } = await supabase.from("offices").select("*").eq("is_active", true).order("sort_order");
+  const { data, error } = await supabase
+    .from("offices")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order");
   if (error) throw new Error(`Не удалось загрузить точки: ${error.message}`);
-  return data ?? [];
+  return (data ?? []).map((office) => ({
+    ...office,
+    phone: office.phone && isValidTmPhone(office.phone) ? formatPhone(office.phone) : null,
+  }));
 }
 
 /** Публичные настройки (срочность, нотариальное заверение, доставка). */
@@ -100,7 +106,7 @@ export async function getPublicSettings(): Promise<Record<string, unknown>> {
     delivery_price: 0,
     holidays: [],
     company: {
-      name: "Точка Перевода Прогресс",
+      name: "Terjime hyzmatlary",
       city: "Казань",
       address: "г. Казань, ул. Сибирский Тракт, 7/6",
     },

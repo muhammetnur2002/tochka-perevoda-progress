@@ -86,6 +86,7 @@ export class YookassaProvider implements PaymentProvider {
   }
 
   async createPayment(params: CreatePaymentParams): Promise<CreatePaymentResult> {
+    if (params.currency !== "RUB") throw new Error("Bu töleg üpjün edijisinde TMT goldanylmaýar.");
     const isSbp = params.method === "sbp" || params.method === "qr";
 
     const body: Record<string, unknown> = {
@@ -134,6 +135,7 @@ export class YookassaProvider implements PaymentProvider {
 
   /** Возврат по платежу (полный или частичный). Чек возврата формирует онлайн-касса ЮKassa. */
   async createRefund(params: CreateRefundParams): Promise<ProviderRefund> {
+    if (params.currency !== "RUB") throw new Error("Bu töleg üpjün edijisinde TMT goldanylmaýar.");
     const res = await this.request<YookassaRefundResponse>("/refunds", {
       method: "POST",
       headers: { "Idempotence-Key": params.idempotenceKey },
@@ -152,7 +154,9 @@ export class YookassaProvider implements PaymentProvider {
   }
 
   async getRefund(providerRefundId: string): Promise<ProviderRefund> {
-    const res = await this.request<YookassaRefundResponse>(`/refunds/${providerRefundId}`, { method: "GET" });
+    const res = await this.request<YookassaRefundResponse>(`/refunds/${providerRefundId}`, {
+      method: "GET",
+    });
     return {
       providerRefundId: res.id,
       status: REFUND_STATUS_MAP[res.status] ?? "pending",

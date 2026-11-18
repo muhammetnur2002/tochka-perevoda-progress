@@ -5,7 +5,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
-  return { title: { default: t("siteTitle"), template: "%s · Точка Перевода Прогресс" } };
+  return { title: { default: t("siteTitle"), template: "%s · Terjime hyzmatlary" } };
 }
 
 /** Общая обёртка публичных страниц (шапка + подвал). */

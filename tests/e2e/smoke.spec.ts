@@ -6,6 +6,12 @@ import { expect, test } from "@playwright/test";
  *   E2E_FULL=1 pnpm test:e2e
  */
 
+test.beforeEach(async ({ context, baseURL }) => {
+  await context.addCookies([
+    { name: "NEXT_LOCALE_TM", value: "ru", url: baseURL ?? "http://localhost:3000" },
+  ]);
+});
+
 test.describe("публичная часть", () => {
   test("главная: бренд, три точки приёма, переход в калькулятор", async ({ page }) => {
     await page.goto("/");
@@ -13,14 +19,19 @@ test.describe("публичная часть", () => {
     for (const address of ["Сибирский Тракт, 7/6", "Карла Маркса, 65", "Промысловая, 5, каб. 3"]) {
       await expect(page.getByText(address).first()).toBeVisible();
     }
-    await page.getByRole("link", { name: /Рассчитать стоимость/ }).first().click();
+    await page
+      .getByRole("link", { name: /Рассчитать стоимость/ })
+      .first()
+      .click();
     await expect(page).toHaveURL(/\/calculator/);
   });
 
   test("калькулятор: срочность меняет итог", async ({ page }) => {
     await page.goto("/calculator");
-    await page.getByRole("button", { name: /Увеличить: Перевод паспорта \(все страницы\)/ }).click();
-    const total = page.locator("aside").getByText(/₽/).last();
+    await page
+      .getByRole("button", { name: /Увеличить: Перевод паспорта \(все страницы\)/ })
+      .click();
+    const total = page.locator("aside").getByText(/manat/).last();
     const before = await total.textContent();
     await page.getByRole("button", { name: /Срочно — за 1 день/ }).click();
     await expect(total).not.toHaveText(before ?? "");
@@ -28,27 +39,40 @@ test.describe("публичная часть", () => {
   });
 
   test("язык интерфейса: переключатель и cookie", async ({ page, context, baseURL }) => {
-    await context.addCookies([{ name: "NEXT_LOCALE", value: "tk", url: baseURL ?? "http://localhost:3000" }]);
+    await context.addCookies([
+      { name: "NEXT_LOCALE_TM", value: "tk", url: baseURL ?? "http://localhost:3000" },
+    ]);
     await page.goto("/");
     await expect(page.locator("html")).toHaveAttribute("lang", "tk");
     await context.clearCookies();
     await page.goto("/");
-    await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+    await expect(page.locator("html")).toHaveAttribute("lang", "tk");
+    await expect(page.locator('img[src*="brand/"]')).toHaveCount(0);
   });
 
   test("калькулятор: язык документа → русский и выбор точки", async ({ page }) => {
     await page.goto("/calculator");
-    await page.getByRole("button", { name: /Увеличить: Перевод паспорта \(все страницы\)/ }).click();
+    await page
+      .getByRole("button", { name: /Увеличить: Перевод паспорта \(все страницы\)/ })
+      .click();
     const from = page.getByLabel("С какого языка");
     await from.selectOption({ label: "Туркменский" });
     await expect(page.getByText("Русский").first()).toBeVisible();
-    await page.getByRole("button", { name: /Карла Маркса, 65/ }).first().click();
-    await expect(page.getByRole("button", { name: /Карла Маркса, 65/ }).first()).toHaveAttribute("aria-pressed", "true");
+    await page
+      .getByRole("button", { name: /Карла Маркса, 65/ })
+      .first()
+      .click();
+    await expect(page.getByRole("button", { name: /Карла Маркса, 65/ }).first()).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
   });
 
   test("оформление: выбор «оплата в точке» скрывает онлайн-способы", async ({ page }) => {
     await page.goto("/calculator");
-    await page.getByRole("button", { name: /Увеличить: Перевод паспорта \(все страницы\)/ }).click();
+    await page
+      .getByRole("button", { name: /Увеличить: Перевод паспорта \(все страницы\)/ })
+      .click();
     await page.goto("/checkout");
     await expect(page.getByRole("radio", { name: /Оплатить онлайн/ })).toBeVisible();
     await page.getByRole("radio", { name: /Оплатить в точке/ }).click();
@@ -69,12 +93,16 @@ test.describe("публичная часть", () => {
     }
   });
 
-  test("проверка перевода без доступа закрыта (нужен вход или ссылка с токеном)", async ({ page }) => {
+  test("проверка перевода без доступа закрыта (нужен вход или ссылка с токеном)", async ({
+    page,
+  }) => {
     const res = await page.goto("/proof/00000000-0000-0000-0000-000000000000");
     expect(res?.status()).toBe(200);
     await expect(page.getByRole("heading", { name: "Нет доступа к проверке" })).toBeVisible();
     // страницы перевода без токена не отдаются вовсе
-    const image = await page.request.get("/api/proofs/00000000-0000-0000-0000-000000000000/pages/1");
+    const image = await page.request.get(
+      "/api/proofs/00000000-0000-0000-0000-000000000000/pages/1",
+    );
     expect([403, 404]).toContain(image.status());
   });
 
@@ -89,13 +117,18 @@ test.describe("полный сценарий заказа", () => {
 
   test("гость: заказ → mock-оплата → статус", async ({ page }) => {
     await page.goto("/calculator");
-    await page.getByRole("button", { name: /Увеличить: Перевод паспорта \(все страницы\)/ }).click();
+    await page
+      .getByRole("button", { name: /Увеличить: Перевод паспорта \(все страницы\)/ })
+      .click();
     await page.getByLabel("С какого языка").selectOption({ label: "Туркменский" });
-    await page.getByRole("button", { name: /Карла Маркса, 65/ }).first().click();
+    await page
+      .getByRole("button", { name: /Карла Маркса, 65/ })
+      .first()
+      .click();
     await page.getByRole("link", { name: "Оформить заказ" }).click();
 
     await page.getByLabel("Имя *").fill("Тест E2E");
-    await page.getByLabel("Телефон *").fill("9170000001");
+    await page.getByLabel("Телефон *").fill("61000001");
     await page.getByRole("checkbox").last().check();
     await page.getByRole("button", { name: "Перейти к оплате" }).last().click();
 
@@ -109,7 +142,7 @@ test.describe("полный сценарий заказа", () => {
     await expect(page.getByText(/оплачен/)).toBeVisible();
 
     await page.goto(`/status?number=${encodeURIComponent(number!)}`);
-    await page.getByLabel("Телефон").fill("9170000001");
+    await page.getByLabel("Телефон").fill("61000001");
     await page.getByRole("button", { name: "Проверить" }).click();
     await expect(page.getByText("Подтверждён").first()).toBeVisible();
   });

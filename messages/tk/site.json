@@ -1,9 +1,9 @@
 {
   "common": {
     "language": "Dil",
-    "brandName": "Точка Перевода Прогресс",
-    "brandShort": "ТОЧКА ПЕРЕВОДА",
-    "brandSub": "ПРОГРЕСС",
+    "brandName": "",
+    "brandShort": "",
+    "brandSub": "",
     "city": "Kazan",
     "toHome": "baş sahypa",
     "loading": "Ýüklenýär…",
@@ -15,14 +15,14 @@
     "download": "Ýükläp al",
     "open": "Aç",
     "remove": "Aýyr",
-    "phonePlaceholder": "+7 (___) ___-__-__",
+    "phonePlaceholder": "+993 (__) __-__-__",
     "error": "Bir zat nädogry boldy",
     "retry": "Gaýtadan synanyş",
     "notFoundTitle": "Sahypa tapylmady",
     "notFoundText": "Soralan sahypa ýok ýa-da başga ýere geçirildi.",
     "toMain": "Baş sahypa",
     "errorText": "Ýalňyşlyk ýüze çykdy. Gaýtadan synanyşyň.",
-    "rub": "₽"
+    "rub": "manat"
   },
   "nav": {
     "home": "Baş sahypa",
@@ -211,7 +211,7 @@
     "factDays": "1–2 gün",
     "factServices": "Nyrhnamada 24 hyzmat",
     "factOffices": "3 kabul ediş nokady",
-    "logoAlt": "«Точка Перевода Прогресс» logotipi",
+    "logoAlt": "",
     "servicesTitle": "Hyzmatlar we bahalar",
     "servicesSubtitle": "Häzirki nyrhnama. Gyssaglylygy we sahypa sanyny hasaba alyp, takyk bahany kalkulýator hasaplaýar.",
     "allServices": "Ähli hyzmatlar we bahalar",
@@ -259,7 +259,7 @@
     "faq": {
       "price": {
         "q": "Bir sahypanyň terjimesi näçe durýar?",
-        "a": "Hukuk we lukmançylyk resminamalary — sahypasy 550 ₽, tehniki resminamalar — 650 ₽. Pasport, diplom, güwänama — katalogdaky kesgitlenen baha boýunça."
+        "a": "Hukuk we lukmançylyk resminamalary — sahypasy 550 manat, tehniki resminamalar — 650 manat. Pasport, diplom, güwänama — katalogdaky kesgitlenen baha boýunça."
       },
       "time": {
         "q": "Terjime näçe wagtda taýýar bolar?",
@@ -285,7 +285,7 @@
     "contactsTitle": "Aragatnaşyk",
     "orderCta": "Sargyt et",
     "metaTitle": "Kazanda terjimeler, poligrafiýa we ätiýaçlandyryş",
-    "metaDescription": "Kazandaky «Точка Перевода Прогресс» terjime býurosy: resminamalary türkmen, özbek, türk we beýleki dillerden rus diline terjime etmek, notarial tassyklama, poligrafiýa, ätiýaçlandyryş. Onlaýn sargyt, töleg we sargydyň ýagdaýy.",
+    "metaDescription": "Kazandaky «Terjime hyzmatlary» terjime býurosy: resminamalary türkmen, özbek, türk we beýleki dillerden rus diline terjime etmek, notarial tassyklama, poligrafiýa, ätiýaçlandyryş. Onlaýn sargyt, töleg we sargydyň ýagdaýy.",
     "mapTitle": "Kabul ediş nokatlarynyň kartasy",
     "officesText": "Iň ýakyn nokady saýlaň — resminamalary tabşyrmak we taýýar terjimäni almak şol ýerde bolýar."
   },
@@ -379,7 +379,7 @@
     "changeItems": "Düzümini üýtget",
     "errors": {
       "name": "Adyňyzy ýazyň",
-      "phone": "Russiýanyň telefon belgisini giriziň",
+      "phone": "+993 belgili Türkmenistanyň telefon belgisini giriziň",
       "email": "Email nädogry",
       "consent": "Maglumatlary işlemäge razylyk bermän sargyt edip bolmaýar",
       "address": "Eltip bermek salgysyny görkeziň",
@@ -399,7 +399,7 @@
   },
   "payment": {
     "title": "{number} belgili sargydyň tölegi",
-    "sbp": "СБП",
+    "sbp": "SBP (synag)",
     "sbpHint": "bank programmasy arkaly",
     "qr": "QR-kod",
     "qrHint": "kamera bilen skanirläň",
@@ -407,12 +407,12 @@
     "cardHint": "Mir, Visa, Mastercard",
     "order": "Sargyt {number}",
     "qrAria": "СБП arkaly tölemek üçin QR-kod",
-    "cardText": "ЮKassa-nyň goragly sahypasy açylar. Tölegden soň saýta dolanarsyňyz.",
+    "cardText": "Onlaýn töleg diňe degişli töleg üpjün edijisi birikdirilende elýeterlidir.",
     "qrText": "QR-kody kamera bilen skanirläň ýa-da bank programmasyny açyň — mukdar awtomatik goýlar. Ýagdaý özi täzelener.",
     "openBank": "Bank programmasyny aç",
     "goPay": "Töleg etmäge geç",
     "iPaid": "Men töledim",
-    "mockNote": "Synag tertibi: töleg mock-üpjün ediji arkaly imitirlenýär (ЮKassa açarlary görkezilmedik)",
+    "mockNote": "Synag tölegi: hakyky pul alynmaýar. TMT onlaýn tölegi üçin degişli üpjün ediji zerur.",
     "noAccessTitle": "Töleg sahypasyna rugsat ýok",
     "noAccessText": "Salgyny sargyt beren enjamyňyzda açyň ýa-da şahsy otaga giriň.",
     "modeTitle": "Nädip tölemek isleýärsiňiz?",
@@ -509,7 +509,7 @@
       "submit": "Hasaba dur",
       "created": "Hasap döredildi",
       "confirmEmail": "Email-i tassyklaň — size salgy iberdik",
-      "phoneInvalid": "Russiýanyň dogry telefon belgisini giriziň",
+      "phoneInvalid": "+993 belgili Türkmenistanyň telefon belgisini giriziň",
       "haveAccount": "Hasabyňyz barmy?",
       "login": "Gir"
     },
@@ -592,7 +592,7 @@
     "phoneTitle": "Telefon",
     "phoneText": "Sargytlar barada habarlar telefona gelýär. Kod bilen tassyklandan soň, bu belgä girişsiz berlen sargytlar otagyňyza baglanar.",
     "phoneNumber": "Belgi",
-    "phoneInvalid": "Russiýanyň telefon belgisini giriziň",
+    "phoneInvalid": "+993 belgili Türkmenistanyň telefon belgisini giriziň",
     "verified": "tassyklandy",
     "getCode": "Kod al",
     "resendCode": "Kody täzeden iber",
@@ -635,7 +635,7 @@
     "terms": "Hyzmat etmegiň şertleri",
     "consent": "Şahsy maglumatlary işlemäge razylyk",
     "rights": "Ähli hukuklar goralan.",
-    "legalName": "«Точка Перевода Прогресс» terjime býurosy"
+    "legalName": "«Terjime hyzmatlary» terjime býurosy"
   },
   "legal": {
     "officialNotice": "Resminamanyň resmi teksti rus dilindedir. Interfeýsiň terjimesi amatlylyk üçin berilýär."
@@ -658,7 +658,7 @@
     "pay": "Sargydyň tölegi",
     "success": "Sargyt resmileşdirildi",
     "services": "Hyzmatlar we bahalar",
-    "servicesDescription": "«Точка Перевода Прогресс» terjime býurosynyň doly nyrhnamasy: resminamalaryň terjimesi, poligrafiýa, ätiýaçlandyryş. Sahypa we resminama üçin bahalar.",
+    "servicesDescription": "«Terjime hyzmatlary» terjime býurosynyň doly nyrhnamasy: resminamalaryň terjimesi, poligrafiýa, ätiýaçlandyryş. Sahypa we resminama üçin bahalar.",
     "status": "Sargydyň ýagdaýy",
     "statusDescription": "Sargydyň ýagdaýyny belgisi we telefon boýunça barlaň: kabul edildi, işlenýär, bermäge taýýar."
   },

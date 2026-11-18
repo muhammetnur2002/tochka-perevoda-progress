@@ -9,7 +9,7 @@ const OFFICE = "9a7e2c1d-4b3f-4e5a-8c6d-0f1e2d3c4b5a";
 
 const base = {
   name: "Айгуль",
-  phone: "8 (917) 123-45-67",
+  phone: "+993 (61) 23-45-67",
   consent: true,
   items: [{ serviceId: UUID, quantity: 2 }],
   officeId: OFFICE,
@@ -18,7 +18,7 @@ const base = {
 describe("createOrderSchema", () => {
   it("нормализует телефон и подставляет значения по умолчанию", () => {
     const r = createOrderSchema.parse(base);
-    expect(r.phone).toBe("79171234567");
+    expect(r.phone).toBe("99361234567");
     expect(r.urgency).toBe("standard");
     expect(r.deliveryType).toBe("pickup");
     expect(r.source).toBe("web");
@@ -51,19 +51,33 @@ describe("createOrderSchema", () => {
 
   it("для доставки обязателен адрес", () => {
     expect(createOrderSchema.safeParse({ ...base, deliveryType: "delivery" }).success).toBe(false);
-    expect(createOrderSchema.safeParse({ ...base, deliveryType: "delivery", deliveryAddress: "Казань, Баумана 1" }).success).toBe(true);
+    expect(
+      createOrderSchema.safeParse({
+        ...base,
+        deliveryType: "delivery",
+        deliveryAddress: "Казань, Баумана 1",
+      }).success,
+    ).toBe(true);
   });
 
   it("цену клиент передать не может — поле игнорируется", () => {
-    const r = createOrderSchema.parse({ ...base, items: [{ serviceId: UUID, quantity: 1, price: 1 }], totalPrice: 1 });
+    const r = createOrderSchema.parse({
+      ...base,
+      items: [{ serviceId: UUID, quantity: 1, price: 1 }],
+      totalPrice: 1,
+    });
     expect(r.items[0]).not.toHaveProperty("price");
     expect(r).not.toHaveProperty("totalPrice");
   });
 
   it("отклоняет иностранный/битый телефон, дробное и нулевое количество", () => {
     expect(createOrderSchema.safeParse({ ...base, phone: "+1 202 555 0100" }).success).toBe(false);
-    expect(createOrderSchema.safeParse({ ...base, items: [{ serviceId: UUID, quantity: 1.5 }] }).success).toBe(false);
-    expect(createOrderSchema.safeParse({ ...base, items: [{ serviceId: UUID, quantity: 0 }] }).success).toBe(false);
+    expect(
+      createOrderSchema.safeParse({ ...base, items: [{ serviceId: UUID, quantity: 1.5 }] }).success,
+    ).toBe(false);
+    expect(
+      createOrderSchema.safeParse({ ...base, items: [{ serviceId: UUID, quantity: 0 }] }).success,
+    ).toBe(false);
     expect(createOrderSchema.safeParse({ ...base, items: [] }).success).toBe(false);
   });
 });
@@ -71,7 +85,9 @@ describe("createOrderSchema", () => {
 describe("прочие схемы", () => {
   it("статус: нельзя вернуть в «new» через API", () => {
     expect(updateOrderStatusSchema.safeParse({ status: "new" }).success).toBe(false);
-    expect(updateOrderStatusSchema.safeParse({ status: "ready", comment: "ok" }).success).toBe(true);
+    expect(updateOrderStatusSchema.safeParse({ status: "ready", comment: "ok" }).success).toBe(
+      true,
+    );
   });
 
   it("платёж: только card/sbp/qr, сумма с клиента не принимается", () => {
@@ -81,13 +97,22 @@ describe("прочие схемы", () => {
   });
 
   it("услуга: slug только латиница", () => {
-    const svc = { slug: "Перевод", category: "translation", name: "Тест", price: 1, unit: "page", duration_days: 2 };
+    const svc = {
+      slug: "Перевод",
+      category: "translation",
+      name: "Тест",
+      price: 1,
+      unit: "page",
+      duration_days: 2,
+    };
     expect(serviceSchema.safeParse(svc).success).toBe(false);
     expect(serviceSchema.safeParse({ ...svc, slug: "test-1" }).success).toBe(true);
   });
 
   it("сообщение чата: не пустое и не длиннее 2000", () => {
     expect(chatMessageSchema.safeParse({ orderId: UUID, body: "  " }).success).toBe(false);
-    expect(chatMessageSchema.safeParse({ orderId: UUID, body: "x".repeat(2001) }).success).toBe(false);
+    expect(chatMessageSchema.safeParse({ orderId: UUID, body: "x".repeat(2001) }).success).toBe(
+      false,
+    );
   });
 });

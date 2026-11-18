@@ -10,12 +10,12 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <html lang="ru">
+    <html lang="tk">
       <body>
         <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center">
-          <h1 className="text-2xl font-bold text-brand-900">Критическая ошибка · Critical error</h1>
+          <h1 className="text-2xl font-bold text-brand-900">Ýalňyşlyk ýüze çykdy</h1>
           <p className="max-w-md text-sm text-muted-foreground">{error.message}</p>
-          <Button onClick={reset}>Перезагрузить · Reload</Button>
+          <Button onClick={reset}>Gaýtadan ýükle</Button>
         </div>
       </body>
     </html>

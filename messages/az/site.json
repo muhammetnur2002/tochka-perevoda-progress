@@ -1,9 +1,9 @@
 {
   "common": {
     "language": "Dil",
-    "brandName": "Точка Перевода Прогресс",
-    "brandShort": "ТОЧКА ПЕРЕВОДА",
-    "brandSub": "ПРОГРЕСС",
+    "brandName": "",
+    "brandShort": "",
+    "brandSub": "",
     "city": "Kazan",
     "toHome": "ana səhifəyə",
     "loading": "Yüklənir…",
@@ -15,14 +15,14 @@
     "download": "Yüklə",
     "open": "Aç",
     "remove": "Sil",
-    "phonePlaceholder": "+7 (___) ___-__-__",
+    "phonePlaceholder": "+993 (__) __-__-__",
     "error": "Nəsə səhv getdi",
     "retry": "Təkrar et",
     "notFoundTitle": "Səhifə tapılmadı",
     "notFoundText": "Axtardığınız səhifə mövcud deyil və ya başqa yerə köçürülüb.",
     "toMain": "Ana səhifəyə",
     "errorText": "Xəta baş verdi. Yenidən cəhd edin.",
-    "rub": "₽"
+    "rub": "manat"
   },
   "nav": {
     "home": "Ana səhifə",
@@ -211,7 +211,7 @@
     "factDays": "1–2 gün",
     "factServices": "Qiymət siyahısında 24 xidmət",
     "factOffices": "3 qəbul məntəqəsi",
-    "logoAlt": "«Точка Перевода Прогресс» loqosu",
+    "logoAlt": "",
     "servicesTitle": "Xidmətlər və qiymətlər",
     "servicesSubtitle": "Aktual qiymət siyahısı. Təcililik və səhifə sayı nəzərə alınmaqla dəqiq qiyməti kalkulyator hesablayır.",
     "allServices": "Bütün xidmətlər və qiymətlər",
@@ -259,7 +259,7 @@
     "faq": {
       "price": {
         "q": "Bir səhifənin tərcüməsi neçəyədir?",
-        "a": "Hüquqi və tibbi sənədlər — səhifəsi 550 ₽, texniki sənədlər — 650 ₽. Pasport, diplom, arayış — kataloqdakı sabit qiymətlə."
+        "a": "Hüquqi və tibbi sənədlər — səhifəsi 550 manat, texniki sənədlər — 650 manat. Pasport, diplom, arayış — kataloqdakı sabit qiymətlə."
       },
       "time": {
         "q": "Tərcümə nə qədər tez hazır olacaq?",
@@ -509,7 +509,7 @@
       "submit": "Qeydiyyatdan keç",
       "created": "Hesab yaradıldı",
       "confirmEmail": "Email-i təsdiqləyin — link göndərdik",
-      "phoneInvalid": "Düzgün RF telefon nömrəsini daxil edin",
+      "phoneInvalid": "Türkmənistan telefon nömrəsini daxil edin: +993 və 8 rəqəm",
       "haveAccount": "Artıq hesabınız var?",
       "login": "Daxil ol"
     },
@@ -639,7 +639,7 @@
     "phoneTitle": "Telefon",
     "phoneText": "Sifarişlər barədə bildirişlər telefona gəlir. Kodla təsdiqdən sonra bu nömrəyə girişsiz verilmiş sifarişlər kabinetə bağlanacaq.",
     "phoneNumber": "Nömrə",
-    "phoneInvalid": "RF telefon nömrəsini daxil edin",
+    "phoneInvalid": "Türkmənistan telefon nömrəsini daxil edin: +993 və 8 rəqəm",
     "verified": "təsdiqlənib",
     "getCode": "Kod al",
     "resendCode": "Kodu yenidən göndər",

@@ -5,48 +5,26 @@
  * Для перегенерации официальных типов из облачного проекта выполните:
  *   pnpm db:types   (требует Supabase CLI и привязанного проекта)
  */
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 // ---------------------------------------------------------------------------
 // Перечисления (соответствуют SQL-типам из 0001_extensions_enums.sql)
 // ---------------------------------------------------------------------------
 export type UserRole =
-  | "guest"
-  | "client"
-  | "manager"
-  | "translator"
-  | "notary"
-  | "printer"
-  | "admin";
+  "guest" | "client" | "manager" | "translator" | "notary" | "printer" | "admin";
 
 export type ClientType = "individual" | "company";
 export type ServiceCategory = "translation" | "printing" | "insurance" | "additional";
 export type ServiceUnit = "page" | "document" | "item";
 export type PriceRuleType = "fixed" | "per_page" | "urgent" | "notary" | "delivery" | "volume";
 export type OrderStatus =
-  | "new"
-  | "confirmed"
-  | "in_progress"
-  | "ready"
-  | "issued"
-  | "completed"
-  | "cancelled";
+  "new" | "confirmed" | "in_progress" | "ready" | "issued" | "completed" | "cancelled";
 export type DeliveryType = "pickup" | "delivery";
 export type OrderSource = "web" | "mini_app" | "bot" | "admin" | "walkin";
 export type FileKind = "source" | "translation" | "receipt" | "photo" | "other";
 export type PaymentMethod = "card" | "sbp" | "qr" | "cash" | "invoice";
 export type PaymentStatus =
-  | "pending"
-  | "waiting_for_capture"
-  | "succeeded"
-  | "canceled"
-  | "refunded";
+  "pending" | "waiting_for_capture" | "succeeded" | "canceled" | "refunded";
 export type NotificationChannel = "telegram" | "sms" | "email" | "inapp";
 export type NotificationStatus = "queued" | "sent" | "failed";
 export type AssignmentRole = "translator" | "notary" | "printer" | "manager";
@@ -227,6 +205,7 @@ export type ProofEventRow = {
 };
 
 export type OrderRow = {
+  currency: string;
   id: string;
   public_number: string;
   client_id: string;
@@ -643,7 +622,11 @@ export type Database = {
         units_sold: number;
         revenue: number;
       }>;
-      v_language_popularity: View<{ code: string | null; name: string | null; orders_count: number }>;
+      v_language_popularity: View<{
+        code: string | null;
+        name: string | null;
+        orders_count: number;
+      }>;
       v_translator_load: View<{
         user_id: string;
         name: string | null;
@@ -678,7 +661,12 @@ export type Database = {
       normalize_phone: { Args: { p_phone: string }; Returns: string | null };
       claim_guest_orders: { Args: { p_user_id: string }; Returns: number };
       change_order_status: {
-        Args: { p_order_id: string; p_status: OrderStatus; p_comment?: string; p_cancel_reason?: string };
+        Args: {
+          p_order_id: string;
+          p_status: OrderStatus;
+          p_comment?: string;
+          p_cancel_reason?: string;
+        };
         Returns: OrderRow;
       };
       rate_limit_hit: {

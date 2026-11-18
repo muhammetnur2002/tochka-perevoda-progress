@@ -1,7 +1,7 @@
 /**
  * Схема оплаты (общая для сервера и сайта; единственный источник правил).
  *
- *  • Заказ от порога (по умолчанию 3000 ₽) и любой нотариальный — предоплата
+ *  • Заказ от порога (по умолчанию 3000 manat) и любой нотариальный — предоплата
  *    `prepaymentPercent` % при оформлении, остаток — при получении (в точке или по ссылке).
  *  • Остальные (мелкие) заказы — 100% онлайн.
  *  • Если уже что-то оплачено — следующий платёж равен остатку.
@@ -11,7 +11,7 @@
 export interface PaymentPolicy {
   /** Доля предоплаты, % (1–100). */
   prepaymentPercent: number;
-  /** С какой суммы заказа действует предоплата вместо полной оплаты, ₽. */
+  /** С какой суммы заказа действует предоплата вместо полной оплаты, manat. */
   prepaymentThreshold: number;
   /** Можно ли выбрать «оплата в точке». */
   payInOffice: boolean;
@@ -33,8 +33,14 @@ export function policyFromSettings(raw?: Record<string, unknown>): PaymentPolicy
   const percent = num(raw?.prepayment_percent, DEFAULT_PAYMENT_POLICY.prepaymentPercent);
   return {
     prepaymentPercent: percent > 0 && percent <= 100 ? percent : 100,
-    prepaymentThreshold: Math.max(0, num(raw?.prepayment_threshold, DEFAULT_PAYMENT_POLICY.prepaymentThreshold)),
-    payInOffice: raw?.pay_in_office_enabled === undefined ? true : raw.pay_in_office_enabled !== false && raw.pay_in_office_enabled !== "false",
+    prepaymentThreshold: Math.max(
+      0,
+      num(raw?.prepayment_threshold, DEFAULT_PAYMENT_POLICY.prepaymentThreshold),
+    ),
+    payInOffice:
+      raw?.pay_in_office_enabled === undefined
+        ? true
+        : raw.pay_in_office_enabled !== false && raw.pay_in_office_enabled !== "false",
   };
 }
 
@@ -71,6 +77,9 @@ export function dueNow(policy: PaymentPolicy, input: DueInput): DueNow {
 
   const qualifies = total >= policy.prepaymentThreshold || input.hasNotarial;
   const percent = qualifies ? policy.prepaymentPercent : 100;
-  const amount = percent >= 100 ? remaining : Math.min(remaining, Math.max(1, round2((remaining * percent) / 100)));
+  const amount =
+    percent >= 100
+      ? remaining
+      : Math.min(remaining, Math.max(1, round2((remaining * percent) / 100)));
   return { amount, percent, rest: round2(remaining - amount), isPrepayment: amount < remaining };
 }

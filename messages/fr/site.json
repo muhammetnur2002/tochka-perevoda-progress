@@ -1,9 +1,9 @@
 {
   "common": {
     "language": "Langue",
-    "brandName": "Точка Перевода Прогресс",
-    "brandShort": "ТОЧКА ПЕРЕВОДА",
-    "brandSub": "ПРОГРЕСС",
+    "brandName": "",
+    "brandShort": "",
+    "brandSub": "",
     "city": "Kazan",
     "toHome": "à l'accueil",
     "loading": "Chargement…",
@@ -15,14 +15,14 @@
     "download": "Télécharger",
     "open": "Ouvrir",
     "remove": "Supprimer",
-    "phonePlaceholder": "+7 (___) ___-__-__",
+    "phonePlaceholder": "+993 (__) __-__-__",
     "error": "Une erreur s'est produite",
     "retry": "Réessayer",
     "notFoundTitle": "Page introuvable",
     "notFoundText": "La page demandée n'existe pas ou a été déplacée.",
     "toMain": "Accueil",
     "errorText": "Une erreur s'est produite. Veuillez réessayer.",
-    "rub": "₽"
+    "rub": "manat"
   },
   "nav": {
     "home": "Accueil",
@@ -211,7 +211,7 @@
     "factDays": "1 à 2 jours",
     "factServices": "24 services au tarif",
     "factOffices": "3 points d'accueil",
-    "logoAlt": "Logo «Точка Перевода Прогресс»",
+    "logoAlt": "",
     "servicesTitle": "Services et tarifs",
     "servicesSubtitle": "Tarifs à jour. Le calculateur donne le prix exact selon le délai et le nombre de pages.",
     "allServices": "Tous les services et tarifs",
@@ -259,7 +259,7 @@
     "faq": {
       "price": {
         "q": "Combien coûte la traduction d'une page ?",
-        "a": "Documents juridiques et médicaux — 550 ₽ par page, documentation technique — 650 ₽. Passeport, diplôme, certificat — prix fixe indiqué dans le catalogue."
+        "a": "Documents juridiques et médicaux — 550 manat par page, documentation technique — 650 manat. Passeport, diplôme, certificat — prix fixe indiqué dans le catalogue."
       },
       "time": {
         "q": "En combien de temps la traduction sera-t-elle prête ?",
@@ -509,7 +509,7 @@
       "submit": "S'inscrire",
       "created": "Compte créé",
       "confirmEmail": "Confirmez votre e-mail — nous vous avons envoyé un lien",
-      "phoneInvalid": "Saisissez un numéro de téléphone russe valide",
+      "phoneInvalid": "Saisissez un numéro du Turkménistan : +993 et 8 chiffres",
       "haveAccount": "Vous avez déjà un compte ?",
       "login": "Se connecter"
     },
@@ -592,7 +592,7 @@
     "phoneTitle": "Téléphone",
     "phoneText": "Les notifications de commande sont envoyées sur ce téléphone. Après confirmation par code, les commandes passées sans connexion avec ce numéro seront liées à votre espace.",
     "phoneNumber": "Numéro",
-    "phoneInvalid": "Saisissez un numéro de téléphone russe",
+    "phoneInvalid": "Saisissez un numéro du Turkménistan : +993 et 8 chiffres",
     "verified": "confirmé",
     "getCode": "Recevoir le code",
     "resendCode": "Renvoyer le code",

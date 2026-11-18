@@ -7,10 +7,14 @@ import { ReportsCharts } from "@/components/admin/reports-charts";
 import { createClient } from "@/lib/supabase/server";
 import { getDashboardStats } from "@/lib/services/reports";
 
-export const metadata: Metadata = { title: "Отчёты" };
+export const metadata: Metadata = { title: "Hasabatlar" };
 export const dynamic = "force-dynamic";
 
-export default async function AdminReportsPage({ searchParams }: { searchParams: { days?: string } }) {
+export default async function AdminReportsPage({
+  searchParams,
+}: {
+  searchParams: { days?: string };
+}) {
   const days = parseDays(searchParams.days);
   const t = await getTranslations("admin.reports");
   const stats = await getDashboardStats(createClient(), days);

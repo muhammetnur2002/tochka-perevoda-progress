@@ -17,51 +17,17 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: {
-    default: `${COMPANY.name} — бюро переводов в Казани`,
-    template: `%s · ${COMPANY.name}`,
-  },
-  description:
-    "Переводы документов, нотариальное заверение, полиграфия и страхование в Казани. " +
-    "Онлайн-заказ, расчёт стоимости, оплата и статус заказа в Telegram и на сайте.",
+  title: { default: COMPANY.name, template: `%s · ${COMPANY.name}` },
+  description: "Resminamalaryň terjimesi. Onlaýn sargyt, baha hasaplamasy we sargydyň ýagdaýy.",
   applicationName: COMPANY.name,
-  keywords: [
-    "перевод документов",
-    "нотариальный перевод",
-    "бюро переводов Казань",
-    "полиграфия Казань",
-    "перевод паспорта",
-    "перевод диплома",
-    "ДМС студентам",
-  ],
-  authors: [{ name: COMPANY.name }],
-  creator: COMPANY.name,
   openGraph: {
     type: "website",
-    locale: "ru_RU",
+    locale: "tk_TM",
     url: siteUrl,
     siteName: COMPANY.name,
-    title: `${COMPANY.name} — бюро переводов в Казани`,
-    description: "Переводы, полиграфия, страхование. Онлайн-заказ и оплата.",
-    images: [
-      {
-        url: "/brand/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: `${COMPANY.name} — бюро переводов`,
-      },
-    ],
+    title: COMPANY.name,
   },
-  twitter: {
-    card: "summary_large_image",
-    title: `${COMPANY.name} — бюро переводов в Казани`,
-    description: "Переводы, полиграфия, страхование. Онлайн-заказ и оплата.",
-    images: ["/brand/og-image.jpg"],
-  },
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-icon.png",
-  },
+  twitter: { card: "summary", title: COMPANY.name },
 };
 
 export const viewport: Viewport = {
@@ -71,9 +37,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-export default async function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const locale = await getLocale();
   const messages = await getMessages();
   return (

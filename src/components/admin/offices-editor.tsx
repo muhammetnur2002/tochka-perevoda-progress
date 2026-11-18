@@ -54,7 +54,14 @@ function OfficeFields({
     <div className="grid gap-3 sm:grid-cols-2">
       <div className="space-y-1">
         <Label htmlFor={`${id}-name`}>{t("name")}</Label>
-        <Input id={`${id}-name`} required minLength={2} maxLength={100} value={draft.name} onChange={(e) => onChange({ name: e.target.value })} />
+        <Input
+          id={`${id}-name`}
+          required
+          minLength={2}
+          maxLength={100}
+          value={draft.name}
+          onChange={(e) => onChange({ name: e.target.value })}
+        />
       </div>
       <div className="space-y-1">
         <Label htmlFor={`${id}-address`}>{t("address")}</Label>
@@ -84,7 +91,7 @@ function OfficeFields({
           maxLength={40}
           inputMode="tel"
           value={draft.phone}
-          placeholder="+7 (843) ___-__-__"
+          placeholder="+993 (__) __-__-__"
           onChange={(e) => onChange({ phone: e.target.value })}
         />
       </div>
@@ -114,7 +121,13 @@ function OfficeFields({
 }
 
 /** Точки приёма документов: правка адреса, часов работы, телефона; админ добавляет новые. */
-export function OfficesEditor({ offices, canCreate }: { offices: OfficeRow[]; canCreate: boolean }) {
+export function OfficesEditor({
+  offices,
+  canCreate,
+}: {
+  offices: OfficeRow[];
+  canCreate: boolean;
+}) {
   const t = useTranslations("admin.offices");
   const tCommon = useTranslations("common");
   const router = useRouter();
@@ -136,7 +149,8 @@ export function OfficesEditor({ offices, canCreate }: { offices: OfficeRow[]; ca
   const [pending, start] = React.useTransition();
 
   const draftOf = (o: OfficeRow) => drafts[o.id] ?? fromOffice(o);
-  const patch = (o: OfficeRow, p: Partial<Draft>) => setDrafts((d) => ({ ...d, [o.id]: { ...draftOf(o), ...p } }));
+  const patch = (o: OfficeRow, p: Partial<Draft>) =>
+    setDrafts((d) => ({ ...d, [o.id]: { ...draftOf(o), ...p } }));
 
   const save = (id: string | null, payload: unknown, after?: () => void) =>
     start(async () => {
@@ -164,7 +178,9 @@ export function OfficesEditor({ offices, canCreate }: { offices: OfficeRow[]; ca
         </div>
       )}
 
-      {offices.length === 0 && <p className="rounded-2xl border bg-card p-5 text-sm text-muted-foreground">{t("empty")}</p>}
+      {offices.length === 0 && (
+        <p className="rounded-2xl border bg-card p-5 text-sm text-muted-foreground">{t("empty")}</p>
+      )}
 
       <div className="grid gap-4 xl:grid-cols-2">
         {offices.map((o) => {
@@ -173,7 +189,10 @@ export function OfficesEditor({ offices, canCreate }: { offices: OfficeRow[]; ca
           return (
             <form
               key={o.id}
-              className={cn("space-y-3 rounded-2xl border bg-card p-4", !d.is_active && "opacity-70")}
+              className={cn(
+                "space-y-3 rounded-2xl border bg-card p-4",
+                !d.is_active && "opacity-70",
+              )}
               onSubmit={(e) => {
                 e.preventDefault();
                 save(o.id, toPayload(d));
@@ -191,7 +210,12 @@ export function OfficesEditor({ offices, canCreate }: { offices: OfficeRow[]; ca
               </div>
               <OfficeFields id={`office-${o.id}`} draft={d} onChange={(p) => patch(o, p)} />
               <div className="flex gap-2">
-                <Button type="submit" size="sm" variant={dirty ? "default" : "outline"} disabled={!dirty || pending}>
+                <Button
+                  type="submit"
+                  size="sm"
+                  variant={dirty ? "default" : "outline"}
+                  disabled={!dirty || pending}
+                >
                   {tCommon("save")}
                 </Button>
                 {dirty && (
@@ -238,7 +262,11 @@ export function OfficesEditor({ offices, canCreate }: { offices: OfficeRow[]; ca
                 />
                 <p className="text-xs text-muted-foreground">{t("slugHint")}</p>
               </div>
-              <OfficeFields id="new-office" draft={newDraft} onChange={(p) => setNewDraft({ ...newDraft, ...p })} />
+              <OfficeFields
+                id="new-office"
+                draft={newDraft}
+                onChange={(p) => setNewDraft({ ...newDraft, ...p })}
+              />
               <Button type="submit" disabled={pending} className="w-full">
                 {t("addOffice")}
               </Button>

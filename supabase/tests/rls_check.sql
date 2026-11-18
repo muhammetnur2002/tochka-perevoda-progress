@@ -26,8 +26,8 @@ begin;
 -- -----------------------------------------------------------------------------
 -- c1 пытается назначить себе роль admin через метаданные регистрации
 insert into auth.users (id, email, raw_user_meta_data) values
-  (:c1, 'rls-c1@test.local', '{"name":"Клиент 1","phone":"+7 900 000-00-01","role":"admin"}'),
-  (:c2, 'rls-c2@test.local', '{"name":"Клиент 2","phone":"+7 900 000-00-02"}'),
+  (:c1, 'rls-c1@test.local', '{"name":"Клиент 1","phone":"+993 61 000-001","role":"admin"}'),
+  (:c2, 'rls-c2@test.local', '{"name":"Клиент 2","phone":"+993 61 000-002"}'),
   (:mg, 'rls-mg@test.local', '{"name":"Менеджер"}'),
   (:tr, 'rls-tr@test.local', '{"name":"Переводчик"}'),
   (:ad, 'rls-ad@test.local', '{"name":"Админ"}');
@@ -46,7 +46,7 @@ update public.users set role = 'admin' where id = :ad;
 insert into public.translators (user_id, capacity_per_day) values (:tr, 5);
 
 -- Гостевой заказ (без аккаунта) с телефоном, который позже зарегистрируется
-insert into public.clients (id, name, phone) values (:gu, 'Гость', '79000000099');
+insert into public.clients (id, name, phone) values (:gu, 'Гость', '99361000099');
 
 insert into public.orders (id, client_id, user_id, total_price)
 select '00000000-0000-0000-0000-0000000000a1', c.id, c.user_id, 1000
@@ -318,7 +318,7 @@ reset role;
 -- -----------------------------------------------------------------------------
 \echo '10. Гостевой заказ НЕ привязывается по неподтверждённому телефону, привязывается сервером'
 insert into auth.users (id, email, raw_user_meta_data)
-values ('77777777-7777-7777-7777-777777777777', 'rls-guest@test.local', '{"name":"Гость","phone":"8 (900) 000-00-99"}');
+values ('77777777-7777-7777-7777-777777777777', 'rls-guest@test.local', '{"name":"Гость","phone":"61 00-00-99"}');
 do $$ begin
   assert (select user_id from public.orders where id = '00000000-0000-0000-0000-0000000000a3') is null,
     'Гостевой заказ привязан по неподтверждённому телефону';

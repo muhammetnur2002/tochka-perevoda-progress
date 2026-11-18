@@ -10,7 +10,7 @@ import { formatMoney } from "@/lib/format/money";
 import { formatDateTime } from "@/lib/format/date";
 import { mskDateKey } from "@/lib/services/deadline";
 
-export const metadata: Metadata = { title: "Финансы" };
+export const metadata: Metadata = { title: "Maliýe" };
 export const dynamic = "force-dynamic";
 
 const METHODS = ["card", "sbp", "qr", "cash", "invoice"];
@@ -22,9 +22,16 @@ const STATUS_CLASS: Record<string, string> = {
   refunded: "bg-slate-100 text-slate-700",
 };
 
-export default async function AdminFinancePage({ searchParams }: { searchParams: { days?: string } }) {
+export default async function AdminFinancePage({
+  searchParams,
+}: {
+  searchParams: { days?: string };
+}) {
   const days = parseDays(searchParams.days);
-  const [t, tAdmin] = await Promise.all([getTranslations("admin.finance"), getTranslations("admin")]);
+  const [t, tAdmin] = await Promise.all([
+    getTranslations("admin.finance"),
+    getTranslations("admin"),
+  ]);
   const method = (m: string) => (METHODS.includes(m) ? tAdmin(`paymentMethods.${m}`) : m);
   const supabase = createClient();
   const since = new Date(Date.now() - days * 86_400_000).toISOString();
@@ -32,13 +39,16 @@ export default async function AdminFinancePage({ searchParams }: { searchParams:
     getDashboardStats(supabase, days),
     supabase
       .from("payments")
-      .select("id, amount, method, status, provider, provider_payment_id, paid_at, created_at, order:orders(id, public_number)")
+      .select(
+        "id, currency, amount, method, status, provider, provider_payment_id, paid_at, created_at, order:orders(id, public_number)",
+      )
       .gte("created_at", since)
       .order("created_at", { ascending: false })
       .limit(200),
     supabase
       .from("orders")
-      .select("id, public_number, total_price, paid_amount, status, client:clients(name)")
+      .select("id, currency, public_number, total_price, paid_amount, status, client:clients(name)")
+      .eq("currency", "TMT")
       .not("status", "in", "(cancelled)")
       .order("created_at", { ascending: false })
       .limit(500),
@@ -61,15 +71,25 @@ export default async function AdminFinancePage({ searchParams }: { searchParams:
         }
       />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <StatTile label={t("revenue")} value={formatMoney(stats.totals.revenue)} hint={t("ordersCount", { n: stats.totals.orders })} />
+        <StatTile
+          label={t("revenue")}
+          value={formatMoney(stats.totals.revenue)}
+          hint={t("ordersCount", { n: stats.totals.orders })}
+        />
         <StatTile
           label={t("paid")}
           value={formatMoney(stats.totals.paid)}
-          hint={stats.paymentMethods.map((m) => `${method(m.method)} ${Math.round((m.amount / methodTotal) * 100)}%`).join(" · ") || "—"}
+          hint={
+            stats.paymentMethods
+              .map((m) => `${method(m.method)} ${Math.round((m.amount / methodTotal) * 100)}%`)
+              .join(" · ") || "—"
+          }
         />
         <StatTile
           label={t("debts")}
-          value={formatMoney(owing.reduce((s, o) => s + Number(o.total_price) - Number(o.paid_amount), 0))}
+          value={formatMoney(
+            owing.reduce((s, o) => s + Number(o.total_price) - Number(o.paid_amount), 0),
+          )}
           hint={t("unpaidOrders", { n: owing.length })}
         />
         <StatTile label={t("averageCheck")} value={formatMoney(stats.totals.averageCheck)} />
@@ -90,14 +110,20 @@ export default async function AdminFinancePage({ searchParams }: { searchParams:
             </thead>
             <tbody>
               {(payments ?? []).map((p) => {
-                const label = p.status in STATUS_CLASS ? tAdmin(`paymentStatus.${p.status}`) : p.status;
+                const label =
+                  p.status in STATUS_CLASS ? tAdmin(`paymentStatus.${p.status}`) : p.status;
                 const cls = STATUS_CLASS[p.status] ?? "";
                 return (
                   <tr key={p.id} className="border-t">
-                    <td className="whitespace-nowrap px-4 py-2.5">{formatDateTime(p.paid_at ?? p.created_at)}</td>
+                    <td className="whitespace-nowrap px-4 py-2.5">
+                      {formatDateTime(p.paid_at ?? p.created_at)}
+                    </td>
                     <td className="px-4 py-2.5">
                       {p.order ? (
-                        <Link href={`/admin/orders/${p.order.id}`} className="font-bold text-brand-800 hover:underline">
+                        <Link
+                          href={`/admin/orders/${p.order.id}`}
+                          className="font-bold text-brand-800 hover:underline"
+                        >
                           {p.order.public_number}
                         </Link>
                       ) : (
@@ -106,10 +132,16 @@ export default async function AdminFinancePage({ searchParams }: { searchParams:
                     </td>
                     <td className="px-4 py-2.5">{method(p.method)}</td>
                     <td className="px-4 py-2.5">
-                      <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${cls}`}>{label}</span>
+                      <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${cls}`}>
+                        {label}
+                      </span>
                     </td>
-                    <td className="px-4 py-2.5 text-right font-bold">{formatMoney(Number(p.amount))}</td>
-                    <td className="max-w-40 truncate px-4 py-2.5 font-mono text-xs text-muted-foreground">{p.provider_payment_id ?? p.provider}</td>
+                    <td className="px-4 py-2.5 text-right font-bold">
+                      {formatMoney(Number(p.amount), p.currency)}
+                    </td>
+                    <td className="max-w-40 truncate px-4 py-2.5 font-mono text-xs text-muted-foreground">
+                      {p.provider_payment_id ?? p.provider}
+                    </td>
                   </tr>
                 );
               })}
@@ -129,11 +161,16 @@ export default async function AdminFinancePage({ searchParams }: { searchParams:
           <ul className="space-y-2">
             {owing.slice(0, 30).map((o) => (
               <li key={o.id}>
-                <Link href={`/admin/orders/${o.id}`} className="flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-sm hover:border-brand-800">
+                <Link
+                  href={`/admin/orders/${o.id}`}
+                  className="flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-sm hover:border-brand-800"
+                >
                   <span>
                     <strong className="text-brand-800">{o.public_number}</strong> · {o.client?.name}
                   </span>
-                  <span className="font-bold text-red-700">{formatMoney(Number(o.total_price) - Number(o.paid_amount))}</span>
+                  <span className="font-bold text-red-700">
+                    {formatMoney(Number(o.total_price) - Number(o.paid_amount), o.currency)}
+                  </span>
                 </Link>
               </li>
             ))}

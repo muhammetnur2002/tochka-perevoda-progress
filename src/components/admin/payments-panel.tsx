@@ -10,8 +10,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { cancelPaymentRequestAction, createPaymentRequestAction, refundPaymentAction } from "@/app/admin/actions";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  cancelPaymentRequestAction,
+  createPaymentRequestAction,
+  refundPaymentAction,
+} from "@/app/admin/actions";
 import { formatMoney, round2 } from "@/lib/format/money";
 import { formatDateTime } from "@/lib/format/date";
 import type { PaymentMode, PaymentRequestRow, PaymentRow, RefundRow } from "@/types/database.types";
@@ -22,6 +32,7 @@ const PAY_METHODS = ["card", "sbp", "qr", "cash", "invoice"];
 
 export interface PaymentsPanelProps {
   orderId: string;
+  currency: string;
   paymentMode: PaymentMode;
   /** Итоговая стоимость заказа (с доплатой и за вычетом промо). */
   totalPrice: number;
@@ -41,11 +52,29 @@ const REFUND_VARIANT = { pending: "warning", succeeded: "success", canceled: "se
 /** Деньги в поле ввода: «1500.5» → число, запятая допускается. */
 const parseAmount = (v: string): number => Number(v.trim().replace(",", "."));
 
-function SummaryRow({ label, value, strong, tone }: { label: string; value: string; strong?: boolean; tone?: "good" | "bad" }) {
+function SummaryRow({
+  label,
+  value,
+  strong,
+  tone,
+}: {
+  label: string;
+  value: string;
+  strong?: boolean;
+  tone?: "good" | "bad";
+}) {
   return (
     <div className="flex items-baseline justify-between gap-3">
       <dt className="text-muted-foreground">{label}</dt>
-      <dd className={cn(strong && "font-bold", tone === "good" && "text-emerald-700", tone === "bad" && "text-red-700")}>{value}</dd>
+      <dd
+        className={cn(
+          strong && "font-bold",
+          tone === "good" && "text-emerald-700",
+          tone === "bad" && "text-red-700",
+        )}
+      >
+        {value}
+      </dd>
     </div>
   );
 }
@@ -53,6 +82,7 @@ function SummaryRow({ label, value, strong, tone }: { label: string; value: stri
 /** Платежи заказа: сводка, платежи, возвраты, ссылки на оплату (остаток / доплата). */
 export function PaymentsPanel({
   orderId,
+  currency,
   paymentMode,
   totalPrice,
   extraCharge,
@@ -71,8 +101,10 @@ export function PaymentsPanel({
   const officeUnpaid = paymentMode === "office" && remaining > 0;
   const openRequests = requests.filter((r) => r.status === "open").length;
 
-  const methodName = (m: string) => (PAY_METHODS.includes(m) ? tAdmin(`paymentMethods.${m}`) : m.toUpperCase());
-  const payStatusName = (s: string) => (PAY_STATUSES.includes(s) ? tAdmin(`paymentStatus.${s}`) : s);
+  const methodName = (m: string) =>
+    PAY_METHODS.includes(m) ? tAdmin(`paymentMethods.${m}`) : m.toUpperCase();
+  const payStatusName = (s: string) =>
+    PAY_STATUSES.includes(s) ? tAdmin(`paymentStatus.${s}`) : s;
 
   /** Сколько ещё можно вернуть по платежу (ожидающие возвраты тоже занимают сумму). */
   const refundable = (p: PaymentRow): number =>
@@ -81,7 +113,9 @@ export function PaymentsPanel({
       round2(
         Number(p.amount) -
           refunds
-            .filter((r) => r.payment_id === p.id && (r.status === "pending" || r.status === "succeeded"))
+            .filter(
+              (r) => r.payment_id === p.id && (r.status === "pending" || r.status === "succeeded"),
+            )
             .reduce((sum, r) => sum + Number(r.amount), 0),
       ),
     );
@@ -104,12 +138,15 @@ export function PaymentsPanel({
     const max = refundable(refundFor);
     const amount = parseAmount(refundAmount);
     if (!Number.isFinite(amount) || amount <= 0 || amount > max + 0.009) {
-      setRefundError(t("refundDialog.invalid", { max: formatMoney(max) }));
+      setRefundError(t("refundDialog.invalid", { max: formatMoney(max, currency) }));
       return;
     }
     setRefundError(null);
     start(async () => {
-      const r = await refundPaymentAction(orderId, refundFor.id, { amount: round2(amount), reason: refundReason.trim() || null });
+      const r = await refundPaymentAction(orderId, refundFor.id, {
+        amount: round2(amount),
+        reason: refundReason.trim() || null,
+      });
       if (r.ok) {
         if (r.message) toast.success(r.message);
         setRefundFor(null);
@@ -148,12 +185,16 @@ export function PaymentsPanel({
       return;
     }
     if (!reqExtra && amount > remaining + 0.009) {
-      setReqError(t("requestDialog.errorOver", { max: formatMoney(remaining) }));
+      setReqError(t("requestDialog.errorOver", { max: formatMoney(remaining, currency) }));
       return;
     }
     setReqError(null);
     start(async () => {
-      const r = await createPaymentRequestAction(orderId, { amount: round2(amount), reason: reqReason.trim() || null, isExtra: reqExtra });
+      const r = await createPaymentRequestAction(orderId, {
+        amount: round2(amount),
+        reason: reqReason.trim() || null,
+        isExtra: reqExtra,
+      });
       if (r.ok) {
         if (r.message) toast.success(r.message);
         const url = typeof r.data?.url === "string" ? r.data.url : "";
@@ -176,8 +217,8 @@ export function PaymentsPanel({
 
   const cancelRequest = (r: PaymentRequestRow) => {
     const text = r.is_extra
-      ? t("cancelConfirmExtra", { amount: formatMoney(Number(r.amount)) })
-      : t("cancelConfirm", { amount: formatMoney(Number(r.amount)) });
+      ? t("cancelConfirmExtra", { amount: formatMoney(Number(r.amount), currency) })
+      : t("cancelConfirm", { amount: formatMoney(Number(r.amount), currency) });
     if (!window.confirm(text)) return;
     start(async () => {
       const res = await cancelPaymentRequestAction(orderId, r.id);
@@ -188,7 +229,8 @@ export function PaymentsPanel({
     });
   };
 
-  const refundProviderHint = (p: PaymentRow) => (p.provider === "yookassa" ? t("refundDialog.onlineHint") : t("refundDialog.manualHint"));
+  const refundProviderHint = (p: PaymentRow) =>
+    p.provider === "yookassa" ? t("refundDialog.onlineHint") : t("refundDialog.manualHint");
 
   return (
     <section className="space-y-4 rounded-2xl border bg-card p-4">
@@ -202,16 +244,25 @@ export function PaymentsPanel({
         </Button>
       </div>
 
-      {officeUnpaid && <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">{t("officeHint")}</p>}
+      {officeUnpaid && (
+        <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">{t("officeHint")}</p>
+      )}
 
       <dl className="grid gap-1 text-sm sm:max-w-sm">
-        <SummaryRow label={t("summary.total")} value={formatMoney(totalPrice)} strong />
-        {extraCharge > 0 && <SummaryRow label={t("summary.extra")} value={`+${formatMoney(extraCharge)}`} />}
-        {promoDiscount > 0 && <SummaryRow label={t("summary.promo")} value={`−${formatMoney(promoDiscount)}`} />}
-        <SummaryRow label={t("summary.paid")} value={formatMoney(paidAmount)} />
+        <SummaryRow label={t("summary.total")} value={formatMoney(totalPrice, currency)} strong />
+        {extraCharge > 0 && (
+          <SummaryRow label={t("summary.extra")} value={`+${formatMoney(extraCharge, currency)}`} />
+        )}
+        {promoDiscount > 0 && (
+          <SummaryRow
+            label={t("summary.promo")}
+            value={`−${formatMoney(promoDiscount, currency)}`}
+          />
+        )}
+        <SummaryRow label={t("summary.paid")} value={formatMoney(paidAmount, currency)} />
         <SummaryRow
           label={remaining > 0 ? t("summary.remaining") : t("summary.settled")}
-          value={formatMoney(remaining)}
+          value={formatMoney(remaining, currency)}
           strong
           tone={remaining > 0 ? "bad" : "good"}
         />
@@ -219,15 +270,21 @@ export function PaymentsPanel({
 
       <div className="space-y-1.5">
         <h3 className="text-sm font-bold text-brand-800">{t("paymentsTitle")}</h3>
-        {payments.length === 0 && <p className="text-sm text-muted-foreground">{t("noPayments")}</p>}
+        {payments.length === 0 && (
+          <p className="text-sm text-muted-foreground">{t("noPayments")}</p>
+        )}
         <ul className="space-y-2">
           {payments.map((p) => {
             const canRefund = p.status === "succeeded" && refundable(p) > 0;
             return (
-              <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm">
+              <li
+                key={p.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm"
+              >
                 <div className="min-w-0">
                   <div>
-                    <strong>{formatMoney(Number(p.amount))}</strong> · {methodName(p.method)} ·{" "}
+                    <strong>{formatMoney(Number(p.amount), p.currency)}</strong> ·{" "}
+                    {methodName(p.method)} ·{" "}
                     <span className="text-muted-foreground">{payStatusName(p.status)}</span>
                   </div>
                   <div className="text-xs text-muted-foreground">
@@ -235,7 +292,12 @@ export function PaymentsPanel({
                   </div>
                 </div>
                 {canRefund && (
-                  <Button size="sm" variant="outline" disabled={pending} onClick={() => openRefund(p)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={pending}
+                    onClick={() => openRefund(p)}
+                  >
                     <Undo2 className="h-4 w-4" aria-hidden /> {t("refund")}
                   </Button>
                 )}
@@ -250,13 +312,18 @@ export function PaymentsPanel({
           <h3 className="text-sm font-bold text-brand-800">{t("refundsTitle")}</h3>
           <ul className="space-y-2">
             {refunds.map((r) => (
-              <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm">
+              <li
+                key={r.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm"
+              >
                 <div className="min-w-0">
                   <div>
-                    <strong>−{formatMoney(Number(r.amount))}</strong>
+                    <strong>−{formatMoney(Number(r.amount), currency)}</strong>
                     {r.reason ? <span className="text-muted-foreground"> · {r.reason}</span> : null}
                   </div>
-                  <div className="text-xs text-muted-foreground">{formatDateTime(r.created_at)}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {formatDateTime(r.created_at)}
+                  </div>
                 </div>
                 <Badge variant={REFUND_VARIANT[r.status]}>{t(`refundStatus.${r.status}`)}</Badge>
               </li>
@@ -269,22 +336,40 @@ export function PaymentsPanel({
         <div className="space-y-1.5">
           <h3 className="text-sm font-bold text-brand-800">
             {t("requestsTitle")}
-            {openRequests > 0 && <span className="ml-2 text-xs font-normal text-muted-foreground">{t("openCount", { n: openRequests })}</span>}
+            {openRequests > 0 && (
+              <span className="ml-2 text-xs font-normal text-muted-foreground">
+                {t("openCount", { n: openRequests })}
+              </span>
+            )}
           </h3>
           <ul className="space-y-2">
             {requests.map((r) => (
-              <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm">
+              <li
+                key={r.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm"
+              >
                 <div className="min-w-0">
                   <div>
-                    <strong>{formatMoney(Number(r.amount))}</strong> · {r.is_extra ? t("kind.extra") : t("kind.remainder")}
+                    <strong>{formatMoney(Number(r.amount), currency)}</strong> ·{" "}
+                    {r.is_extra ? t("kind.extra") : t("kind.remainder")}
                     {r.reason ? <span className="text-muted-foreground"> · {r.reason}</span> : null}
                   </div>
-                  <div className="text-xs text-muted-foreground">{formatDateTime(r.paid_at ?? r.created_at)}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {formatDateTime(r.paid_at ?? r.created_at)}
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={REQUEST_VARIANT[r.status]}>{t(`requestStatus.${r.status}`)}</Badge>
+                  <Badge variant={REQUEST_VARIANT[r.status]}>
+                    {t(`requestStatus.${r.status}`)}
+                  </Badge>
                   {r.status === "open" && (
-                    <Button size="sm" variant="ghost" className="text-red-700 hover:text-red-800" disabled={pending} onClick={() => cancelRequest(r)}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-red-700 hover:text-red-800"
+                      disabled={pending}
+                      onClick={() => cancelRequest(r)}
+                    >
                       {t("cancel")}
                     </Button>
                   )}
@@ -302,7 +387,10 @@ export function PaymentsPanel({
             <DialogTitle>{t("refundDialog.title")}</DialogTitle>
             {refundFor && (
               <DialogDescription>
-                {t("refundDialog.description", { amount: formatMoney(Number(refundFor.amount)), method: methodName(refundFor.method) })}
+                {t("refundDialog.description", {
+                  amount: formatMoney(Number(refundFor.amount), refundFor.currency),
+                  method: methodName(refundFor.method),
+                })}
               </DialogDescription>
             )}
           </DialogHeader>
@@ -319,7 +407,11 @@ export function PaymentsPanel({
                   value={refundAmount}
                   onChange={(e) => setRefundAmount(e.target.value)}
                 />
-                <p className="text-xs text-muted-foreground">{t("refundDialog.available", { amount: formatMoney(refundable(refundFor)) })}</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("refundDialog.available", {
+                    amount: formatMoney(refundable(refundFor), refundFor.currency),
+                  })}
+                </p>
               </div>
               <div className="space-y-1">
                 <Label htmlFor="refund-reason">{t("refundDialog.reason")}</Label>
@@ -358,13 +450,20 @@ export function PaymentsPanel({
               <div className="space-y-1">
                 <Label htmlFor="request-link">{t("requestDialog.linkReady")}</Label>
                 <div className="flex gap-2">
-                  <Input id="request-link" readOnly value={created.url} onFocus={(e) => e.currentTarget.select()} />
+                  <Input
+                    id="request-link"
+                    readOnly
+                    value={created.url}
+                    onFocus={(e) => e.currentTarget.select()}
+                  />
                   <Button type="button" variant="outline" className="shrink-0" onClick={copyLink}>
                     <Copy className="h-4 w-4" aria-hidden /> {t("requestDialog.copy")}
                   </Button>
                 </div>
               </div>
-              <p className={cn("text-sm", created.delivered ? "text-emerald-700" : "text-amber-800")}>
+              <p
+                className={cn("text-sm", created.delivered ? "text-emerald-700" : "text-amber-800")}
+              >
                 {created.delivered ? t("requestDialog.delivered") : t("requestDialog.notDelivered")}
               </p>
               <Button className="w-full" onClick={() => setReqOpen(false)}>
@@ -388,7 +487,9 @@ export function PaymentsPanel({
                         onClick={() => changeType(extra)}
                         className={cn(
                           "min-h-11 rounded-md border px-3 text-left text-sm font-bold disabled:opacity-40",
-                          reqExtra === extra ? "border-brand-800 bg-brand-800 text-white" : "border-input bg-white text-brand-800",
+                          reqExtra === extra
+                            ? "border-brand-800 bg-brand-800 text-white"
+                            : "border-input bg-white text-brand-800",
                         )}
                       >
                         {extra ? t("requestDialog.extra") : t("requestDialog.remainder")}
@@ -396,7 +497,9 @@ export function PaymentsPanel({
                     );
                   })}
                 </div>
-                {remaining <= 0 && <p className="text-xs text-muted-foreground">{t("requestDialog.noRemaining")}</p>}
+                {remaining <= 0 && (
+                  <p className="text-xs text-muted-foreground">{t("requestDialog.noRemaining")}</p>
+                )}
               </div>
               <div className="space-y-1">
                 <Label htmlFor="request-amount">{t("requestDialog.amount")}</Label>
@@ -410,7 +513,11 @@ export function PaymentsPanel({
                   onChange={(e) => setReqAmount(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  {reqExtra ? t("requestDialog.amountHintExtra") : t("requestDialog.amountHintRemainder", { max: formatMoney(remaining) })}
+                  {reqExtra
+                    ? t("requestDialog.amountHintExtra")
+                    : t("requestDialog.amountHintRemainder", {
+                        max: formatMoney(remaining, currency),
+                      })}
                 </p>
               </div>
               <div className="space-y-1">

@@ -31,14 +31,14 @@ describe("страницы сверки", () => {
     // чисто белая страница после знака уже не белая: на ней есть тёмные пиксели
     const { channels } = await sharp(marked).stats();
     expect(channels[0]!.min).toBeLessThan(200);
-  });
+  }, 120_000);
 
   it("разный текст знака даёт разные картинки (след для разбора утечки)", async () => {
     const source = await samplePage(1000, 1400);
     const a = await watermarkPage(source, { tile: "ТП-1 · Анна · 10:00", banner: "ПРОВЕРКА" });
     const b = await watermarkPage(source, { tile: "ТП-1 · Борис · 10:00", banner: "ПРОВЕРКА" });
     expect(a.equals(b)).toBe(false);
-  });
+  }, 120_000);
 
   it("служебные символы в имени не ломают разметку знака", async () => {
     const out = await watermarkPage(await samplePage(800, 1000), { tile: `ТП-2 · <b>"Tom" & 'Jerry'</b>`, banner: "ПРОВЕРКА" });

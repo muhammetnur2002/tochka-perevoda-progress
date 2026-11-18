@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 interface OrderItem {
   id: string;
   public_number: string;
+  currency: string;
   status: OrderStatus;
   total_price: number;
   paid_amount: number;
@@ -24,13 +25,13 @@ interface OrderItem {
 }
 
 const STEP_TEXT: Partial<Record<OrderStatus, string>> = {
-  new: "Ожидает оплаты/подтверждения",
-  confirmed: "Оплачен, передан переводчику",
-  in_progress: "Переводчик работает",
-  ready: "Можно забирать: Сибирский Тракт, 7/6",
-  issued: "Выдан",
-  completed: "Завершён",
-  cancelled: "Отменён",
+  new: "Tölege ýa-da tassyklama garaşýar",
+  confirmed: "Tölendi, terjimeçä berildi",
+  in_progress: "Terjimeçi işleýär",
+  ready: "Taýýar: saýlan kabul ediş nokadyňyzdan alyň",
+  issued: "Gowşuryldy",
+  completed: "Tamamlandy",
+  cancelled: "Ýatyryldy",
 };
 
 function OrdersList() {
@@ -56,9 +57,10 @@ function OrdersList() {
   if (error || !data) {
     return (
       <p className="rounded-2xl bg-white p-5 text-center text-sm text-slate-700">
-        Откройте приложение из бота в Telegram, чтобы увидеть свои заказы. На сайте — по номеру на странице{" "}
+        Sargytlaryňyzy görmek üçin programmany Telegram botundan açyň. Saýtda sargyt belgiňiz
+        boýunça şu sahypada barlaň:{" "}
         <Link className="text-brand-500 underline" href="/status">
-          «Статус заказа»
+          «Sargydyň ýagdaýy»
         </Link>
         .
       </p>
@@ -68,9 +70,9 @@ function OrdersList() {
   if (data.orders.length === 0) {
     return (
       <p className="rounded-2xl bg-white p-5 text-center text-sm text-slate-700">
-        Заказов пока нет.{" "}
+        Entek sargyt ýok.{" "}
         <Link href="/tg" className="font-bold text-brand-500">
-          Оформить первый
+          Ilkinji sargydy bermek
         </Link>
       </p>
     );
@@ -84,31 +86,43 @@ function OrdersList() {
         return (
           <li
             key={o.id}
-            className={cn("space-y-2.5 rounded-2xl bg-white p-3.5", highlight === o.id && "ring-2 ring-gold-400")}
+            className={cn(
+              "space-y-2.5 rounded-2xl bg-white p-3.5",
+              highlight === o.id && "ring-2 ring-gold-400",
+            )}
           >
             <div className="flex items-center justify-between gap-2">
               <strong className="text-brand-800">{o.public_number}</strong>
               <OrderStatusBadge status={o.status} />
             </div>
-            <div className="text-sm text-slate-700">{o.items.map((i) => `${i.name_snapshot} × ${i.quantity}`).join(", ")}</div>
+            <div className="text-sm text-slate-700">
+              {o.items.map((i) => `${i.name_snapshot} × ${i.quantity}`).join(", ")}
+            </div>
             <div className="grid grid-cols-6 gap-1" aria-hidden>
               {ORDER_STATUS_FLOW.map((s, i) => (
                 <span
                   key={s}
-                  className={cn("h-1.5 rounded-full", i < step - 1 ? "bg-brand-800" : i === step - 1 ? "bg-gold-400" : "bg-slate-200")}
+                  className={cn(
+                    "h-1.5 rounded-full",
+                    i < step - 1 ? "bg-brand-800" : i === step - 1 ? "bg-gold-400" : "bg-slate-200",
+                  )}
                 />
               ))}
             </div>
             <div className="flex justify-between gap-2 text-xs text-muted-foreground">
               <span>{STEP_TEXT[o.status]}</span>
-              <span>{o.deadline && step < 4 ? `готов ${formatDateTime(o.deadline)}` : formatMoney(Number(o.total_price))}</span>
+              <span>
+                {o.deadline && step < 4
+                  ? `taýýar boljak wagty ${formatDateTime(o.deadline)}`
+                  : formatMoney(Number(o.total_price), o.currency)}
+              </span>
             </div>
             {unpaid && (
               <Link
                 href={`/checkout/pay/${o.id}`}
                 className="flex min-h-10 items-center justify-center rounded-xl bg-gold-400 text-sm font-extrabold text-brand-800"
               >
-                Оплатить {formatMoney(Number(o.total_price) - Number(o.paid_amount))}
+                Tölemek {formatMoney(Number(o.total_price) - Number(o.paid_amount), o.currency)}
               </Link>
             )}
           </li>

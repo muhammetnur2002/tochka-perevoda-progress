@@ -1,12 +1,20 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { SITE_LOCALES, STAFF_LOCALES, isLocale, isStaffLocale, matchAcceptLanguage } from "@/i18n/config";
+import {
+  SITE_LOCALES,
+  STAFF_LOCALES,
+  isLocale,
+  isStaffLocale,
+  matchAcceptLanguage,
+} from "@/i18n/config";
 
 type Dict = { [key: string]: string | Dict };
 
 function load(locale: string, file: "site" | "staff"): Dict {
-  return JSON.parse(readFileSync(path.join(process.cwd(), "messages", locale, `${file}.json`), "utf8")) as Dict;
+  return JSON.parse(
+    readFileSync(path.join(process.cwd(), "messages", locale, `${file}.json`), "utf8"),
+  ) as Dict;
 }
 
 function flatten(d: Dict, prefix = ""): Record<string, string> {
@@ -18,7 +26,10 @@ function flatten(d: Dict, prefix = ""): Record<string, string> {
 
 /** Имена ICU-аргументов: {date}, {count, plural, …} → date, count. */
 function args(s: string): string[] {
-  return [...s.matchAll(/\{(\w+)(?=[,}])/g)].map((m) => m[1]!).filter((a) => !["one", "few", "many", "other", "zero", "two"].includes(a)).sort();
+  return [...s.matchAll(/\{(\w+)(?=[,}])/g)]
+    .map((m) => m[1]!)
+    .filter((a) => !["one", "few", "many", "other", "zero", "two"].includes(a))
+    .sort();
 }
 
 describe("выбор языка интерфейса", () => {
@@ -30,12 +41,12 @@ describe("выбор языка интерфейса", () => {
     expect(isStaffLocale("tr")).toBe(false);
   });
 
-  it("Accept-Language: первый поддерживаемый по весу, иначе русский", () => {
+  it("Accept-Language: первый поддерживаемый по весу, иначе туркменский", () => {
     expect(matchAcceptLanguage("uz-UZ,uz;q=0.9,ru;q=0.8")).toBe("uz");
     expect(matchAcceptLanguage("de-DE,de;q=0.9,fr;q=0.5")).toBe("fr");
     expect(matchAcceptLanguage("ru;q=0.5,tk;q=0.9")).toBe("tk");
-    expect(matchAcceptLanguage("zh-CN")).toBe("ru");
-    expect(matchAcceptLanguage(null)).toBe("ru");
+    expect(matchAcceptLanguage("zh-CN")).toBe("tk");
+    expect(matchAcceptLanguage(null)).toBe("tk");
   });
 });
 

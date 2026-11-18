@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { getLocale } from "next-intl/server";
+import { TurkmenLegalDocument } from "@/components/layout/turkmen-legal-document";
 import { COMPANY } from "@/lib/config/constants";
 
-export const metadata: Metadata = { title: "Условия оказания услуг" };
+export const metadata: Metadata = { title: "Hyzmat şertleri" };
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  if ((await getLocale()) === "tk") return <TurkmenLegalDocument kind="terms" />;
   return (
     <div className="container max-w-3xl py-12">
       <h1 className="mb-6 text-2xl font-bold text-brand-900">Условия оказания услуг</h1>
@@ -15,17 +18,18 @@ export default function TermsPage() {
         </p>
         <h2 className="text-base font-semibold text-foreground">2. Сроки</h2>
         <p>
-          Стандартный срок выполнения — 1–2 рабочих дня, если иное не указано для конкретной
-          услуги. Срочное выполнение (1 день) и экспресс (в день обращения) оплачиваются с
-          повышающим коэффициентом 1.5× и 2× соответственно.
+          Стандартный срок выполнения — 1–2 рабочих дня, если иное не указано для конкретной услуги.
+          Срочное выполнение (1 день) и экспресс (в день обращения) оплачиваются с повышающим
+          коэффициентом 1.5× и 2× соответственно.
         </p>
         <h2 className="text-base font-semibold text-foreground">3. Оплата</h2>
         <p>
           Оплата производится онлайн (СБП, QR-код, банковская карта) либо в пункте приёма (наличными
           или картой) при сдаче документов — работа начинается после оплаты. Для заказов от
-          установленной суммы и нотариальных переводов действует предоплата, остаток оплачивается при
-          получении. Дополнительные работы (срочность, дополнительные страницы) оплачиваются отдельно —
-          по ссылке на оплату после согласования с клиентом. Момент оплаты отражается в статусе заказа.
+          установленной суммы и нотариальных переводов действует предоплата, остаток оплачивается
+          при получении. Дополнительные работы (срочность, дополнительные страницы) оплачиваются
+          отдельно — по ссылке на оплату после согласования с клиентом. Момент оплаты отражается в
+          статусе заказа.
         </p>
         <h2 className="text-base font-semibold text-foreground">4. Отмена и возврат</h2>
         <p>

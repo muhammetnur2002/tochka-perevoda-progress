@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
 export interface KanbanOrder {
   id: string;
   public_number: string;
+  currency: string;
   status: OrderStatus;
   proof_status?: OrderProofStatus;
   total_price: number;
@@ -44,7 +45,12 @@ export interface KanbanOrder {
   office: { name: string } | null;
   client: { name: string; phone: string | null } | null;
   items: { service_id: string | null; name_snapshot: string; quantity: number }[];
-  assignments: { role: string; status: string; user_id: string; user: { name: string | null } | null }[];
+  assignments: {
+    role: string;
+    status: string;
+    user_id: string;
+    user: { name: string | null } | null;
+  }[];
 }
 
 const COLUMNS: OrderStatus[] = ["new", "confirmed", "in_progress", "ready", "issued", "completed"];
@@ -55,21 +61,31 @@ type Quick = (typeof QUICK)[number];
 const DAY = 86_400_000;
 const isOpen = (o: KanbanOrder) => ["new", "confirmed", "in_progress"].includes(o.status);
 const isHot = (o: KanbanOrder) =>
-  isOpen(o) && !!o.deadline && new Date(o.deadline).getTime() - Date.now() < DAY && new Date(o.deadline).getTime() > Date.now();
-const isOverdue = (o: KanbanOrder) => isOpen(o) && !!o.deadline && new Date(o.deadline).getTime() < Date.now();
+  isOpen(o) &&
+  !!o.deadline &&
+  new Date(o.deadline).getTime() - Date.now() < DAY &&
+  new Date(o.deadline).getTime() > Date.now();
+const isOverdue = (o: KanbanOrder) =>
+  isOpen(o) && !!o.deadline && new Date(o.deadline).getTime() < Date.now();
 const PROOF_BADGE: Partial<Record<OrderProofStatus, string>> = {
   awaiting_client: "bg-sky-100 text-sky-800",
   changes_requested: "bg-amber-100 text-amber-800",
   approved: "bg-emerald-100 text-emerald-800",
 };
-const executorOf = (o: KanbanOrder) => o.assignments.find((a) => a.role !== "manager" && a.status !== "rejected");
+const executorOf = (o: KanbanOrder) =>
+  o.assignments.find((a) => a.role !== "manager" && a.status !== "rejected");
 
 function OrderCard({ order, onNext }: { order: KanbanOrder; onNext?: () => void }) {
   const t = useTranslations("admin.kanban");
   const tSource = useTranslations("admin.sources");
   const tProof = useTranslations("admin.proof");
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: order.id, data: { order } });
-  const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: order.id,
+    data: { order },
+  });
+  const style = transform
+    ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
+    : undefined;
   const executor = executorOf(order);
   const paid = Number(order.paid_amount) >= Number(order.total_price);
   const hot = isHot(order) || isOverdue(order);
@@ -91,10 +107,17 @@ function OrderCard({ order, onNext }: { order: KanbanOrder; onNext?: () => void 
         isDragging && "z-50 rotate-1 cursor-grabbing shadow-card",
       )}
     >
-      <div {...listeners} {...attributes} className="cursor-grab space-y-1.5" aria-label={t("dragOrder", { number: order.public_number })}>
+      <div
+        {...listeners}
+        {...attributes}
+        className="cursor-grab space-y-1.5"
+        aria-label={t("dragOrder", { number: order.public_number })}
+      >
         <div className="flex items-center justify-between gap-1.5">
           <strong className="text-brand-800">{order.public_number}</strong>
-          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-600">{SOURCES.includes(order.source) ? tSource(order.source) : order.source}</span>
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-600">
+            {SOURCES.includes(order.source) ? tSource(order.source) : order.source}
+          </span>
         </div>
         <div className="text-slate-600">{order.client?.name ?? "—"}</div>
         {order.office && (
@@ -105,24 +128,43 @@ function OrderCard({ order, onNext }: { order: KanbanOrder; onNext?: () => void 
         )}
         {order.proof_status && PROOF_BADGE[order.proof_status] && (
           <div>
-            <span className={cn("inline-block rounded-full px-2 py-0.5 text-[11px] font-bold", PROOF_BADGE[order.proof_status])}>
-              {tProof(`badge.${order.proof_status as "awaiting_client" | "changes_requested" | "approved"}`)}
+            <span
+              className={cn(
+                "inline-block rounded-full px-2 py-0.5 text-[11px] font-bold",
+                PROOF_BADGE[order.proof_status],
+              )}
+            >
+              {tProof(
+                `badge.${order.proof_status as "awaiting_client" | "changes_requested" | "approved"}`,
+              )}
             </span>
           </div>
         )}
         {order.payment_mode === "office" && !paid && (
           <div>
-            <span className="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">{t("payInOffice")}</span>
+            <span className="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">
+              {t("payInOffice")}
+            </span>
           </div>
         )}
-        <div className="leading-snug">{order.items.map((i) => `${i.name_snapshot}${i.quantity > 1 ? ` × ${i.quantity}` : ""}`).join(", ")}</div>
+        <div className="leading-snug">
+          {order.items
+            .map((i) => `${i.name_snapshot}${i.quantity > 1 ? ` × ${i.quantity}` : ""}`)
+            .join(", ")}
+        </div>
         <div className="flex items-center justify-between">
-          <strong>{formatMoney(Number(order.total_price))}</strong>
-          <span className={cn("text-xs font-extrabold", paid ? "text-emerald-700" : "text-red-700")}>{paid ? t("paid") : t("unpaid")}</span>
+          <strong>{formatMoney(Number(order.total_price), order.currency)}</strong>
+          <span
+            className={cn("text-xs font-extrabold", paid ? "text-emerald-700" : "text-red-700")}
+          >
+            {paid ? t("paid") : t("unpaid")}
+          </span>
         </div>
         <div className="flex items-center justify-between gap-1.5">
           <span className={cn("text-xs font-bold", hot ? "text-red-700" : "text-slate-500")}>
-            {order.deadline ? (isOverdue(order) ? `${t("overdueMark")} · ` : "") + formatDateTime(order.deadline) : t("noDeadline")}
+            {order.deadline
+              ? (isOverdue(order) ? `${t("overdueMark")} · ` : "") + formatDateTime(order.deadline)
+              : t("noDeadline")}
           </span>
           <span
             title={executor?.user?.name ?? t("noExecutor")}
@@ -154,7 +196,15 @@ function OrderCard({ order, onNext }: { order: KanbanOrder; onNext?: () => void 
   );
 }
 
-function Column({ status, orders, onMove }: { status: OrderStatus; orders: KanbanOrder[]; onMove: (o: KanbanOrder, to: OrderStatus) => void }) {
+function Column({
+  status,
+  orders,
+  onMove,
+}: {
+  status: OrderStatus;
+  orders: KanbanOrder[];
+  onMove: (o: KanbanOrder, to: OrderStatus) => void;
+}) {
   const tStatus = useTranslations("orderStatus");
   const { setNodeRef, isOver } = useDroppable({ id: status });
   const next = COLUMNS[COLUMNS.indexOf(status) + 1];
@@ -162,11 +212,16 @@ function Column({ status, orders, onMove }: { status: OrderStatus; orders: Kanba
     <section
       ref={setNodeRef}
       aria-label={tStatus(status)}
-      className={cn("flex min-h-[520px] flex-col gap-2 rounded-2xl p-2 transition-colors", isOver ? "bg-gold-50 ring-2 ring-gold-300" : "bg-[#EBEFF5]")}
+      className={cn(
+        "flex min-h-[520px] flex-col gap-2 rounded-2xl p-2 transition-colors",
+        isOver ? "bg-gold-50 ring-2 ring-gold-300" : "bg-[#EBEFF5]",
+      )}
     >
       <div className="flex items-center justify-between px-1 pb-1">
         <strong className="text-sm text-brand-800">{tStatus(status)}</strong>
-        <span className="rounded-full bg-white px-2 text-xs font-extrabold text-slate-600">{orders.length}</span>
+        <span className="rounded-full bg-white px-2 text-xs font-extrabold text-slate-600">
+          {orders.length}
+        </span>
       </div>
       {orders.map((o) => (
         <OrderCard key={o.id} order={o} onNext={next ? () => onMove(o, next) : undefined} />
@@ -198,7 +253,10 @@ export function KanbanBoard() {
   const { data: offices } = useQuery({
     queryKey: ["admin-offices-list"],
     queryFn: async () => {
-      const { data: rows, error } = await createClient().from("offices").select("id, name").order("sort_order");
+      const { data: rows, error } = await createClient()
+        .from("offices")
+        .select("id, name")
+        .order("sort_order");
       if (error) throw error;
       return rows ?? [];
     },
@@ -235,7 +293,10 @@ export function KanbanBoard() {
       d ? { orders: d.orders.map((o) => (o.id === order.id ? { ...o, status: to } : o)) } : d,
     );
     try {
-      await apiFetch(`/api/orders/${order.id}`, { method: "PATCH", body: JSON.stringify({ status: to }) });
+      await apiFetch(`/api/orders/${order.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status: to }),
+      });
       toast.success(`${order.public_number}: ${tStatus(to)}`);
     } catch (err) {
       queryClient.setQueryData(queryKey, previous);
@@ -249,10 +310,18 @@ export function KanbanBoard() {
     if (order && to) void move(order, to);
   };
 
-  const services = [...new Map(orders.flatMap((o) => o.items).map((i) => [i.name_snapshot, i.name_snapshot])).values()].sort();
+  const services = [
+    ...new Map(
+      orders.flatMap((o) => o.items).map((i) => [i.name_snapshot, i.name_snapshot]),
+    ).values(),
+  ].sort();
   const executors = [
     ...new Map(
-      orders.flatMap((o) => o.assignments.filter((a) => a.user?.name).map((a) => [a.user_id, a.user?.name ?? ""] as const)),
+      orders.flatMap((o) =>
+        o.assignments
+          .filter((a) => a.user?.name)
+          .map((a) => [a.user_id, a.user?.name ?? ""] as const),
+      ),
     ).entries(),
   ];
 
@@ -263,9 +332,16 @@ export function KanbanBoard() {
     if (quick === "unpaid" && Number(o.paid_amount) >= Number(o.total_price)) return false;
     if (quick === "tg" && !["mini_app", "bot"].includes(o.source)) return false;
     if (service && !o.items.some((i) => i.name_snapshot === service)) return false;
-    if (executor && !o.assignments.some((a) => a.user_id === executor && a.status !== "rejected")) return false;
+    if (executor && !o.assignments.some((a) => a.user_id === executor && a.status !== "rejected"))
+      return false;
     if (office && o.office_id !== office) return false;
-    if (q && !`${o.public_number} ${o.client?.name ?? ""} ${o.client?.phone ?? ""}`.toLowerCase().includes(q)) return false;
+    if (
+      q &&
+      !`${o.public_number} ${o.client?.name ?? ""} ${o.client?.phone ?? ""}`
+        .toLowerCase()
+        .includes(q)
+    )
+      return false;
     return true;
   });
 
@@ -280,7 +356,9 @@ export function KanbanBoard() {
             aria-pressed={quick === f}
             className={cn(
               "min-h-9 rounded-full border px-3.5 text-sm font-bold",
-              quick === f ? "border-brand-800 bg-brand-800 text-white" : "border-input bg-white text-brand-800",
+              quick === f
+                ? "border-brand-800 bg-brand-800 text-white"
+                : "border-input bg-white text-brand-800",
             )}
           >
             {t(`quick.${f}`)}
@@ -296,13 +374,23 @@ export function KanbanBoard() {
           placeholder={t("searchPlaceholder")}
           className="h-9 w-56"
         />
-        <select aria-label={t("service")} value={service} onChange={(e) => setService(e.target.value)} className="h-9 max-w-56 rounded-md border bg-white px-2 text-sm">
+        <select
+          aria-label={t("service")}
+          value={service}
+          onChange={(e) => setService(e.target.value)}
+          className="h-9 max-w-56 rounded-md border bg-white px-2 text-sm"
+        >
           <option value="">{t("allServices")}</option>
           {services.map((s) => (
             <option key={s}>{s}</option>
           ))}
         </select>
-        <select aria-label={t("executor")} value={executor} onChange={(e) => setExecutor(e.target.value)} className="h-9 rounded-md border bg-white px-2 text-sm">
+        <select
+          aria-label={t("executor")}
+          value={executor}
+          onChange={(e) => setExecutor(e.target.value)}
+          className="h-9 rounded-md border bg-white px-2 text-sm"
+        >
           <option value="">{t("allExecutors")}</option>
           {executors.map(([id, name]) => (
             <option key={id} value={id}>
@@ -310,7 +398,12 @@ export function KanbanBoard() {
             </option>
           ))}
         </select>
-        <select aria-label={t("office")} value={office} onChange={(e) => setOffice(e.target.value)} className="h-9 max-w-56 rounded-md border bg-white px-2 text-sm">
+        <select
+          aria-label={t("office")}
+          value={office}
+          onChange={(e) => setOffice(e.target.value)}
+          className="h-9 max-w-56 rounded-md border bg-white px-2 text-sm"
+        >
           <option value="">{t("allOffices")}</option>
           {(offices ?? []).map((o) => (
             <option key={o.id} value={o.id}>
@@ -331,15 +424,18 @@ export function KanbanBoard() {
           <div className="overflow-x-auto pb-2">
             <div className="grid min-w-[1400px] grid-cols-6 gap-3">
               {COLUMNS.map((c) => (
-                <Column key={c} status={c} orders={visible.filter((o) => o.status === c)} onMove={move} />
+                <Column
+                  key={c}
+                  status={c}
+                  orders={visible.filter((o) => o.status === c)}
+                  onMove={move}
+                />
               ))}
             </div>
           </div>
         </DndContext>
       )}
-      <p className="text-xs text-muted-foreground">
-        {t("hint")}
-      </p>
+      <p className="text-xs text-muted-foreground">{t("hint")}</p>
     </div>
   );
 }

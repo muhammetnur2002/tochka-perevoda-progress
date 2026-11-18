@@ -9,7 +9,7 @@ export interface ReceiptData {
 }
 
 export interface CreatePaymentParams {
-  amount: number; // рубли
+  amount: number; // единицы валюты currency
   currency: string;
   method: PaymentMethodKind;
   idempotenceKey: string;
@@ -39,7 +39,7 @@ export type RefundStatus = "pending" | "succeeded" | "canceled";
 
 export interface CreateRefundParams {
   providerPaymentId: string;
-  amount: number; // рубли
+  amount: number; // единицы валюты currency
   currency: string;
   idempotenceKey: string;
   description: string;

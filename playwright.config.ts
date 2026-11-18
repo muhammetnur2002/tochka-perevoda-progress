@@ -14,7 +14,7 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000",
-    // язык интерфейса берётся из Accept-Language — проверяем русскую версию
+    // русская версия запрашивается явно через cookie в smoke.spec.ts; язык по умолчанию — tk
     locale: "ru-RU",
     trace: "on-first-retry",
     screenshot: "only-on-failure",

@@ -25,7 +25,7 @@ export interface DashboardStats {
   paymentMethods: { method: string; amount: number }[];
 }
 
-const WEEKDAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+const WEEKDAYS = ["Duş", "Siş", "Çar", "Pen", "Ann", "Şen", "Ýek"];
 
 /**
  * Агрегаты для дашборда, финансов и отчётов. Считаются в приложении по выборке
@@ -38,12 +38,23 @@ export async function getDashboardStats(db: Db, days: number): Promise<Dashboard
   const [ordersRes, clientsRes, paymentsRes, assignmentsRes, languagesRes] = await Promise.all([
     db
       .from("orders")
-      .select("id, status, total_price, paid_amount, deadline, language_from, created_at, items:order_items(name_snapshot, quantity, price)")
+      .select(
+        "id, currency, status, total_price, paid_amount, deadline, language_from, created_at, items:order_items(name_snapshot, quantity, price)",
+      )
       .gte("created_at", since)
+      .eq("currency", "TMT")
       .limit(5000),
     db.from("clients").select("id", { count: "exact", head: true }),
-    db.from("payments").select("amount, method, status").gte("created_at", since).eq("status", "succeeded"),
-    db.from("order_assignments").select("status, user:users!order_assignments_user_id_fkey(name)").gte("assigned_at", since),
+    db
+      .from("payments")
+      .select("amount, method, status")
+      .gte("created_at", since)
+      .eq("status", "succeeded")
+      .eq("currency", "TMT"),
+    db
+      .from("order_assignments")
+      .select("status, user:users!order_assignments_user_id_fkey(name)")
+      .gte("assigned_at", since),
     db.from("languages").select("id, name"),
   ]);
   if (ordersRes.error) throw ordersRes.error;
@@ -130,7 +141,9 @@ export async function getDashboardStats(db: Db, days: number): Promise<Dashboard
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10),
-    executors: [...execs.entries()].map(([name, v]) => ({ name, ...v })).sort((a, b) => b.active - a.active),
+    executors: [...execs.entries()]
+      .map(([name, v]) => ({ name, ...v }))
+      .sort((a, b) => b.active - a.active),
     paymentMethods: [...methods.entries()].map(([method, amount]) => ({ method, amount })),
   };
 }

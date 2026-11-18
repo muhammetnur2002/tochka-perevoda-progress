@@ -97,6 +97,7 @@ export interface CreateOrderPayload extends CustomerInfo {
 export interface OrderWithDetails {
   id: string;
   public_number: string;
+  currency: string;
   status: OrderStatus;
   total_price: number;
   paid_amount: number;
